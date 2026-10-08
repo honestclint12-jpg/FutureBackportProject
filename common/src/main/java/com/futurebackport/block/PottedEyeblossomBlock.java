@@ -16,7 +16,9 @@ public class PottedEyeblossomBlock extends FlowerPotBlock {
    private final Supplier<? extends Block> opposite;
 
    public PottedEyeblossomBlock(boolean open, Supplier<? extends Block> flower, Supplier<? extends Block> opposite, Properties properties) {
-      super(() -> (FlowerPotBlock)Blocks.FLOWER_POT, flower, properties);
+      // The flower is registered before its pot, so it can be resolved here. Vanilla's constructor (and NeoForge's
+      // version of it) also maps the flower to this pot for empty-pot interactions.
+      super(flower.get(), properties);
       this.open = open;
       this.opposite = opposite;
    }

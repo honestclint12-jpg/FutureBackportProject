@@ -161,8 +161,7 @@ public class ModBlocks {
    public static final BlockEntry<FlowerPotBlock> POTTED_PALE_OAK_SAPLING = BLOCKS.register(
       "potted_pale_oak_sapling",
       () -> new FlowerPotBlock(
-         () -> (FlowerPotBlock)net.minecraft.world.level.block.Blocks.FLOWER_POT,
-         PALE_OAK_SAPLING,
+         PALE_OAK_SAPLING.get(),
          Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.POTTED_DARK_OAK_SAPLING)
       )
    );
@@ -265,8 +264,7 @@ public class ModBlocks {
    public static final BlockEntry<FlowerPotBlock> POTTED_GOLDEN_DANDELION = BLOCKS.register(
       "potted_golden_dandelion",
       () -> new FlowerPotBlock(
-         () -> (FlowerPotBlock)net.minecraft.world.level.block.Blocks.FLOWER_POT,
-         GOLDEN_DANDELION,
+         GOLDEN_DANDELION.get(),
          Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.POTTED_DANDELION)
       )
    );

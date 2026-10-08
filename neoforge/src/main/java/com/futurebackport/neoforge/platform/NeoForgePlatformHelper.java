@@ -13,8 +13,10 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FireBlock;
@@ -66,6 +68,21 @@ public final class NeoForgePlatformHelper implements PlatformHelper {
     @Override
     public void onCropGrown(ServerLevel level, BlockPos pos, BlockState state) {
         CommonHooks.fireCropGrowPost(level, pos, state);
+    }
+
+    @Override
+    public float getBiomeTemperature(Biome biome) {
+        return biome.getModifiedClimateSettings().temperature();
+    }
+
+    @Override
+    public float getBiomeDownfall(Biome biome) {
+        return biome.getModifiedClimateSettings().downfall();
+    }
+
+    @Override
+    public CreativeModeTab.Builder creativeTabBuilder() {
+        return CreativeModeTab.builder();
     }
 
     @Override

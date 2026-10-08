@@ -9,15 +9,16 @@ import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.ColorResolver;
-import net.minecraft.world.level.biome.Biome.ClimateSettings;
+import com.futurebackport.platform.Services;
 
 public final class DryFoliageColor {
    public static final int DEFAULT = -10732494;
    private static final ResourceLocation LOCATION = FutureBackport.id("textures/colormap/dry_foliage.png");
    private static int[] pixels = new int[65536];
    public static final ColorResolver RESOLVER = (biome, x, z) -> {
-      ClimateSettings climate = biome.getModifiedClimateSettings();
-      return get(Mth.clamp(climate.temperature(), 0.0F, 1.0F), Mth.clamp(climate.downfall(), 0.0F, 1.0F));
+      float temperature = Services.PLATFORM.getBiomeTemperature(biome);
+      float downfall = Services.PLATFORM.getBiomeDownfall(biome);
+      return get(Mth.clamp(temperature, 0.0F, 1.0F), Mth.clamp(downfall, 0.0F, 1.0F));
    };
 
    private DryFoliageColor() {

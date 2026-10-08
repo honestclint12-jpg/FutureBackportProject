@@ -13,8 +13,10 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -45,6 +47,15 @@ public interface PlatformHelper {
 
     /** Tells other mods a crop-like block grew (NeoForge's CropGrowEvent.Post). */
     void onCropGrown(ServerLevel level, BlockPos pos, BlockState state);
+
+    /** A biome's temperature after other mods' biome changes (vanilla's base value on loaders without them). */
+    float getBiomeTemperature(Biome biome);
+
+    /** A biome's downfall after other mods' biome changes. */
+    float getBiomeDownfall(Biome biome);
+
+    /** A creative tab builder; loaders lay tabs out differently. */
+    CreativeModeTab.Builder creativeTabBuilder();
 
     /** A menu type whose client-side menu is built from extra data sent by {@link #openMenu}. */
     <M extends AbstractContainerMenu> MenuType<M> createMenuType(MenuFactory<M> factory);
