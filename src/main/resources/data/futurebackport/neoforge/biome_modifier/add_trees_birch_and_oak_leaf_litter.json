@@ -1,0 +1,8 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": [
+    "minecraft:forest"
+  ],
+  "features": "futurebackport:trees_birch_and_oak_leaf_litter",
+  "step": "vegetal_decoration"
+}

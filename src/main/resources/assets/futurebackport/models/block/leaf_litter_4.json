@@ -1,0 +1,6 @@
+{
+  "parent": "futurebackport:block/template_leaf_litter_4",
+  "textures": {
+    "texture": "futurebackport:block/leaf_litter"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:random_selector",
+  "config": {
+    "default": "futurebackport:oak_bees_0002_leaf_litter",
+    "features": [
+      {
+        "chance": 0.0025,
+        "feature": "futurebackport:fallen_birch_tree"
+      },
+      {
+        "chance": 0.2,
+        "feature": "futurebackport:birch_bees_0002_leaf_litter"
+      },
+      {
+        "chance": 0.1,
+        "feature": "futurebackport:fancy_oak_bees_0002_leaf_litter"
+      },
+      {
+        "chance": 0.0125,
+        "feature": "futurebackport:fallen_oak_tree"
+      }
+    ]
+  }
+}

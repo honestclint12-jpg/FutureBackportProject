@@ -1,0 +1,7 @@
+{
+  "parent": "futurebackport:block/cross_emissive",
+  "textures": {
+    "cross": "futurebackport:block/open_eyeblossom",
+    "cross_emissive": "futurebackport:block/open_eyeblossom_emissive"
+  }
+}

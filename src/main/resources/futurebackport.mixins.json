@@ -1,0 +1,23 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.futurebackport.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "CactusBlockMixin",
+    "CamelMixin",
+    "CarvedPumpkinBlockMixin",
+    "ChestBlockEntityMixin",
+    "ChickenMixin",
+    "DrownedMixin",
+    "EntityMixin",
+    "LeavesBlockMixin",
+    "LightningRodBlockMixin",
+    "OverworldBiomeBuilderMixin",
+    "SimpleBlockFeatureMixin",
+    "ZombieMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

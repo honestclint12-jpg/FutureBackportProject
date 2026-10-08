@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "futurebackport:resin_brick_stairs",
+    "futurebackport:cinnabar_stairs",
+    "futurebackport:polished_cinnabar_stairs",
+    "futurebackport:cinnabar_brick_stairs",
+    "futurebackport:sulfur_stairs",
+    "futurebackport:polished_sulfur_stairs",
+    "futurebackport:sulfur_brick_stairs"
+  ]
+}

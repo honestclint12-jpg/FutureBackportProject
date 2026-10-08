@@ -1,0 +1,8 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": [
+    "minecraft:swamp"
+  ],
+  "features": "futurebackport:patch_firefly_bush_swamp",
+  "step": "vegetal_decoration"
+}

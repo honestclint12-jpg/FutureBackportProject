@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "futurebackport:block/cinnabar_slab"
+    },
+    "type=double": {
+      "model": "futurebackport:block/cinnabar"
+    },
+    "type=top": {
+      "model": "futurebackport:block/cinnabar_slab_top"
+    }
+  }
+}

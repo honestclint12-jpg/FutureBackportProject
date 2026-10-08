@@ -1,0 +1,24 @@
+{
+  "pools": [
+    {
+      "rolls": 1.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "count": 1.0,
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "futurebackport:dried_ghast",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:empty",
+          "weight": 459
+        }
+      ]
+    }
+  ]
+}

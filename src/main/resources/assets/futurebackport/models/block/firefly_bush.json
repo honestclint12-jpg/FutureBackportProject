@@ -1,0 +1,7 @@
+{
+  "parent": "futurebackport:block/cross_emissive",
+  "textures": {
+    "cross": "futurebackport:block/firefly_bush",
+    "cross_emissive": "futurebackport:block/firefly_bush_emissive"
+  }
+}

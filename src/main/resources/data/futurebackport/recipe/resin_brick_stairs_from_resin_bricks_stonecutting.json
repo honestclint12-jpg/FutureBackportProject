@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "futurebackport:resin_bricks"
+  },
+  "result": {
+    "id": "futurebackport:resin_brick_stairs"
+  }
+}

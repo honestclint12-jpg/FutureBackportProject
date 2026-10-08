@@ -1,0 +1,6 @@
+{
+  "type": "futurebackport:set_spawn_weight",
+  "biomes": "minecraft:desert",
+  "entity_type": "minecraft:skeleton",
+  "weight": 50
+}

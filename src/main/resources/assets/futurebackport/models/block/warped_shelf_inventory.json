@@ -1,0 +1,7 @@
+{
+  "parent": "futurebackport:block/template_shelf_inventory",
+  "textures": {
+    "all": "futurebackport:block/warped_shelf",
+    "particle": "minecraft:block/stripped_warped_stem"
+  }
+}

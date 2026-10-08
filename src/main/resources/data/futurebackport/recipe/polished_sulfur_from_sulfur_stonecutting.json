@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "futurebackport:sulfur"
+  },
+  "result": {
+    "id": "futurebackport:polished_sulfur"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:short_grass",
+    "futurebackport:short_dry_grass",
+    "futurebackport:tall_dry_grass",
+    "minecraft:fern"
+  ]
+}

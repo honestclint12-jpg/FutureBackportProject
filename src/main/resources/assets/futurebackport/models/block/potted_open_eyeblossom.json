@@ -1,0 +1,7 @@
+{
+  "parent": "futurebackport:block/flower_pot_cross_emissive",
+  "textures": {
+    "cross_emissive": "futurebackport:block/open_eyeblossom_emissive",
+    "plant": "futurebackport:block/open_eyeblossom"
+  }
+}

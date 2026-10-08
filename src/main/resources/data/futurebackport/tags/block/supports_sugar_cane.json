@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "#futurebackport:substrate_overworld",
+    "#minecraft:sand"
+  ]
+}

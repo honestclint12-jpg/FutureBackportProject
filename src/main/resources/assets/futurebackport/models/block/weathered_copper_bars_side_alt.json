@@ -1,0 +1,7 @@
+{
+  "parent": "futurebackport:block/template_bars_side_alt",
+  "textures": {
+    "bars": "futurebackport:block/weathered_copper_bars",
+    "edge": "futurebackport:block/weathered_copper_bars"
+  }
+}

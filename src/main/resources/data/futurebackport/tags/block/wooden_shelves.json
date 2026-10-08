@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    "futurebackport:acacia_shelf",
+    "futurebackport:bamboo_shelf",
+    "futurebackport:birch_shelf",
+    "futurebackport:cherry_shelf",
+    "futurebackport:crimson_shelf",
+    "futurebackport:dark_oak_shelf",
+    "futurebackport:jungle_shelf",
+    "futurebackport:mangrove_shelf",
+    "futurebackport:oak_shelf",
+    "futurebackport:pale_oak_shelf",
+    "futurebackport:spruce_shelf",
+    "futurebackport:warped_shelf"
+  ]
+}

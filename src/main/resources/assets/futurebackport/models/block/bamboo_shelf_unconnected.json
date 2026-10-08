@@ -1,0 +1,7 @@
+{
+  "parent": "futurebackport:block/template_shelf_unconnected",
+  "textures": {
+    "all": "futurebackport:block/bamboo_shelf",
+    "particle": "minecraft:block/stripped_bamboo_block"
+  }
+}

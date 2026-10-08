@@ -1,0 +1,21 @@
+{
+  "pools": [
+    {
+      "rolls": {
+        "type": "minecraft:uniform",
+        "max": 6.0,
+        "min": 2.0
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "futurebackport:copper_horse_armor"
+        },
+        {
+          "type": "minecraft:empty",
+          "weight": 88
+        }
+      ]
+    }
+  ]
+}

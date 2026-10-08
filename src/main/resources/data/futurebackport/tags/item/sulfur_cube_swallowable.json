@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "#futurebackport:sulfur_cube_archetype/fast_flat",
+    "#futurebackport:sulfur_cube_archetype/slow_bouncy"
+  ]
+}

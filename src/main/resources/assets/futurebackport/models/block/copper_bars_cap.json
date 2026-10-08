@@ -1,0 +1,7 @@
+{
+  "parent": "futurebackport:block/template_bars_cap",
+  "textures": {
+    "bars": "futurebackport:block/copper_bars",
+    "edge": "futurebackport:block/copper_bars"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "#futurebackport:substrate_overworld",
+    "futurebackport:cinnabar",
+    "futurebackport:sulfur"
+  ]
+}
