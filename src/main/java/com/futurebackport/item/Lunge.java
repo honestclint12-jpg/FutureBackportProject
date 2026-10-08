@@ -1,5 +1,7 @@
 package com.futurebackport.item;
 
+import com.futurebackport.platform.registry.RegistryEntry;
+
 import com.futurebackport.FutureBackport;
 import com.futurebackport.registry.ModSounds;
 import java.util.Optional;
@@ -17,7 +19,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.registries.DeferredHolder;
 
 public final class Lunge {
    public static final ResourceKey<Enchantment> KEY = ResourceKey.create(Registries.ENCHANTMENT, FutureBackport.id("lunge"));
@@ -40,7 +41,7 @@ public final class Lunge {
                   if (player instanceof ServerPlayer serverPlayer) {
                      serverPlayer.connection.send(new ClientboundSetEntityMotionPacket(player));
                   }
-                  DeferredHolder<SoundEvent, SoundEvent> sound = switch (lunge) {
+                  RegistryEntry<SoundEvent, SoundEvent> sound = switch (lunge) {
                      case 1 -> ModSounds.SPEAR_LUNGE_1;
                      case 2 -> ModSounds.SPEAR_LUNGE_2;
                      default -> ModSounds.SPEAR_LUNGE_3;

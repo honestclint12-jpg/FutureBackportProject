@@ -38,7 +38,7 @@ public class HappyGhastTests {
 
       for (int i = 0; i < 4; i++) {
          BlockState state = helper.getBlockState(pos);
-         if (state.is(ModBlocks.DRIED_GHAST)) {
+         if (state.is(ModBlocks.DRIED_GHAST.get())) {
             state.tick(helper.getLevel(), helper.absolutePos(pos), helper.getLevel().getRandom());
          }
       }

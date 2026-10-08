@@ -1,5 +1,7 @@
 package com.futurebackport;
 
+import com.futurebackport.platform.registry.BlockEntry;
+
 import com.futurebackport.entity.AgeLock;
 import com.futurebackport.entity.FarmAnimalVariant;
 import com.futurebackport.entity.FarmAnimalVariantEvents;
@@ -19,6 +21,7 @@ import com.futurebackport.registry.ModMenus;
 import com.futurebackport.registry.ModParticles;
 import com.futurebackport.registry.ModSounds;
 import com.futurebackport.registry.ModWorldgen;
+import com.futurebackport.neoforge.platform.NeoForgeRegistrationFactory;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ItemLike;
@@ -36,7 +39,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-import net.neoforged.neoforge.registries.DeferredBlock;
 import org.slf4j.Logger;
 
 @Mod("futurebackport")
@@ -45,20 +47,10 @@ public class FutureBackport {
    public static final Logger LOGGER = LogUtils.getLogger();
 
    public FutureBackport(IEventBus modEventBus, ModContainer modContainer) {
-      ModBlocks.BLOCKS.register(modEventBus);
-      ModItems.ITEMS.register(modEventBus);
-      ModBlockEntities.BLOCK_ENTITIES.register(modEventBus);
-      ModEntities.ENTITIES.register(modEventBus);
+      NeoForgeRegistrationFactory.attach(modEventBus);
+      bootstrapRegistries();
       FarmAnimalVariant.ATTACHMENTS.register(modEventBus);
-      ModMaterials.ARMOR_MATERIALS.register(modEventBus);
-      ModParticles.PARTICLES.register(modEventBus);
-      ModSounds.SOUNDS.register(modEventBus);
-      ModWorldgen.FEATURES.register(modEventBus);
-      ModWorldgen.TREE_DECORATORS.register(modEventBus);
       ModWorldgen.BIOME_MODIFIERS.register(modEventBus);
-      ModMenus.MENUS.register(modEventBus);
-      ModEffects.EFFECTS.register(modEventBus);
-      ModCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
       modEventBus.addListener(this::commonSetup);
       modEventBus.addListener(this::addBlockEntityBlocks);
       modEventBus.addListener(ModEntities::registerAttributes);
@@ -69,6 +61,19 @@ public class FutureBackport {
       NeoForge.EVENT_BUS.register(new AgeLock());
       NeoForge.EVENT_BUS.register(SoundVariants.class);
       NeoForge.EVENT_BUS.register(BreathOfTheNautilus.class);
+   }
+
+   /**
+    * Loads every registry class so its static fields create their entries. Order matters on loaders that register
+    * immediately (Fabric): sounds and blocks before the items, entities and tabs that reference them.
+    */
+   public static void bootstrapRegistries() {
+      Object[] registries = {
+         ModSounds.SOUNDS, ModParticles.PARTICLES, ModEffects.EFFECTS, ModMaterials.ARMOR_MATERIALS,
+         ModBlocks.BLOCKS, ModEntities.ENTITIES, ModItems.ITEMS, ModBlockEntities.BLOCK_ENTITIES,
+         ModWorldgen.FEATURES, ModWorldgen.TREE_DECORATORS, ModMenus.MENUS, ModCreativeTabs.CREATIVE_MODE_TABS
+      };
+      LOGGER.debug("Bootstrapped {} registries", registries.length);
    }
 
    public static ResourceLocation id(String path) {
@@ -115,8 +120,8 @@ public class FutureBackport {
    }
 
    @SafeVarargs
-   private static void flammable(int encouragement, int flammability, DeferredBlock<? extends Block>... blocks) {
-      for (DeferredBlock<? extends Block> block : blocks) {
+   private static void flammable(int encouragement, int flammability, BlockEntry<? extends Block>... blocks) {
+      for (BlockEntry<? extends Block> block : blocks) {
          ((FireBlock)Blocks.FIRE).setFlammable((Block)block.get(), encouragement, flammability);
       }
    }

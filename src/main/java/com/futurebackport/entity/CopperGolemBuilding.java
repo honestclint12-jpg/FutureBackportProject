@@ -1,5 +1,7 @@
 package com.futurebackport.entity;
 
+import com.futurebackport.platform.registry.BlockEntry;
+
 import com.futurebackport.registry.ModBlocks;
 import com.futurebackport.registry.ModEntities;
 import java.util.Map;
@@ -15,7 +17,6 @@ import net.minecraft.world.level.block.CarvedPumpkinBlock;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.WeatheringCopper.WeatherState;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.registries.DeferredBlock;
 import org.jetbrains.annotations.Nullable;
 
 public final class CopperGolemBuilding {
@@ -68,7 +69,7 @@ public final class CopperGolemBuilding {
                }
 
                level.blockUpdated(pumpkinPos, Blocks.AIR);
-               Map<WeatherState, DeferredBlock<Block>> chests = WAXED_COPPER.containsKey(copper.getBlock())
+               Map<WeatherState, BlockEntry<Block>> chests = WAXED_COPPER.containsKey(copper.getBlock())
                   ? ModBlocks.COPPER_CHEST.waxed()
                   : ModBlocks.COPPER_CHEST.weathering();
                BlockState chest = (BlockState)((Block)chests.get(weather).get())

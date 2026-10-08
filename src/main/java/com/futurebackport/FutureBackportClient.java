@@ -1,5 +1,7 @@
 package com.futurebackport;
 
+import com.futurebackport.platform.registry.BlockEntry;
+
 import com.futurebackport.client.DryFoliageColor;
 import com.futurebackport.client.NautilusScreen;
 import com.futurebackport.client.dev.Showcase;
@@ -74,7 +76,6 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent.RegisterRenderer
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.ColorResolvers;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
-import net.neoforged.neoforge.registries.DeferredBlock;
 
 @Mod(
    value = "futurebackport",
@@ -129,17 +130,17 @@ public class FutureBackportClient {
    }
 
    @SafeVarargs
-   private static void cutout(DeferredBlock<? extends Block>... blocks) {
+   private static void cutout(BlockEntry<? extends Block>... blocks) {
       setLayer(RenderType.cutout(), blocks);
    }
 
-   private static void cutout(DeferredBlock<? extends Block> block) {
+   private static void cutout(BlockEntry<? extends Block> block) {
       setLayer(RenderType.cutout(), block);
    }
 
    @SafeVarargs
-   private static void setLayer(RenderType type, DeferredBlock<? extends Block>... blocks) {
-      for (DeferredBlock<? extends Block> block : blocks) {
+   private static void setLayer(RenderType type, BlockEntry<? extends Block>... blocks) {
+      for (BlockEntry<? extends Block> block : blocks) {
          ItemBlockRenderTypes.setRenderLayer((Block)block.get(), type);
       }
    }

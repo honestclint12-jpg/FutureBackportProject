@@ -13,7 +13,7 @@ public final class BreathOfTheNautilus {
    @SubscribeEvent
    public static void onBreathe(LivingBreatheEvent event) {
       LivingEntity entity = event.getEntity();
-      if (entity.hasEffect(ModEffects.BREATH_OF_THE_NAUTILUS)) {
+      if (entity.hasEffect(ModEffects.BREATH_OF_THE_NAUTILUS.holder())) {
          event.setCanBreathe(true);
          if (!entity.hasEffect(MobEffects.WATER_BREATHING) && !entity.hasEffect(MobEffects.CONDUIT_POWER)) {
             event.setRefillAirAmount(0);

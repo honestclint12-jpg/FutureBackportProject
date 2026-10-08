@@ -1,5 +1,7 @@
 package com.futurebackport.registry;
 
+import com.futurebackport.platform.registry.BlockEntry;
+
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -12,17 +14,16 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.WeatheringCopper.WeatherState;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.material.MapColor;
-import net.neoforged.neoforge.registries.DeferredBlock;
 
-public record CopperFamily(String baseName, Map<WeatherState, DeferredBlock<Block>> weathering, Map<WeatherState, DeferredBlock<Block>> waxed) {
+public record CopperFamily(String baseName, Map<WeatherState, BlockEntry<Block>> weathering, Map<WeatherState, BlockEntry<Block>> waxed) {
    public static CopperFamily register(
       String baseName,
       BiFunction<WeatherState, Properties, ? extends Block> weatheringFactory,
       BiFunction<WeatherState, Properties, ? extends Block> waxedFactory,
       Function<WeatherState, Properties> properties
    ) {
-      Map<WeatherState, DeferredBlock<Block>> weathering = new EnumMap<>(WeatherState.class);
-      Map<WeatherState, DeferredBlock<Block>> waxed = new EnumMap<>(WeatherState.class);
+      Map<WeatherState, BlockEntry<Block>> weathering = new EnumMap<>(WeatherState.class);
+      Map<WeatherState, BlockEntry<Block>> waxed = new EnumMap<>(WeatherState.class);
       boolean vanillaBase = baseName.equals("lightning_rod");
 
       for (WeatherState state : WeatherState.values()) {
@@ -51,8 +52,8 @@ public record CopperFamily(String baseName, Map<WeatherState, DeferredBlock<Bloc
       };
    }
 
-   public List<DeferredBlock<Block>> all() {
-      List<DeferredBlock<Block>> list = new ArrayList<>();
+   public List<BlockEntry<Block>> all() {
+      List<BlockEntry<Block>> list = new ArrayList<>();
 
       for (WeatherState state : WeatherState.values()) {
          if (this.weathering.containsKey(state)) {

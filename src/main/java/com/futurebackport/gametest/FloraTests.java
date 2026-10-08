@@ -118,7 +118,7 @@ public class FloraTests {
       int bushes = 0;
 
       for (Direction d : Plane.HORIZONTAL) {
-         if (helper.getBlockState(new BlockPos(2, 1, 2).relative(d)).is(ModBlocks.BUSH)) {
+         if (helper.getBlockState(new BlockPos(2, 1, 2).relative(d)).is(ModBlocks.BUSH.get())) {
             bushes++;
          }
       }
@@ -142,7 +142,7 @@ public class FloraTests {
       helper.setBlock(new BlockPos(2, 3, 2), (BlockState)Blocks.CACTUS.defaultBlockState().setValue(CactusBlock.AGE, 8));
       BlockPos top = helper.absolutePos(new BlockPos(2, 3, 2));
 
-      for (int i = 0; i < 200 && !helper.getBlockState(new BlockPos(2, 4, 2)).is(ModBlocks.CACTUS_FLOWER); i++) {
+      for (int i = 0; i < 200 && !helper.getBlockState(new BlockPos(2, 4, 2)).is(ModBlocks.CACTUS_FLOWER.get()); i++) {
          helper.getLevel().setBlock(top, (BlockState)Blocks.CACTUS.defaultBlockState().setValue(CactusBlock.AGE, 8), 260);
          helper.getLevel().getBlockState(top).randomTick(helper.getLevel(), top, helper.getLevel().getRandom());
       }

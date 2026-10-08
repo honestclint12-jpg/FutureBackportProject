@@ -51,7 +51,7 @@ public class HangingMossBlock extends Block implements BonemealableBlock {
    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
       if (random.nextInt(500) == 0) {
          BlockState above = level.getBlockState(pos.above());
-         if (above.is(PALE_OAK_LOGS) || above.is(ModBlocks.PALE_OAK_LEAVES)) {
+         if (above.is(PALE_OAK_LOGS) || above.is(ModBlocks.PALE_OAK_LEAVES.get())) {
             level.playLocalSound(pos.getX(), pos.getY(), pos.getZ(), (SoundEvent)ModSounds.PALE_HANGING_MOSS_IDLE.get(), SoundSource.AMBIENT, 1.0F, 1.0F, false);
          }
       }

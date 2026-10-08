@@ -95,7 +95,7 @@ public class PaleGardenTests {
          int resin = 0;
 
          for (BlockPos pos : BlockPos.betweenClosed(HEART.offset(-3, -3, -3), HEART.offset(3, 3, 3))) {
-            if (helper.getBlockState(pos).is(ModBlocks.RESIN_CLUMP)) {
+            if (helper.getBlockState(pos).is(ModBlocks.RESIN_CLUMP.get())) {
                resin++;
             }
          }
@@ -170,11 +170,11 @@ public class PaleGardenTests {
       int moss = 0;
 
       for (BlockPos pos : BlockPos.betweenClosed(BlockPos.ZERO, new BlockPos(11, 15, 11))) {
-         if (helper.getBlockState(pos).is(ModBlocks.CREAKING_HEART)) {
+         if (helper.getBlockState(pos).is(ModBlocks.CREAKING_HEART.get())) {
             hearts++;
          }
 
-         if (helper.getBlockState(pos).is(ModBlocks.PALE_HANGING_MOSS)) {
+         if (helper.getBlockState(pos).is(ModBlocks.PALE_HANGING_MOSS.get())) {
             moss++;
          }
       }

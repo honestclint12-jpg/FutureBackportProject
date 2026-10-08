@@ -71,7 +71,7 @@ public class NautilusTests {
       helper.runAfterDelay(
          2L,
          () -> {
-            helper.assertTrue(player.hasEffect(ModEffects.BREATH_OF_THE_NAUTILUS), "rider has no Breath of the Nautilus");
+            helper.assertTrue(player.hasEffect(ModEffects.BREATH_OF_THE_NAUTILUS.holder()), "rider has no Breath of the Nautilus");
             helper.assertTrue(
                nautilus.getAttributeValue(Attributes.ARMOR) - armorBefore == 11.0,
                "diamond nautilus armor should give 11 armor, gave " + (nautilus.getAttributeValue(Attributes.ARMOR) - armorBefore)

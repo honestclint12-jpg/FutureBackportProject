@@ -1,5 +1,10 @@
 package com.futurebackport.registry;
 
+import com.futurebackport.platform.registry.ItemRegistration;
+import com.futurebackport.platform.registry.ItemEntry;
+import com.futurebackport.platform.Services;
+import net.minecraft.world.item.SpawnEggItem;
+
 import com.futurebackport.FutureBackport;
 import com.futurebackport.entity.FarmAnimalVariant;
 import com.futurebackport.item.HarnessItem;
@@ -37,102 +42,98 @@ import net.minecraft.world.item.AnimalArmorItem.BodyType;
 import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BannerPattern;
-import net.neoforged.neoforge.common.DeferredSpawnEggItem;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.DeferredRegister.Items;
 
 public class ModItems {
-   public static final Items ITEMS = DeferredRegister.createItems("futurebackport");
-   public static final DeferredItem<SignItem> PALE_OAK_SIGN = ITEMS.register(
+   public static final ItemRegistration ITEMS = ItemRegistration.create("futurebackport");
+   public static final ItemEntry<SignItem> PALE_OAK_SIGN = ITEMS.register(
       "pale_oak_sign", () -> new SignItem(new Properties().stacksTo(16), (Block)ModBlocks.PALE_OAK_SIGN.get(), (Block)ModBlocks.PALE_OAK_WALL_SIGN.get())
    );
-   public static final DeferredItem<HangingSignItem> PALE_OAK_HANGING_SIGN = ITEMS.register(
+   public static final ItemEntry<HangingSignItem> PALE_OAK_HANGING_SIGN = ITEMS.register(
       "pale_oak_hanging_sign",
       () -> new HangingSignItem((Block)ModBlocks.PALE_OAK_HANGING_SIGN.get(), (Block)ModBlocks.PALE_OAK_WALL_HANGING_SIGN.get(), new Properties().stacksTo(16))
    );
-   public static final DeferredItem<BoatItem> PALE_OAK_BOAT = ITEMS.register(
+   public static final ItemEntry<BoatItem> PALE_OAK_BOAT = ITEMS.register(
       "pale_oak_boat", () -> new BoatItem(false, (Type)ModBoats.PALE_OAK.getValue(), new Properties().stacksTo(1))
    );
-   public static final DeferredItem<BoatItem> PALE_OAK_CHEST_BOAT = ITEMS.register(
+   public static final ItemEntry<BoatItem> PALE_OAK_CHEST_BOAT = ITEMS.register(
       "pale_oak_chest_boat", () -> new BoatItem(true, (Type)ModBoats.PALE_OAK.getValue(), new Properties().stacksTo(1))
    );
-   public static final DeferredItem<Item> RESIN_BRICK = ITEMS.registerSimpleItem("resin_brick");
-   public static final DeferredItem<DeferredSpawnEggItem> CREAKING_SPAWN_EGG = ITEMS.register(
-      "creaking_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.CREAKING, 16777215, 16777215, new Properties())
+   public static final ItemEntry<Item> RESIN_BRICK = ITEMS.registerSimpleItem("resin_brick");
+   public static final ItemEntry<SpawnEggItem> CREAKING_SPAWN_EGG = ITEMS.register(
+      "creaking_spawn_egg", () -> Services.PLATFORM.spawnEgg(ModEntities.CREAKING, 16777215, 16777215, new Properties())
    );
-   public static final DeferredItem<Item> COPPER_NUGGET = ITEMS.registerSimpleItem("copper_nugget");
-   public static final DeferredItem<SwordItem> COPPER_SWORD = ITEMS.register(
+   public static final ItemEntry<Item> COPPER_NUGGET = ITEMS.registerSimpleItem("copper_nugget");
+   public static final ItemEntry<SwordItem> COPPER_SWORD = ITEMS.register(
       "copper_sword",
       () -> new SwordItem(ModMaterials.COPPER_TIER, new Properties().attributes(SwordItem.createAttributes(ModMaterials.COPPER_TIER, 3, -2.4F)))
    );
-   public static final DeferredItem<ShovelItem> COPPER_SHOVEL = ITEMS.register(
+   public static final ItemEntry<ShovelItem> COPPER_SHOVEL = ITEMS.register(
       "copper_shovel",
       () -> new ShovelItem(ModMaterials.COPPER_TIER, new Properties().attributes(DiggerItem.createAttributes(ModMaterials.COPPER_TIER, 1.5F, -3.0F)))
    );
-   public static final DeferredItem<PickaxeItem> COPPER_PICKAXE = ITEMS.register(
+   public static final ItemEntry<PickaxeItem> COPPER_PICKAXE = ITEMS.register(
       "copper_pickaxe",
       () -> new PickaxeItem(ModMaterials.COPPER_TIER, new Properties().attributes(DiggerItem.createAttributes(ModMaterials.COPPER_TIER, 1.0F, -2.8F)))
    );
-   public static final DeferredItem<AxeItem> COPPER_AXE = ITEMS.register(
+   public static final ItemEntry<AxeItem> COPPER_AXE = ITEMS.register(
       "copper_axe",
       () -> new AxeItem(ModMaterials.COPPER_TIER, new Properties().attributes(DiggerItem.createAttributes(ModMaterials.COPPER_TIER, 7.0F, -3.2F)))
    );
-   public static final DeferredItem<HoeItem> COPPER_HOE = ITEMS.register(
+   public static final ItemEntry<HoeItem> COPPER_HOE = ITEMS.register(
       "copper_hoe",
       () -> new HoeItem(ModMaterials.COPPER_TIER, new Properties().attributes(DiggerItem.createAttributes(ModMaterials.COPPER_TIER, -1.0F, -2.0F)))
    );
-   public static final DeferredItem<ArmorItem> COPPER_HELMET = copperArmor("copper_helmet", net.minecraft.world.item.ArmorItem.Type.HELMET);
-   public static final DeferredItem<ArmorItem> COPPER_CHESTPLATE = copperArmor("copper_chestplate", net.minecraft.world.item.ArmorItem.Type.CHESTPLATE);
-   public static final DeferredItem<ArmorItem> COPPER_LEGGINGS = copperArmor("copper_leggings", net.minecraft.world.item.ArmorItem.Type.LEGGINGS);
-   public static final DeferredItem<ArmorItem> COPPER_BOOTS = copperArmor("copper_boots", net.minecraft.world.item.ArmorItem.Type.BOOTS);
-   public static final DeferredItem<AnimalArmorItem> COPPER_HORSE_ARMOR = ITEMS.register(
-      "copper_horse_armor", () -> new AnimalArmorItem(ModMaterials.COPPER_ARMOR, BodyType.EQUESTRIAN, false, new Properties().stacksTo(1))
+   public static final ItemEntry<ArmorItem> COPPER_HELMET = copperArmor("copper_helmet", net.minecraft.world.item.ArmorItem.Type.HELMET);
+   public static final ItemEntry<ArmorItem> COPPER_CHESTPLATE = copperArmor("copper_chestplate", net.minecraft.world.item.ArmorItem.Type.CHESTPLATE);
+   public static final ItemEntry<ArmorItem> COPPER_LEGGINGS = copperArmor("copper_leggings", net.minecraft.world.item.ArmorItem.Type.LEGGINGS);
+   public static final ItemEntry<ArmorItem> COPPER_BOOTS = copperArmor("copper_boots", net.minecraft.world.item.ArmorItem.Type.BOOTS);
+   public static final ItemEntry<AnimalArmorItem> COPPER_HORSE_ARMOR = ITEMS.register(
+      "copper_horse_armor", () -> new AnimalArmorItem(ModMaterials.COPPER_ARMOR.holder(), BodyType.EQUESTRIAN, false, new Properties().stacksTo(1))
    );
-   public static final DeferredItem<StandingAndWallBlockItem> COPPER_TORCH = ITEMS.register(
+   public static final ItemEntry<StandingAndWallBlockItem> COPPER_TORCH = ITEMS.register(
       "copper_torch",
       () -> new StandingAndWallBlockItem((Block)ModBlocks.COPPER_TORCH.get(), (Block)ModBlocks.COPPER_WALL_TORCH.get(), new Properties(), Direction.DOWN)
    );
-   public static final DeferredItem<Item> MUSIC_DISC_TEARS;
-   public static final DeferredItem<Item> MUSIC_DISC_LAVA_CHICKEN;
-   public static final DeferredItem<Item> MUSIC_DISC_BOUNCE;
-   public static final DeferredItem<BannerPatternItem> BORDURE_INDENTED_BANNER_PATTERN;
-   public static final DeferredItem<BannerPatternItem> FIELD_MASONED_BANNER_PATTERN;
-   public static final DeferredItem<AnimalArmorItem> NETHERITE_HORSE_ARMOR;
-   public static final DeferredItem<VariantEggItem> BLUE_EGG;
-   public static final DeferredItem<VariantEggItem> BROWN_EGG;
-   public static final DeferredItem<DeferredSpawnEggItem> HAPPY_GHAST_SPAWN_EGG;
-   public static final Map<DyeColor, DeferredItem<HarnessItem>> HARNESSES;
-   public static final DeferredItem<DeferredSpawnEggItem> PARCHED_SPAWN_EGG;
-   public static final DeferredItem<SpearItem> WOODEN_SPEAR;
-   public static final DeferredItem<SpearItem> STONE_SPEAR;
-   public static final DeferredItem<SpearItem> COPPER_SPEAR;
-   public static final DeferredItem<SpearItem> IRON_SPEAR;
-   public static final DeferredItem<SpearItem> GOLDEN_SPEAR;
-   public static final DeferredItem<SpearItem> DIAMOND_SPEAR;
-   public static final DeferredItem<SpearItem> NETHERITE_SPEAR;
-   public static final DeferredItem<DeferredSpawnEggItem> COPPER_GOLEM_SPAWN_EGG;
-   public static final DeferredItem<DeferredSpawnEggItem> NAUTILUS_SPAWN_EGG;
-   public static final DeferredItem<DeferredSpawnEggItem> ZOMBIE_NAUTILUS_SPAWN_EGG;
-   public static final DeferredItem<NautilusArmorItem> COPPER_NAUTILUS_ARMOR;
-   public static final DeferredItem<NautilusArmorItem> IRON_NAUTILUS_ARMOR;
-   public static final DeferredItem<NautilusArmorItem> GOLDEN_NAUTILUS_ARMOR;
-   public static final DeferredItem<NautilusArmorItem> DIAMOND_NAUTILUS_ARMOR;
-   public static final DeferredItem<NautilusArmorItem> NETHERITE_NAUTILUS_ARMOR;
-   public static final DeferredItem<DeferredSpawnEggItem> CAMEL_HUSK_SPAWN_EGG;
+   public static final ItemEntry<Item> MUSIC_DISC_TEARS;
+   public static final ItemEntry<Item> MUSIC_DISC_LAVA_CHICKEN;
+   public static final ItemEntry<Item> MUSIC_DISC_BOUNCE;
+   public static final ItemEntry<BannerPatternItem> BORDURE_INDENTED_BANNER_PATTERN;
+   public static final ItemEntry<BannerPatternItem> FIELD_MASONED_BANNER_PATTERN;
+   public static final ItemEntry<AnimalArmorItem> NETHERITE_HORSE_ARMOR;
+   public static final ItemEntry<VariantEggItem> BLUE_EGG;
+   public static final ItemEntry<VariantEggItem> BROWN_EGG;
+   public static final ItemEntry<SpawnEggItem> HAPPY_GHAST_SPAWN_EGG;
+   public static final Map<DyeColor, ItemEntry<HarnessItem>> HARNESSES;
+   public static final ItemEntry<SpawnEggItem> PARCHED_SPAWN_EGG;
+   public static final ItemEntry<SpearItem> WOODEN_SPEAR;
+   public static final ItemEntry<SpearItem> STONE_SPEAR;
+   public static final ItemEntry<SpearItem> COPPER_SPEAR;
+   public static final ItemEntry<SpearItem> IRON_SPEAR;
+   public static final ItemEntry<SpearItem> GOLDEN_SPEAR;
+   public static final ItemEntry<SpearItem> DIAMOND_SPEAR;
+   public static final ItemEntry<SpearItem> NETHERITE_SPEAR;
+   public static final ItemEntry<SpawnEggItem> COPPER_GOLEM_SPAWN_EGG;
+   public static final ItemEntry<SpawnEggItem> NAUTILUS_SPAWN_EGG;
+   public static final ItemEntry<SpawnEggItem> ZOMBIE_NAUTILUS_SPAWN_EGG;
+   public static final ItemEntry<NautilusArmorItem> COPPER_NAUTILUS_ARMOR;
+   public static final ItemEntry<NautilusArmorItem> IRON_NAUTILUS_ARMOR;
+   public static final ItemEntry<NautilusArmorItem> GOLDEN_NAUTILUS_ARMOR;
+   public static final ItemEntry<NautilusArmorItem> DIAMOND_NAUTILUS_ARMOR;
+   public static final ItemEntry<NautilusArmorItem> NETHERITE_NAUTILUS_ARMOR;
+   public static final ItemEntry<SpawnEggItem> CAMEL_HUSK_SPAWN_EGG;
 
-   private static DeferredItem<Item> musicDisc(String name, String song, Rarity rarity) {
+   private static ItemEntry<Item> musicDisc(String name, String song, Rarity rarity) {
       ResourceKey<JukeboxSong> key = ResourceKey.create(Registries.JUKEBOX_SONG, FutureBackport.id(song));
       return ITEMS.register(name, () -> new Item(new Properties().stacksTo(1).rarity(rarity).jukeboxPlayable(key)));
    }
 
-   private static DeferredItem<BannerPatternItem> bannerPattern(String name, String tag) {
+   private static ItemEntry<BannerPatternItem> bannerPattern(String name, String tag) {
       TagKey<BannerPattern> patterns = TagKey.create(Registries.BANNER_PATTERN, FutureBackport.id("pattern_item/" + tag));
       return ITEMS.register(name, () -> new BannerPatternItem(patterns, new Properties().stacksTo(1)));
    }
 
-   private static DeferredItem<ArmorItem> copperArmor(String name, net.minecraft.world.item.ArmorItem.Type type) {
-      return ITEMS.register(name, () -> new ArmorItem(ModMaterials.COPPER_ARMOR, type, new Properties().durability(type.getDurability(11))));
+   private static ItemEntry<ArmorItem> copperArmor(String name, net.minecraft.world.item.ArmorItem.Type type) {
+      return ITEMS.register(name, () -> new ArmorItem(ModMaterials.COPPER_ARMOR.holder(), type, new Properties().durability(type.getDurability(11))));
    }
 
    static {
@@ -195,7 +196,7 @@ public class ModItems {
       BLUE_EGG = ITEMS.register("blue_egg", () -> new VariantEggItem(FarmAnimalVariant.COLD, new Properties().stacksTo(16)));
       BROWN_EGG = ITEMS.register("brown_egg", () -> new VariantEggItem(FarmAnimalVariant.WARM, new Properties().stacksTo(16)));
       HAPPY_GHAST_SPAWN_EGG = ITEMS.register(
-         "happy_ghast_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.HAPPY_GHAST, 16777215, 16777215, new Properties())
+         "happy_ghast_spawn_egg", () -> Services.PLATFORM.spawnEgg(ModEntities.HAPPY_GHAST, 16777215, 16777215, new Properties())
       );
       HARNESSES = new EnumMap<>(DyeColor.class);
       ITEMS.registerSimpleBlockItem(ModBlocks.DRIED_GHAST);
@@ -204,7 +205,7 @@ public class ModItems {
          HARNESSES.put(color, ITEMS.register(color.getSerializedName() + "_harness", () -> new HarnessItem(color, new Properties().stacksTo(1))));
       }
 
-      PARCHED_SPAWN_EGG = ITEMS.register("parched_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.PARCHED, 16777215, 16777215, new Properties()));
+      PARCHED_SPAWN_EGG = ITEMS.register("parched_spawn_egg", () -> Services.PLATFORM.spawnEgg(ModEntities.PARCHED, 16777215, 16777215, new Properties()));
       WOODEN_SPEAR = ITEMS.register(
          "wooden_spear", () -> new SpearItem(Tiers.WOOD, 0.65F, 0.7F, 0.75F, 5.0F, 14.0F, 10.0F, 5.1F, 15.0F, 4.6F, new Properties())
       );
@@ -221,11 +222,11 @@ public class ModItems {
          "netherite_spear", () -> new SpearItem(Tiers.NETHERITE, 1.15F, 1.2F, 0.4F, 2.5F, 9.0F, 5.5F, 5.1F, 8.75F, 4.6F, new Properties().fireResistant())
       );
       COPPER_GOLEM_SPAWN_EGG = ITEMS.register(
-         "copper_golem_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.COPPER_GOLEM, 16777215, 16777215, new Properties())
+         "copper_golem_spawn_egg", () -> Services.PLATFORM.spawnEgg(ModEntities.COPPER_GOLEM, 16777215, 16777215, new Properties())
       );
-      NAUTILUS_SPAWN_EGG = ITEMS.register("nautilus_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.NAUTILUS, 16777215, 16777215, new Properties()));
+      NAUTILUS_SPAWN_EGG = ITEMS.register("nautilus_spawn_egg", () -> Services.PLATFORM.spawnEgg(ModEntities.NAUTILUS, 16777215, 16777215, new Properties()));
       ZOMBIE_NAUTILUS_SPAWN_EGG = ITEMS.register(
-         "zombie_nautilus_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.ZOMBIE_NAUTILUS, 16777215, 16777215, new Properties())
+         "zombie_nautilus_spawn_egg", () -> Services.PLATFORM.spawnEgg(ModEntities.ZOMBIE_NAUTILUS, 16777215, 16777215, new Properties())
       );
       COPPER_NAUTILUS_ARMOR = ITEMS.register("copper_nautilus_armor", () -> new NautilusArmorItem("copper", 4, 0.0F, 0.0F, new Properties()));
       IRON_NAUTILUS_ARMOR = ITEMS.register("iron_nautilus_armor", () -> new NautilusArmorItem("iron", 5, 0.0F, 0.0F, new Properties()));
@@ -235,7 +236,7 @@ public class ModItems {
          "netherite_nautilus_armor", () -> new NautilusArmorItem("netherite", 19, 3.0F, 0.1F, new Properties().fireResistant())
       );
       CAMEL_HUSK_SPAWN_EGG = ITEMS.register(
-         "camel_husk_spawn_egg", () -> new DeferredSpawnEggItem(ModEntities.CAMEL_HUSK, 16777215, 16777215, new Properties())
+         "camel_husk_spawn_egg", () -> Services.PLATFORM.spawnEgg(ModEntities.CAMEL_HUSK, 16777215, 16777215, new Properties())
       );
       ModBlocks.SHELVES.values().forEach(ITEMS::registerSimpleBlockItem);
 

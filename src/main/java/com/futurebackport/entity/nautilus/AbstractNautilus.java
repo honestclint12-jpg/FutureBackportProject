@@ -426,9 +426,9 @@ public abstract class AbstractNautilus extends TamableAnimal implements PlayerRi
    public void tick() {
       super.tick();
       if (!this.level().isClientSide && this.getFirstPassenger() instanceof Player player) {
-         boolean has = player.hasEffect(ModEffects.BREATH_OF_THE_NAUTILUS);
+         boolean has = player.hasEffect(ModEffects.BREATH_OF_THE_NAUTILUS.holder());
          if (!has || this.level().getGameTime() % 40L == 0L) {
-            player.addEffect(new MobEffectInstance(ModEffects.BREATH_OF_THE_NAUTILUS, 60, 0, true, true, true));
+            player.addEffect(new MobEffectInstance(ModEffects.BREATH_OF_THE_NAUTILUS.holder(), 60, 0, true, true, true));
          }
       }
 

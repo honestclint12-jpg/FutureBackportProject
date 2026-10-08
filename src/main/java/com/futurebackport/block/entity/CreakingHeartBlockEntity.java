@@ -265,7 +265,7 @@ public class CreakingHeartBlockEntity extends BlockEntity {
                   neighbour = (BlockState)((ResinClumpBlock)ModBlocks.RESIN_CLUMP.get()).defaultBlockState().setValue(BlockStateProperties.WATERLOGGED, true);
                }
 
-               if (neighbour.is(ModBlocks.RESIN_CLUMP) && !MultifaceBlock.hasFace(neighbour, opposite)) {
+               if (neighbour.is(ModBlocks.RESIN_CLUMP.get()) && !MultifaceBlock.hasFace(neighbour, opposite)) {
                   level.setBlock(neighbourPos, (BlockState)neighbour.setValue(MultifaceBlock.getFaceProperty(opposite), true), 3);
                   return Optional.of(neighbourPos);
                }
