@@ -13,11 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
-@GameTestHolder("futurebackport")
-@PrefixGameTestTemplate(false)
 public class SpearTests {
    private static Player spearman(GameTestHelper helper) {
       Player player = helper.makeMockPlayer(GameType.SURVIVAL);

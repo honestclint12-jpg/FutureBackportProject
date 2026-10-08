@@ -8,11 +8,17 @@
     "AgeableMobMixin",
     "AnimalMixin",
     "BlockEntityTypeAccessor",
+    "BoatMixin",
+    "BoatTypeInvoker",
+    "BoatTypeMixin",
     "LivingEntityMixin",
     "MobMixin",
+    "PlayerMixin",
     "SpawnPlacementsInvoker"
   ],
   "client": [
+    "client.BoatNamesMixin",
+    "client.BoatRendererMixin",
     "client.ChestRendererMixin"
   ],
   "injectors": {

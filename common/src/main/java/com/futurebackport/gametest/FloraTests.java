@@ -17,11 +17,7 @@ import net.minecraft.world.level.block.CactusBlock;
 import net.minecraft.world.level.block.MultifaceBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.WallSide;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
-@GameTestHolder("futurebackport")
-@PrefixGameTestTemplate(false)
 public class FloraTests {
    private static void bonemeal(GameTestHelper helper, BlockPos pos) {
       BlockPos abs = helper.absolutePos(pos);

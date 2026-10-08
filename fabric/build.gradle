@@ -30,5 +30,14 @@ loom {
             ideConfigGenerated(true)
             runDir('runs/server')
         }
+        // Runs every game test in the mod on a headless server and exits non-zero if any fail (same as NeoForge's).
+        gameTestServer {
+            server()
+            setConfigName('Fabric Game Test Server')
+            ideConfigGenerated(false)
+            vmArg('-Dfabric-api.gametest')
+            vmArg("-Dfabric-api.gametest.report-file=${project.layout.buildDirectory.get()}/gametest/report.xml")
+            runDir('runs/gametest')
+        }
     }
 }

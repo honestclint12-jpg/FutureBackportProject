@@ -32,11 +32,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
-@GameTestHolder("futurebackport")
-@PrefixGameTestTemplate(false)
 public class WorldgenTests {
    private static void grassFloor(GameTestHelper helper) {
       for (int x = 0; x < 12; x++) {

@@ -29,11 +29,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
-@GameTestHolder("futurebackport")
-@PrefixGameTestTemplate(false)
 public class FarmAnimalTests {
    private static void floor(GameTestHelper helper) {
       for (int x = 0; x < 12; x++) {

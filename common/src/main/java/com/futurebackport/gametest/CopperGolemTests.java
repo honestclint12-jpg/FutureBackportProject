@@ -28,11 +28,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
-@GameTestHolder("futurebackport")
-@PrefixGameTestTemplate(false)
 public class CopperGolemTests {
    @GameTest(
       template = "arena"
@@ -41,7 +37,8 @@ public class CopperGolemTests {
       BlockPos copper = new BlockPos(5, 1, 5);
       helper.setBlock(copper, Blocks.WEATHERED_COPPER);
       helper.setBlock(copper.above(), (BlockState)Blocks.CARVED_PUMPKIN.defaultBlockState().setValue(CarvedPumpkinBlock.FACING, Direction.EAST));
-      List<CopperGolem> golems = helper.getLevel().getEntitiesOfClass(CopperGolem.class, new AABB(helper.absolutePos(BlockPos.ZERO)).inflate(16.0));
+      // Only this test's arena: tests run side by side and others spawn golems too.
+      List<CopperGolem> golems = helper.getEntities(ModEntities.COPPER_GOLEM.get());
       helper.assertTrue(golems.size() == 1, "expected one copper golem, found " + golems.size());
       helper.assertTrue(golems.get(0).getWeatherState() == WeatherState.WEATHERED, "golem should match the copper's age");
       BlockState chest = helper.getBlockState(copper);

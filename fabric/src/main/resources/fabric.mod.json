@@ -18,6 +18,9 @@
         ],
         "client": [
             "com.futurebackport.fabric.FutureBackportFabricClient"
+        ],
+        "fabric-gametest": [
+            "com.futurebackport.fabric.FabricGameTests"
         ]
     },
     "depends": {

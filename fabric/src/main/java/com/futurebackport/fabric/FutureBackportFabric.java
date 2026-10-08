@@ -1,7 +1,6 @@
 package com.futurebackport.fabric;
 
 import com.futurebackport.FutureBackport;
-import com.futurebackport.entity.AgeLock;
 import com.futurebackport.entity.FarmAnimalVariantEvents;
 import com.futurebackport.fabric.compat.NeoForgeDataOnFabric;
 import com.futurebackport.fabric.mixin.BlockEntityTypeAccessor;
@@ -14,12 +13,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.SpawnPlacementType;
@@ -54,13 +51,6 @@ public class FutureBackportFabric implements ModInitializer {
         ItemGroupEvents.MODIFY_ENTRIES_ALL.register((tab, entries) -> BuiltInRegistries.CREATIVE_MODE_TAB.getResourceKey(tab)
                 .ifPresent(key -> CreativePlacements.apply(key, (after, item) -> entries.addAfter(after, item))));
         EntityTrackingEvents.START_TRACKING.register(FarmAnimalVariantEvents::onStartTracking);
-        UseEntityCallback.EVENT.register((player, level, hand, entity, hitResult) -> {
-            // NeoForge's EntityInteract is the plain interaction; Fabric also calls this for the positioned one.
-            if (hitResult != null) {
-                return InteractionResult.PASS;
-            }
-            InteractionResult result = AgeLock.onInteract(player, level, entity, player.getItemInHand(hand));
-            return result != null ? result : InteractionResult.PASS;
-        });
+        // Golden dandelion age lock: PlayerMixin (NeoForge's EntityInteract fires inside Player#interactOn).
     }
 }

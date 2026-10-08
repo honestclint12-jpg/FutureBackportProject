@@ -13,23 +13,29 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.ChestBoat;
 import net.minecraft.world.entity.vehicle.Boat.Type;
 import net.minecraft.world.item.BoatItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.BaseFireBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.FireBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.StandingSignBlock;
 import net.minecraft.world.level.block.entity.HangingSignBlockEntity;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
-import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
-import net.neoforged.neoforge.registries.datamaps.builtin.Strippable;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 
-@GameTestHolder("futurebackport")
-@PrefixGameTestTemplate(false)
 public class PaleOakTests {
    @GameTest(
       template = "arena"
@@ -49,11 +55,19 @@ public class PaleOakTests {
       template = "arena"
    )
    public static void paleOakStripsAndBurns(GameTestHelper helper) {
-      Strippable stripped = (Strippable)((RotatedPillarBlock)ModBlocks.PALE_OAK_LOG.get()).builtInRegistryHolder().getData(NeoForgeDataMaps.STRIPPABLES);
-      helper.assertTrue(stripped != null && stripped.strippedBlock() == ModBlocks.STRIPPED_PALE_OAK_LOG.get(), "log does not strip");
-      BlockPos pos = new BlockPos(1, 1, 1);
-      helper.setBlock(pos, (Block)ModBlocks.PALE_OAK_PLANKS.get());
-      helper.assertTrue(helper.getBlockState(pos).isFlammable(helper.getLevel(), helper.absolutePos(pos), Direction.UP), "planks not flammable");
+      // Strip with a real axe: NeoForge reads its strippables data map, Fabric its StrippableBlockRegistry.
+      BlockPos log = new BlockPos(1, 1, 1);
+      helper.setBlock(log, (Block)ModBlocks.PALE_OAK_LOG.get());
+      Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+      player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_AXE));
+      BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(helper.absolutePos(log)), Direction.UP, helper.absolutePos(log), false);
+      Items.IRON_AXE.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, hit));
+      helper.assertBlockPresent((Block)ModBlocks.STRIPPED_PALE_OAK_LOG.get(), log);
+      // Fire placed beside the planks clings to them only if they can burn.
+      BlockPos planks = new BlockPos(1, 2, 3);
+      helper.setBlock(planks, (Block)ModBlocks.PALE_OAK_PLANKS.get());
+      BlockState fire = BaseFireBlock.getState(helper.getLevel(), helper.absolutePos(planks.east()));
+      helper.assertTrue(fire.is(Blocks.FIRE) && fire.getValue(FireBlock.WEST), "planks not flammable");
       helper.succeed();
    }
 
@@ -75,8 +89,13 @@ public class PaleOakTests {
    public static void paleOakBoatRoundTrips(GameTestHelper helper) {
       Type type = ModBoats.paleOak();
       Boat boat = (Boat)helper.spawn(EntityType.BOAT, new BlockPos(2, 2, 2));
+      helper.assertTrue(type != Type.OAK, "no pale oak boat type on this loader");
+      helper.assertTrue(type.getPlanks() == ModBlocks.PALE_OAK_PLANKS.get(), "boat type has planks " + type.getPlanks());
       boat.setVariant(type);
       helper.assertTrue(boat.getDropItem() == ModItems.PALE_OAK_BOAT.get(), "boat drops " + boat.getDropItem());
+      ChestBoat chestBoat = (ChestBoat)helper.spawn(EntityType.CHEST_BOAT, new BlockPos(2, 2, 4));
+      chestBoat.setVariant(type);
+      helper.assertTrue(chestBoat.getDropItem() == ModItems.PALE_OAK_CHEST_BOAT.get(), "chest boat drops " + chestBoat.getDropItem());
       helper.assertTrue(Type.byName(type.getName()) == type, "boat type does not serialize");
       helper.succeed();
    }

@@ -28,12 +28,8 @@ import net.minecraft.world.level.storage.loot.LootParams.Builder;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.DataMapHooks;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
+import net.minecraft.world.item.HoneycombItem;
 
-@GameTestHolder("futurebackport")
-@PrefixGameTestTemplate(false)
 public class CopperTests {
    @GameTest(
       template = "arena"
@@ -50,7 +46,8 @@ public class CopperTests {
          "vanilla lightning rod has no next stage"
       );
       helper.assertTrue(
-         DataMapHooks.getBlockWaxed(Blocks.LIGHTNING_ROD) == ModBlocks.LIGHTNING_ROD.waxed().get(WeatherState.UNAFFECTED).get(),
+         HoneycombItem.getWaxed(Blocks.LIGHTNING_ROD.defaultBlockState()).map(BlockState::getBlock).orElse(null)
+            == ModBlocks.LIGHTNING_ROD.waxed().get(WeatherState.UNAFFECTED).get(),
          "vanilla lightning rod cannot be waxed"
       );
       helper.assertTrue(

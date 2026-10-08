@@ -28,11 +28,7 @@ import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
-@GameTestHolder("futurebackport")
-@PrefixGameTestTemplate(false)
 public class PaleGardenTests {
    private static final BlockPos HEART = new BlockPos(6, 2, 6);
 
@@ -56,9 +52,15 @@ public class PaleGardenTests {
       helper.getLevel().updateSkyBrightness();
    }
 
+   /** The creaking bound to this test's heart; tests run side by side, so a neighbour's creaking may be in range. */
    private static Creaking findCreaking(GameTestHelper helper) {
-      AABB area = new AABB(helper.absolutePos(BlockPos.ZERO)).inflate(40.0);
-      return (Creaking)helper.getLevel().getEntitiesOfClass(Creaking.class, area).stream().findFirst().orElse(null);
+      BlockPos heart = helper.absolutePos(HEART);
+      AABB area = new AABB(heart).inflate(40.0);
+      return (Creaking)helper.getLevel()
+         .getEntitiesOfClass(Creaking.class, area, creaking -> heart.equals(creaking.getHomePos()))
+         .stream()
+         .findFirst()
+         .orElse(null);
    }
 
    @GameTest(
