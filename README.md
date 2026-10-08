@@ -56,3 +56,7 @@ Requires Java 21.
 ./gradlew :neoforge:runClient            # NeoForge dev client
 ./gradlew :fabric:runServer              # Fabric dev server
 ```
+
+## License
+
+MIT, see [LICENSE](LICENSE).
