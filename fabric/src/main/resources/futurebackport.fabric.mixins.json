@@ -12,6 +12,9 @@
     "MobMixin",
     "SpawnPlacementsInvoker"
   ],
+  "client": [
+    "client.ChestRendererMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

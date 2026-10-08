@@ -10,14 +10,11 @@ spears and nautiluses, and more.
 | Loader (1.21.1) | Status |
 |---|---|
 | **NeoForge** | Complete; all 48 game tests pass |
-| **Fabric** | Server side works (all content registers, worldgen/spawns/loot/data maps applied). **Client rendering is not wired up yet**, so it is not playable on a Fabric client. |
+| **Fabric** | Playable: all content registers, worldgen/spawns/loot/data maps apply, and client rendering (entities, block entities, particles, screens, colors, item renderers) matches NeoForge in side-by-side client screenshots. See gaps below. |
 | Forge / Fabric 1.20.1 | Not started |
 
 ### Fabric gaps
 
-- **Client registration**: entity, block entity and particle renderers, model layers, menu screens, color
-  handlers, custom item renderers and the dry foliage reload listener are still registered only by the NeoForge
-  client class (`neoforge/.../FutureBackportClient.java`). Next step: a client registration service in `common`.
 - **Pale oak boats**: `Boat.Type` is an enum in 1.21.1. NeoForge extends it via `enumextensions.json`; Fabric
   currently falls back to oak boats (logged as a warning).
 - **Game tests** run on NeoForge only.
@@ -27,9 +24,10 @@ spears and nautiluses, and more.
 ```
 common/    Shared code (most of the mod). Compiles against plain Minecraft and only talks to the loader through
            com.futurebackport.platform (Services.*). Also holds all assets and data, including the NeoForge-format
-           biome modifiers / data maps / loot modifiers, which the Fabric build reads too.
+           biome modifiers / data maps / loot modifiers, which the Fabric build reads too. Client registration
+           lives in common/.../client/ModClientSetup.java; each loader passes in its own registration sinks.
 neoforge/  NeoForge entry point and event glue, platform service implementations, biome modifier type,
-           Boat.Type enum extension, client registration, dev showcase, game tests.
+           Boat.Type enum extension, client event glue, dev showcase, game tests.
 fabric/    Fabric entry points, platform service implementations, mixins that replace NeoForge events, and
            NeoForgeDataOnFabric (applies the shared NeoForge-format data with Fabric APIs).
 ```

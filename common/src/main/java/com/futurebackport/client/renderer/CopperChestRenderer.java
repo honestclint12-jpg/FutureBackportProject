@@ -25,7 +25,12 @@ public class CopperChestRenderer extends ChestRenderer<CopperChestBlockEntity> {
       super(context);
    }
 
+   /** NeoForge's hook for the chest texture; Fabric calls {@link #material} through a mixin instead. */
    protected Material getMaterial(CopperChestBlockEntity chest, ChestType type) {
+      return material(chest, type);
+   }
+
+   public static Material material(CopperChestBlockEntity chest, ChestType type) {
       WeatherState state = chest.getBlockState().getBlock() instanceof CopperChestBlock copper ? copper.getWeatherState() : WeatherState.UNAFFECTED;
       String stage = state == WeatherState.UNAFFECTED ? "" : "_" + state.name().toLowerCase(Locale.ROOT);
 
