@@ -80,13 +80,13 @@ public class FarmAnimalTests {
       ServerPlayer player = helper.makeMockServerPlayerInLevel();
       player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack((ItemLike)ModBlocks.GOLDEN_DANDELION.get(), 2));
       player.interactOn(calf, InteractionHand.MAIN_HAND);
-      helper.assertTrue((Boolean)calf.getData(AgeLock.LOCKED), "calf was not age locked");
+      helper.assertTrue(AgeLock.LOCKED.get(calf), "calf was not age locked");
       calf.ageUp(30000);
       helper.runAfterDelay(5L, () -> {
          helper.assertTrue(calf.isBaby(), "age-locked calf grew up");
          helper.runAfterDelay(45L, () -> {
             player.interactOn(calf, InteractionHand.MAIN_HAND);
-            helper.assertTrue(!(Boolean)calf.getData(AgeLock.LOCKED), "second dandelion did not unlock");
+            helper.assertTrue(!AgeLock.LOCKED.get(calf), "second dandelion did not unlock");
             helper.succeed();
          });
       });

@@ -1,25 +1,24 @@
 package com.futurebackport.entity;
 
+import com.futurebackport.platform.Services;
+import net.minecraft.world.level.LevelAccessor;
+import com.futurebackport.platform.attachment.DataAttachment;
+
 import com.futurebackport.FutureBackport;
 import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 
 public final class SoundVariants {
    public static final String CLASSIC = "classic";
-   public static final Supplier<AttachmentType<String>> ATTACHMENT = FarmAnimalVariant.ATTACHMENTS
-      .register("sound_variant", () -> AttachmentType.builder(() -> "classic").serialize(Codec.STRING).build());
+   public static final DataAttachment<String> ATTACHMENT = Services.ATTACHMENTS.register("futurebackport", "sound_variant", () -> "classic", Codec.STRING, false);
    private static final Map<EntityType<?>, SoundVariants.Mob> MOBS = Map.of(
       EntityType.COW,
       new SoundVariants.Mob("cow", List.of("classic", "moody"), List.of("ambient", "death", "hurt", "step")),
@@ -69,11 +68,11 @@ public final class SoundVariants {
    }
 
    public static String get(Entity entity) {
-      return (String)entity.getData(ATTACHMENT);
+      return ATTACHMENT.get(entity);
    }
 
    public static void set(Entity entity, String variant) {
-      entity.setData(ATTACHMENT, variant);
+      ATTACHMENT.set(entity, variant);
    }
 
    public static SoundEvent swap(Entity entity, SoundEvent sound) {
@@ -121,11 +120,11 @@ public final class SoundVariants {
       }
    }
 
-   @SubscribeEvent
-   public static void onFinalizeSpawn(FinalizeSpawnEvent event) {
-      SoundVariants.Mob mob = MOBS.get(event.getEntity().getType());
+   /** A mob finished spawning: roll its sound variant. */
+   public static void onFinalizeSpawn(net.minecraft.world.entity.Mob entity, LevelAccessor level) {
+      SoundVariants.Mob mob = MOBS.get(entity.getType());
       if (mob != null) {
-         set(event.getEntity(), mob.variants().get(event.getLevel().getRandom().nextInt(mob.variants().size())));
+         set(entity, mob.variants().get(level.getRandom().nextInt(mob.variants().size())));
       }
    }
 

@@ -1,5 +1,7 @@
 package com.futurebackport.platform;
 
+import com.futurebackport.platform.services.AttachmentService;
+import com.futurebackport.platform.services.NetworkService;
 import com.futurebackport.platform.services.PlatformHelper;
 import com.futurebackport.platform.services.RegistrationFactory;
 import java.util.ServiceLoader;
@@ -12,6 +14,8 @@ public final class Services {
 
     public static final PlatformHelper PLATFORM = load(PlatformHelper.class);
     public static final RegistrationFactory REGISTRATION = load(RegistrationFactory.class);
+    public static final AttachmentService ATTACHMENTS = load(AttachmentService.class);
+    public static final NetworkService NETWORK = load(NetworkService.class);
 
     private Services() {
     }

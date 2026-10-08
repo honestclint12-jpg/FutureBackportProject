@@ -1,5 +1,10 @@
 package com.futurebackport.registry;
 
+import com.futurebackport.platform.entity.SpawnPlacementRegistrar;
+import java.util.function.BiConsumer;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+
 import com.futurebackport.platform.registry.RegistrationProvider;
 import com.futurebackport.platform.registry.RegistryEntry;
 
@@ -19,9 +24,6 @@ import net.minecraft.world.entity.EntityType.Builder;
 import net.minecraft.world.entity.animal.camel.Camel;
 import net.minecraft.world.level.levelgen.Heightmap.Types;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
-import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
-import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent.Operation;
 
 public class ModEntities {
    public static final RegistrationProvider<EntityType<?>> ENTITIES = RegistrationProvider.create(Registries.ENTITY_TYPE, "futurebackport");
@@ -67,34 +69,20 @@ public class ModEntities {
          .build("zombie_nautilus")
    );
 
-   public static void registerSpawnPlacements(RegisterSpawnPlacementsEvent event) {
-      event.register(
-         (EntityType)NAUTILUS.get(),
-         SpawnPlacementTypes.IN_WATER,
-         Types.MOTION_BLOCKING_NO_LEAVES,
-         AbstractNautilus::checkNautilusSpawnRules,
-         Operation.REPLACE
-      );
-      event.register(
-         (EntityType)ZOMBIE_NAUTILUS.get(),
-         SpawnPlacementTypes.IN_WATER,
-         Types.MOTION_BLOCKING_NO_LEAVES,
-         AbstractNautilus::checkNautilusSpawnRules,
-         Operation.REPLACE
-      );
-      event.register(PARCHED.get(), SpawnPlacementTypes.ON_GROUND, Types.MOTION_BLOCKING_NO_LEAVES, Parched::checkSpawnRules, Operation.REPLACE);
-      event.register(
-         CAMEL_HUSK.get(), SpawnPlacementTypes.ON_GROUND, Types.MOTION_BLOCKING_NO_LEAVES, CamelHusk::checkSpawnRules, Operation.REPLACE
-      );
+   public static void registerSpawnPlacements(SpawnPlacementRegistrar registrar) {
+      registrar.register(NAUTILUS.get(), SpawnPlacementTypes.IN_WATER, Types.MOTION_BLOCKING_NO_LEAVES, AbstractNautilus::checkNautilusSpawnRules);
+      registrar.register(ZOMBIE_NAUTILUS.get(), SpawnPlacementTypes.IN_WATER, Types.MOTION_BLOCKING_NO_LEAVES, AbstractNautilus::checkNautilusSpawnRules);
+      registrar.register(PARCHED.get(), SpawnPlacementTypes.ON_GROUND, Types.MOTION_BLOCKING_NO_LEAVES, Parched::checkSpawnRules);
+      registrar.register(CAMEL_HUSK.get(), SpawnPlacementTypes.ON_GROUND, Types.MOTION_BLOCKING_NO_LEAVES, CamelHusk::checkSpawnRules);
    }
 
-   public static void registerAttributes(EntityAttributeCreationEvent event) {
-      event.put((EntityType)PARCHED.get(), Parched.createAttributes().build());
-      event.put((EntityType)CREAKING.get(), Creaking.createAttributes().build());
-      event.put((EntityType)CAMEL_HUSK.get(), Camel.createAttributes().build());
-      event.put((EntityType)COPPER_GOLEM.get(), CopperGolem.createAttributes().build());
-      event.put((EntityType)NAUTILUS.get(), AbstractNautilus.createAttributes().build());
-      event.put((EntityType)ZOMBIE_NAUTILUS.get(), ZombieNautilus.createAttributes().build());
-      event.put((EntityType)HAPPY_GHAST.get(), HappyGhast.createAttributes().build());
+   public static void registerAttributes(BiConsumer<EntityType<? extends LivingEntity>, AttributeSupplier> registrar) {
+      registrar.accept(PARCHED.get(), Parched.createAttributes().build());
+      registrar.accept(CREAKING.get(), Creaking.createAttributes().build());
+      registrar.accept(CAMEL_HUSK.get(), Camel.createAttributes().build());
+      registrar.accept(COPPER_GOLEM.get(), CopperGolem.createAttributes().build());
+      registrar.accept(NAUTILUS.get(), AbstractNautilus.createAttributes().build());
+      registrar.accept(ZOMBIE_NAUTILUS.get(), ZombieNautilus.createAttributes().build());
+      registrar.accept(HAPPY_GHAST.get(), HappyGhast.createAttributes().build());
    }
 }

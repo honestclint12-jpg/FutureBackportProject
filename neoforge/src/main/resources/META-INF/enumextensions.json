@@ -5,7 +5,7 @@
       "name": "FUTUREBACKPORT_PALE_OAK",
       "constructor": "(Ljava/util/function/Supplier;Ljava/lang/String;Ljava/util/function/Supplier;Ljava/util/function/Supplier;Ljava/util/function/Supplier;Z)V",
       "parameters": {
-        "class": "com/futurebackport/registry/ModBoats",
+        "class": "com/futurebackport/neoforge/NeoForgeBoats",
         "field": "PALE_OAK"
       }
     }

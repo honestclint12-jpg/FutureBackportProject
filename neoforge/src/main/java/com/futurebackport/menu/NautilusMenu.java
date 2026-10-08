@@ -1,5 +1,7 @@
 package com.futurebackport.menu;
 
+import com.futurebackport.platform.Services;
+
 import com.futurebackport.entity.nautilus.AbstractNautilus;
 import com.futurebackport.item.NautilusArmorItem;
 import com.futurebackport.registry.ModMenus;
@@ -63,7 +65,8 @@ public class NautilusMenu extends AbstractContainerMenu {
    }
 
    public static void open(ServerPlayer player, AbstractNautilus nautilus) {
-      player.openMenu(
+      Services.PLATFORM.openMenu(
+         player,
          new SimpleMenuProvider((id, inventory, p) -> new NautilusMenu(id, inventory, nautilus), nautilus.getDisplayName()),
          buf -> buf.writeVarInt(nautilus.getId())
       );

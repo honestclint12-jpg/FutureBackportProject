@@ -1,5 +1,7 @@
 package com.futurebackport.mixin;
 
+import com.futurebackport.platform.Services;
+
 import com.futurebackport.block.CactusFlowerBlock;
 import com.futurebackport.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
@@ -8,7 +10,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CactusBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.CommonHooks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -35,7 +36,7 @@ public abstract class CactusBlockMixin {
             }
          }
 
-         if (CommonHooks.canCropGrow(level, above, state, true)) {
+         if (Services.PLATFORM.canCropGrow(level, above, state, true)) {
             if (age == 8 && ((CactusFlowerBlock)ModBlocks.CACTUS_FLOWER.get()).defaultBlockState().canSurvive(level, above)) {
                if (random.nextDouble() <= (height >= 3 ? 0.25 : 0.1)) {
                   level.setBlockAndUpdate(above, ((CactusFlowerBlock)ModBlocks.CACTUS_FLOWER.get()).defaultBlockState());
@@ -51,7 +52,7 @@ public abstract class CactusBlockMixin {
                level.setBlock(pos, (BlockState)state.setValue(CactusBlock.AGE, age + 1), 260);
             }
 
-            CommonHooks.fireCropGrowPost(level, pos, state);
+            Services.PLATFORM.onCropGrown(level, pos, state);
          }
       }
    }

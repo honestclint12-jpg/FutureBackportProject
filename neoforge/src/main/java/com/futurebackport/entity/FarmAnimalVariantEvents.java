@@ -1,41 +1,41 @@
 package com.futurebackport.entity;
 
+import com.futurebackport.platform.Services;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.LevelAccessor;
+import org.jetbrains.annotations.Nullable;
+
 import com.futurebackport.network.FarmAnimalVariantPayload;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent;
-import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent.StartTracking;
-import net.neoforged.neoforge.network.PacketDistributor;
 
+/** Gives cows, pigs and chickens a climate variant. Loader modules call these from their own events. */
 public final class FarmAnimalVariantEvents {
-   @SubscribeEvent
-   public void onFinalizeSpawn(FinalizeSpawnEvent event) {
-      Mob mob = event.getEntity();
-      if (FarmAnimalVariant.hasVariants(mob) && event.getSpawnType() != MobSpawnType.BREEDING) {
-         mob.setData(FarmAnimalVariant.ATTACHMENT, FarmAnimalVariant.forBiome(event.getLevel(), mob.blockPosition()));
+   private FarmAnimalVariantEvents() {
+   }
+
+   /** A mob finished spawning (not by breeding): pick the variant for the biome it spawned in. */
+   public static void onFinalizeSpawn(Mob mob, LevelAccessor level, MobSpawnType spawnType) {
+      if (FarmAnimalVariant.hasVariants(mob) && spawnType != MobSpawnType.BREEDING) {
+         FarmAnimalVariant.ATTACHMENT.set(mob, FarmAnimalVariant.forBiome(level, mob.blockPosition()));
       }
    }
 
-   @SubscribeEvent
-   public void onBabySpawn(BabyEntitySpawnEvent event) {
-      AgeableMob child = event.getChild();
+   /** Babies inherit a random parent's variant. */
+   public static void onBabySpawn(Mob parentA, Mob parentB, @Nullable AgeableMob child) {
       if (child != null && FarmAnimalVariant.hasVariants(child)) {
-         Mob parent = child.getRandom().nextBoolean() ? event.getParentA() : event.getParentB();
-         child.setData(FarmAnimalVariant.ATTACHMENT, FarmAnimalVariant.get(parent));
+         Mob parent = child.getRandom().nextBoolean() ? parentA : parentB;
+         FarmAnimalVariant.ATTACHMENT.set(child, FarmAnimalVariant.get(parent));
       }
    }
 
-   @SubscribeEvent
-   public void onStartTracking(StartTracking event) {
-      Entity target = event.getTarget();
-      if (FarmAnimalVariant.hasVariants(target) && event.getEntity() instanceof ServerPlayer player) {
-         PacketDistributor.sendToPlayer(player, new FarmAnimalVariantPayload(target.getId(), FarmAnimalVariant.get(target)), new CustomPacketPayload[0]);
+   /** A player started seeing an entity: send them its variant so it renders right. */
+   public static void onStartTracking(Entity target, Player player) {
+      if (FarmAnimalVariant.hasVariants(target) && player instanceof ServerPlayer serverPlayer) {
+         Services.NETWORK.sendToPlayer(serverPlayer, new FarmAnimalVariantPayload(target.getId(), FarmAnimalVariant.get(target)));
       }
    }
 }

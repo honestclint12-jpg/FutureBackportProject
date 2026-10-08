@@ -1,11 +1,18 @@
 package com.futurebackport.entity;
 
+import com.futurebackport.platform.Services;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
+import com.futurebackport.platform.attachment.DataAttachment;
+
 import com.futurebackport.FutureBackport;
 import com.futurebackport.registry.ModBlocks;
 import com.futurebackport.registry.ModParticles;
 import com.futurebackport.registry.ModSounds;
 import com.mojang.serialization.Codec;
-import java.util.function.Supplier;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
@@ -16,31 +23,31 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.FlowerBlock;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.EntityInteract;
-import net.neoforged.neoforge.event.tick.EntityTickEvent.Post;
 
 public final class AgeLock {
+   private AgeLock() {
+   }
+
    private static final TagKey<EntityType<?>> CANNOT_BE_AGE_LOCKED = TagKey.create(Registries.ENTITY_TYPE, FutureBackport.id("cannot_be_age_locked"));
    private static final int PARTICLE_TICKS = 40;
-   public static final Supplier<AttachmentType<Boolean>> LOCKED = FarmAnimalVariant.ATTACHMENTS
-      .register("age_locked", () -> AttachmentType.builder(() -> false).serialize(Codec.BOOL).build());
-   public static final Supplier<AttachmentType<Integer>> PARTICLE_TIMER = FarmAnimalVariant.ATTACHMENTS
-      .register("age_lock_particles", () -> AttachmentType.builder(() -> 0).build());
+   public static final DataAttachment<Boolean> LOCKED = Services.ATTACHMENTS.register("futurebackport", "age_locked", () -> false, Codec.BOOL, false);
+   /** Not saved: only drives the particle burst after toggling. */
+   public static final DataAttachment<Integer> PARTICLE_TIMER = Services.ATTACHMENTS.register("futurebackport", "age_lock_particles", () -> 0, null, false);
 
-   @SubscribeEvent
-   public void onInteract(EntityInteract event) {
-      if (event.getTarget() instanceof AgeableMob mob && event.getItemStack().is(((FlowerBlock)ModBlocks.GOLDEN_DANDELION.get()).asItem())) {
-         if (mob.isBaby() && (Integer)mob.getData(PARTICLE_TIMER) <= 0 && !mob.getType().is(CANNOT_BE_AGE_LOCKED)) {
-            event.setCanceled(true);
-            event.setCancellationResult(InteractionResult.sidedSuccess(event.getLevel().isClientSide()));
-            if (!event.getLevel().isClientSide()) {
-               boolean locked = !(Boolean)mob.getData(LOCKED);
-               mob.setData(LOCKED, locked);
+   /**
+    * A player right-clicked an entity. Returns the interaction result if the golden dandelion toggled the age lock,
+    * or {@code null} to let the interaction continue normally.
+    */
+   @Nullable
+   public static InteractionResult onInteract(Player player, Level level, Entity target, ItemStack stack) {
+      if (target instanceof AgeableMob mob && stack.is(((FlowerBlock)ModBlocks.GOLDEN_DANDELION.get()).asItem())) {
+         if (mob.isBaby() && PARTICLE_TIMER.get(mob) <= 0 && !mob.getType().is(CANNOT_BE_AGE_LOCKED)) {
+            if (!level.isClientSide()) {
+               boolean locked = !LOCKED.get(mob);
+               LOCKED.set(mob, locked);
                mob.setAge(-24000);
-               mob.setData(PARTICLE_TIMER, 40);
-               event.getItemStack().consume(1, event.getEntity());
+               PARTICLE_TIMER.set(mob, 40);
+               stack.consume(1, player);
                if (locked) {
                   mob.setPersistenceRequired();
                }
@@ -55,19 +62,23 @@ public final class AgeLock {
                      1.0F
                   );
             }
+
+            return InteractionResult.sidedSuccess(level.isClientSide());
          }
       }
+
+      return null;
    }
 
-   @SubscribeEvent
-   public void onTick(Post event) {
-      if (event.getEntity() instanceof AgeableMob mob && mob.level() instanceof ServerLevel level) {
-         boolean locked = (Boolean)mob.getData(LOCKED);
+   /** Every entity tick: keep locked babies young and run the toggle particles. */
+   public static void onTick(Entity entity) {
+      if (entity instanceof AgeableMob mob && mob.level() instanceof ServerLevel level) {
+         boolean locked = LOCKED.get(mob);
          if (locked && mob.getAge() > -24000) {
             mob.setAge(-24000);
          }
 
-         int timer = (Integer)mob.getData(PARTICLE_TIMER);
+         int timer = PARTICLE_TIMER.get(mob);
          if (timer > 0) {
             if (timer % 2 == 0) {
                double y = mob.getY() + mob.getRandom().nextDouble() * 0.2 + mob.getBbHeight() + (locked ? 0.2 : 0.0);
@@ -84,7 +95,7 @@ public final class AgeLock {
                );
             }
 
-            mob.setData(PARTICLE_TIMER, timer - 1);
+            PARTICLE_TIMER.set(mob, timer - 1);
          }
       }
    }

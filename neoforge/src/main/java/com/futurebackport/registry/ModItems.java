@@ -53,10 +53,10 @@ public class ModItems {
       () -> new HangingSignItem((Block)ModBlocks.PALE_OAK_HANGING_SIGN.get(), (Block)ModBlocks.PALE_OAK_WALL_HANGING_SIGN.get(), new Properties().stacksTo(16))
    );
    public static final ItemEntry<BoatItem> PALE_OAK_BOAT = ITEMS.register(
-      "pale_oak_boat", () -> new BoatItem(false, (Type)ModBoats.PALE_OAK.getValue(), new Properties().stacksTo(1))
+      "pale_oak_boat", () -> new BoatItem(false, ModBoats.paleOak(), new Properties().stacksTo(1))
    );
    public static final ItemEntry<BoatItem> PALE_OAK_CHEST_BOAT = ITEMS.register(
-      "pale_oak_chest_boat", () -> new BoatItem(true, (Type)ModBoats.PALE_OAK.getValue(), new Properties().stacksTo(1))
+      "pale_oak_chest_boat", () -> new BoatItem(true, ModBoats.paleOak(), new Properties().stacksTo(1))
    );
    public static final ItemEntry<Item> RESIN_BRICK = ITEMS.registerSimpleItem("resin_brick");
    public static final ItemEntry<SpawnEggItem> CREAKING_SPAWN_EGG = ITEMS.register(

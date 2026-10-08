@@ -1,6 +1,6 @@
-package com.futurebackport.worldgen;
+package com.futurebackport.neoforge.worldgen;
 
-import com.futurebackport.registry.ModWorldgen;
+import com.futurebackport.neoforge.NeoForgeBiomeModifiers;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -44,6 +44,6 @@ public record SetSpawnWeightModifier(HolderSet<Biome> biomes, EntityType<?> enti
    }
 
    public MapCodec<? extends BiomeModifier> codec() {
-      return (MapCodec<? extends BiomeModifier>)ModWorldgen.SET_SPAWN_WEIGHT.get();
+      return (MapCodec<? extends BiomeModifier>)NeoForgeBiomeModifiers.SET_SPAWN_WEIGHT.get();
    }
 }

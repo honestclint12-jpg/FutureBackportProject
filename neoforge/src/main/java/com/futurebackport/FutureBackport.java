@@ -4,12 +4,7 @@ import com.futurebackport.platform.registry.BlockEntry;
 
 import com.futurebackport.entity.AgeLock;
 import com.futurebackport.entity.FarmAnimalVariant;
-import com.futurebackport.entity.FarmAnimalVariantEvents;
 import com.futurebackport.entity.SoundVariants;
-import com.futurebackport.entity.nautilus.BreathOfTheNautilus;
-import com.futurebackport.network.FarmAnimalVariantPayload;
-import com.futurebackport.network.SpearJabPayload;
-import com.futurebackport.registry.CreativePlacements;
 import com.futurebackport.registry.ModBlockEntities;
 import com.futurebackport.registry.ModBlocks;
 import com.futurebackport.registry.ModCreativeTabs;
@@ -21,46 +16,29 @@ import com.futurebackport.registry.ModMenus;
 import com.futurebackport.registry.ModParticles;
 import com.futurebackport.registry.ModSounds;
 import com.futurebackport.registry.ModWorldgen;
-import com.futurebackport.neoforge.platform.NeoForgeRegistrationFactory;
+import com.futurebackport.network.ModNetwork;
+import com.futurebackport.platform.Services;
 import com.mojang.logging.LogUtils;
+import java.util.function.BiConsumer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
-import net.minecraft.world.level.block.FireBlock;
-import net.minecraft.world.level.block.FlowerPotBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import org.slf4j.Logger;
 
-@Mod("futurebackport")
 public class FutureBackport {
    public static final String MODID = "futurebackport";
    public static final Logger LOGGER = LogUtils.getLogger();
 
-   public FutureBackport(IEventBus modEventBus, ModContainer modContainer) {
-      NeoForgeRegistrationFactory.attach(modEventBus);
+   private FutureBackport() {
+   }
+
+   /** Mod construction, on every loader: create all registry entries and declare packets. */
+   public static void init() {
       bootstrapRegistries();
-      FarmAnimalVariant.ATTACHMENTS.register(modEventBus);
-      ModWorldgen.BIOME_MODIFIERS.register(modEventBus);
-      modEventBus.addListener(this::commonSetup);
-      modEventBus.addListener(this::addBlockEntityBlocks);
-      modEventBus.addListener(ModEntities::registerAttributes);
-      modEventBus.addListener(ModEntities::registerSpawnPlacements);
-      modEventBus.addListener(this::registerPayloads);
-      modEventBus.addListener(CreativePlacements::onBuildTab);
-      NeoForge.EVENT_BUS.register(new FarmAnimalVariantEvents());
-      NeoForge.EVENT_BUS.register(new AgeLock());
-      NeoForge.EVENT_BUS.register(SoundVariants.class);
-      NeoForge.EVENT_BUS.register(BreathOfTheNautilus.class);
+      ModNetwork.register();
    }
 
    /**
@@ -71,7 +49,8 @@ public class FutureBackport {
       Object[] registries = {
          ModSounds.SOUNDS, ModParticles.PARTICLES, ModEffects.EFFECTS, ModMaterials.ARMOR_MATERIALS,
          ModBlocks.BLOCKS, ModEntities.ENTITIES, ModItems.ITEMS, ModBlockEntities.BLOCK_ENTITIES,
-         ModWorldgen.FEATURES, ModWorldgen.TREE_DECORATORS, ModMenus.MENUS, ModCreativeTabs.CREATIVE_MODE_TABS
+         ModWorldgen.FEATURES, ModWorldgen.TREE_DECORATORS, ModMenus.MENUS, ModCreativeTabs.CREATIVE_MODE_TABS,
+         FarmAnimalVariant.ATTACHMENT, AgeLock.LOCKED, SoundVariants.ATTACHMENT
       };
       LOGGER.debug("Bootstrapped {} registries", registries.length);
    }
@@ -80,9 +59,10 @@ public class FutureBackport {
       return ResourceLocation.fromNamespaceAndPath("futurebackport", path);
    }
 
-   private void commonSetup(FMLCommonSetupEvent event) {
-      event.enqueueWork(
-         () -> {
+   /** Common setup, on the main thread: hook this mod's blocks into vanilla systems. */
+   public static void commonSetup() {
+      {
+         {
             flammable(
                5, 20, ModBlocks.PALE_OAK_PLANKS, ModBlocks.PALE_OAK_SLAB, ModBlocks.PALE_OAK_STAIRS, ModBlocks.PALE_OAK_FENCE, ModBlocks.PALE_OAK_FENCE_GATE
             );
@@ -110,30 +90,24 @@ public class FutureBackport {
             );
             DispenserBlock.registerProjectileBehavior((ItemLike)ModItems.BLUE_EGG.get());
             DispenserBlock.registerProjectileBehavior((ItemLike)ModItems.BROWN_EGG.get());
-            FlowerPotBlock pot = (FlowerPotBlock)Blocks.FLOWER_POT;
-            pot.addPlant(ModBlocks.PALE_OAK_SAPLING.getId(), ModBlocks.POTTED_PALE_OAK_SAPLING);
-            pot.addPlant(ModBlocks.OPEN_EYEBLOSSOM.getId(), ModBlocks.POTTED_OPEN_EYEBLOSSOM);
-            pot.addPlant(ModBlocks.CLOSED_EYEBLOSSOM.getId(), ModBlocks.POTTED_CLOSED_EYEBLOSSOM);
-            pot.addPlant(ModBlocks.GOLDEN_DANDELION.getId(), ModBlocks.POTTED_GOLDEN_DANDELION);
+            Services.PLATFORM.addPottedPlant(ModBlocks.PALE_OAK_SAPLING.getId(), ModBlocks.POTTED_PALE_OAK_SAPLING);
+            Services.PLATFORM.addPottedPlant(ModBlocks.OPEN_EYEBLOSSOM.getId(), ModBlocks.POTTED_OPEN_EYEBLOSSOM);
+            Services.PLATFORM.addPottedPlant(ModBlocks.CLOSED_EYEBLOSSOM.getId(), ModBlocks.POTTED_CLOSED_EYEBLOSSOM);
+            Services.PLATFORM.addPottedPlant(ModBlocks.GOLDEN_DANDELION.getId(), ModBlocks.POTTED_GOLDEN_DANDELION);
          }
-      );
+      }
    }
 
    @SafeVarargs
    private static void flammable(int encouragement, int flammability, BlockEntry<? extends Block>... blocks) {
       for (BlockEntry<? extends Block> block : blocks) {
-         ((FireBlock)Blocks.FIRE).setFlammable((Block)block.get(), encouragement, flammability);
+         Services.PLATFORM.setFlammable(block.get(), encouragement, flammability);
       }
    }
 
-   private void registerPayloads(RegisterPayloadHandlersEvent event) {
-      PayloadRegistrar registrar = event.registrar("1");
-      registrar.playToClient(FarmAnimalVariantPayload.TYPE, FarmAnimalVariantPayload.STREAM_CODEC, FarmAnimalVariantPayload::handle);
-      registrar.playToServer(SpearJabPayload.TYPE, SpearJabPayload.STREAM_CODEC, SpearJabPayload::handle);
-   }
-
-   private void addBlockEntityBlocks(BlockEntityTypeAddBlocksEvent event) {
-      event.modify(BlockEntityType.SIGN, new Block[]{(Block)ModBlocks.PALE_OAK_SIGN.get(), (Block)ModBlocks.PALE_OAK_WALL_SIGN.get()});
-      event.modify(BlockEntityType.HANGING_SIGN, new Block[]{(Block)ModBlocks.PALE_OAK_HANGING_SIGN.get(), (Block)ModBlocks.PALE_OAK_WALL_HANGING_SIGN.get()});
+   /** Vanilla block entity types that this mod's blocks also use (pale oak signs). */
+   public static void addBlockEntityBlocks(BiConsumer<BlockEntityType<?>, Block[]> modifier) {
+      modifier.accept(BlockEntityType.SIGN, new Block[]{(Block)ModBlocks.PALE_OAK_SIGN.get(), (Block)ModBlocks.PALE_OAK_WALL_SIGN.get()});
+      modifier.accept(BlockEntityType.HANGING_SIGN, new Block[]{(Block)ModBlocks.PALE_OAK_HANGING_SIGN.get(), (Block)ModBlocks.PALE_OAK_WALL_HANGING_SIGN.get()});
    }
 }

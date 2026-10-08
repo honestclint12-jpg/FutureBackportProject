@@ -4,36 +4,34 @@ import com.futurebackport.item.SpearItem;
 import com.futurebackport.network.SpearJabPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.phys.HitResult.Type;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.InputEvent.InteractionKeyMappingTriggered;
-import net.neoforged.neoforge.network.PacketDistributor;
+import com.futurebackport.platform.Services;
+import net.minecraft.world.InteractionHand;
 
-@EventBusSubscriber(
-   modid = "futurebackport",
-   value = {Dist.CLIENT}
-)
+/** Turns the attack key into a spear jab while holding a spear. */
 public final class SpearInput {
    private SpearInput() {
    }
 
-   @SubscribeEvent
-   static void onAttack(InteractionKeyMappingTriggered event) {
+   /**
+    * The attack key was pressed. Returns {@code true} if the spear handled it; the caller must then cancel the vanilla
+    * attack and its hand swing.
+    */
+   public static boolean onAttackKey(InteractionHand hand) {
       Minecraft mc = Minecraft.getInstance();
       LocalPlayer player = mc.player;
-      if (event.isAttack() && player != null && player.getMainHandItem().getItem() instanceof SpearItem) {
+      if (player != null && player.getMainHandItem().getItem() instanceof SpearItem) {
          if (mc.hitResult == null || mc.hitResult.getType() != Type.BLOCK) {
-            event.setCanceled(true);
-            event.setSwingHand(false);
             if (!player.isSpectator() && !player.isUsingItem() && !(player.getAttackStrengthScale(0.5F) < 1.0F)) {
-               PacketDistributor.sendToServer(new SpearJabPayload(), new CustomPacketPayload[0]);
+               Services.NETWORK.sendToServer(new SpearJabPayload());
                player.resetAttackStrengthTicker();
-               player.swing(event.getHand());
+               player.swing(hand);
             }
+
+            return true;
          }
       }
+
+      return false;
    }
 }

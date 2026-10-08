@@ -55,7 +55,7 @@ public class VariantThrownEgg extends ThrownEgg {
                      break;
                   }
 
-                  chick.setData(FarmAnimalVariant.ATTACHMENT, this.variant);
+                  FarmAnimalVariant.ATTACHMENT.set(chick, this.variant);
                   this.level().addFreshEntity(chick);
                }
             }

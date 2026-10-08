@@ -4,7 +4,10 @@ import com.futurebackport.platform.registry.BlockEntry;
 
 import com.futurebackport.client.DryFoliageColor;
 import com.futurebackport.client.NautilusScreen;
+import com.futurebackport.client.SpearInput;
 import com.futurebackport.client.dev.Showcase;
+import net.neoforged.neoforge.client.event.InputEvent.InteractionKeyMappingTriggered;
+import net.neoforged.neoforge.common.NeoForge;
 import com.futurebackport.client.model.BabyHumanoids;
 import com.futurebackport.client.model.CopperGolemModel;
 import com.futurebackport.client.model.CopperGolemStatueModel;
@@ -88,6 +91,12 @@ import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsE
 public class FutureBackportClient {
    public FutureBackportClient() {
       Showcase.register();
+      NeoForge.EVENT_BUS.addListener((InteractionKeyMappingTriggered event) -> {
+         if (event.isAttack() && SpearInput.onAttackKey(event.getHand())) {
+            event.setCanceled(true);
+            event.setSwingHand(false);
+         }
+      });
    }
 
    @SubscribeEvent

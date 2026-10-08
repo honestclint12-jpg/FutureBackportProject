@@ -10,13 +10,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.CreativeModeTab.TabVisibility;
 import net.minecraft.world.level.ItemLike;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 
 public final class CreativePlacements {
    private static List<CreativePlacements.Placement> placements;
@@ -57,12 +58,13 @@ public final class CreativePlacements {
       return list;
    }
 
-   public static void onBuildTab(BuildCreativeModeTabContentsEvent event) {
+   /** Calls {@code insertAfter(after, item)} for every item this mod slots into an existing creative tab. */
+   public static void apply(ResourceKey<CreativeModeTab> tabKey, BiConsumer<ItemStack, ItemStack> insertAfter) {
       if (placements == null) {
          placements = load();
       }
 
-      ResourceLocation tab = event.getTabKey().location();
+      ResourceLocation tab = tabKey.location();
 
       for (CreativePlacements.Placement placement : placements) {
          if (placement.tab().equals(tab)) {
@@ -70,8 +72,9 @@ public final class CreativePlacements {
             Optional<Item> item = BuiltInRegistries.ITEM.getOptional(placement.item());
             if (!after.isEmpty() && !item.isEmpty()) {
                try {
-                  event.insertAfter(new ItemStack((ItemLike)after.get()), new ItemStack((ItemLike)item.get()), TabVisibility.PARENT_AND_SEARCH_TABS);
-               } catch (IllegalArgumentException var7) {
+                  insertAfter.accept(new ItemStack((ItemLike)after.get()), new ItemStack((ItemLike)item.get()));
+               } catch (IllegalArgumentException ignored) {
+                  // The anchor item isn't in this tab (e.g. disabled by another mod); skip it.
                }
             }
          }

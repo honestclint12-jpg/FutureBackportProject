@@ -556,10 +556,10 @@ public final class Showcase {
 
       int z = this.rows * 7 + 2;
       Boat boat = new Boat(level, 2.0, -60.0, z);
-      boat.setVariant((Type)ModBoats.PALE_OAK.getValue());
+      boat.setVariant(ModBoats.paleOak());
       level.addFreshEntity(boat);
       ChestBoat chestBoat = new ChestBoat(level, 5.0, -60.0, z);
-      chestBoat.setVariant((Type)ModBoats.PALE_OAK.getValue());
+      chestBoat.setVariant(ModBoats.paleOak());
       level.addFreshEntity(chestBoat);
       armorStand(level, 8.0, z, null);
       armorStand(
@@ -922,7 +922,7 @@ public final class Showcase {
                   animal.setAge(-24000);
                }
 
-               animal.setData(FarmAnimalVariant.ATTACHMENT, variant);
+               FarmAnimalVariant.ATTACHMENT.set(animal, variant);
                level.addFreshEntity(animal);
             }
          }

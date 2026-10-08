@@ -8,7 +8,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type;
 import net.minecraft.world.entity.Entity;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.world.entity.player.Player;
 
 public record FarmAnimalVariantPayload(int entityId, FarmAnimalVariant variant) implements CustomPacketPayload {
    public static final Type<FarmAnimalVariantPayload> TYPE = new Type(FutureBackport.id("farm_animal_variant"));
@@ -24,10 +24,10 @@ public record FarmAnimalVariantPayload(int entityId, FarmAnimalVariant variant) 
       return TYPE;
    }
 
-   public static void handle(FarmAnimalVariantPayload payload, IPayloadContext context) {
-      Entity entity = context.player().level().getEntity(payload.entityId());
+   public static void handle(FarmAnimalVariantPayload payload, Player player) {
+      Entity entity = player.level().getEntity(payload.entityId());
       if (entity != null) {
-         entity.setData(FarmAnimalVariant.ATTACHMENT, payload.variant());
+         FarmAnimalVariant.ATTACHMENT.set(entity, payload.variant());
       }
    }
 }

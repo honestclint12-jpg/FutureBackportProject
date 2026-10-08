@@ -73,7 +73,7 @@ public class PaleOakTests {
       template = "arena"
    )
    public static void paleOakBoatRoundTrips(GameTestHelper helper) {
-      Type type = (Type)ModBoats.PALE_OAK.getValue();
+      Type type = ModBoats.paleOak();
       Boat boat = (Boat)helper.spawn(EntityType.BOAT, new BlockPos(2, 2, 2));
       boat.setVariant(type);
       helper.assertTrue(boat.getDropItem() == ModItems.PALE_OAK_BOAT.get(), "boat drops " + boat.getDropItem());

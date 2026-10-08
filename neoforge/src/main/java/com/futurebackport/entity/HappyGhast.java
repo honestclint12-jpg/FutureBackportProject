@@ -50,7 +50,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap.Types;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.Nullable;
 
 public class HappyGhast extends Animal {
@@ -144,8 +143,9 @@ public class HappyGhast extends Animal {
       }
    }
 
-   public boolean canDrownInFluidType(FluidType type) {
-      return !this.isBaby() && super.canDrownInFluidType(type);
+   /** Ghastlings can't drown; adults can. Loader modules apply this in their breathing hook. */
+   public boolean canDrown() {
+      return !this.isBaby();
    }
 
    protected void playStepSound(BlockPos pos, BlockState state) {
