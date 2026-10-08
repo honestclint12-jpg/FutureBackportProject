@@ -15,10 +15,10 @@ import net.minecraft.gametest.framework.StructureUtils;
 import net.minecraft.gametest.framework.TestFunction;
 
 /**
- * Every game test in the mod, for both loaders. NeoForge and Fabric name a @GameTest's structure differently
+ * Every game test in the mod, for both loaders. NeoForge and Fabric name a {@code @GameTest}'s structure differently
  * (NeoForge prefixes the holder's namespace, Fabric takes the template as a full id), so the loaders don't register
- * the test classes themselves: they register a @GameTestGenerator that returns {@link #all()}, which reads the vanilla
- * @GameTest annotations and gives every template the futurebackport namespace.
+ * the test classes themselves: they register a {@code @GameTestGenerator} that returns {@link #all()}, which reads the vanilla
+ * {@code @GameTest} annotations and gives every template the futurebackport namespace.
  */
 public final class FutureBackportGameTests {
    private static final List<Class<?>> TEST_CLASSES = List.of(
