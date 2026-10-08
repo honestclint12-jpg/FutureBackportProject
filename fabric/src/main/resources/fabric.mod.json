@@ -15,6 +15,9 @@
     "entrypoints": {
         "main": [
             "com.futurebackport.fabric.FutureBackportFabric"
+        ],
+        "client": [
+            "com.futurebackport.fabric.FutureBackportFabricClient"
         ]
     },
     "depends": {
@@ -22,5 +25,10 @@
         "fabric-api": "*",
         "minecraft": "~${minecraft_version}",
         "java": ">=${java_version}"
-    }
+    },
+    "mixins": [
+        "${mod_id}.mixins.json",
+        "${mod_id}.fabric.mixins.json"
+    ],
+    "accessWidener": "${mod_id}.accesswidener"
 }

@@ -17,3 +17,7 @@ accessible method net/minecraft/world/level/block/SaplingBlock <init> (Lnet/mine
 accessible method net/minecraft/world/level/block/IronBarsBlock <init> (Lnet/minecraft/world/level/block/state/BlockBehaviour$Properties;)V
 accessible method net/minecraft/world/level/block/PinkPetalsBlock <init> (Lnet/minecraft/world/level/block/state/BlockBehaviour$Properties;)V
 accessible method net/minecraft/world/entity/monster/AbstractSkeleton getStepSound ()Lnet/minecraft/sounds/SoundEvent;
+
+# Fabric-only: the platform helper reads biome downfall (NeoForge uses getModifiedClimateSettings instead).
+accessible field net/minecraft/world/level/biome/Biome climateSettings Lnet/minecraft/world/level/biome/Biome$ClimateSettings;
+accessible class net/minecraft/world/level/biome/Biome$ClimateSettings
