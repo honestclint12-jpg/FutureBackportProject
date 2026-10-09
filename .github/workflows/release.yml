@@ -1,11 +1,21 @@
 name: Release
 
-# Push a tag v<version> on main to publish a release. Run by hand (Actions tab) for a dry run that builds and
-# tests both Minecraft versions without publishing anything.
+# Publish a release either by pushing a tag v<version> on main, or from the Actions tab (Run workflow) with the
+# version filled in, which creates the tag. Run from the Actions tab with the version left empty for a dry run
+# that builds and tests both Minecraft versions without publishing anything.
 on:
   push:
     tags: ['v*']
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish, matching gradle.properties (e.g. 1.0.0-beta.1). Empty: dry run.'
+        required: false
+        default: ''
+
+env:
+  # The release tag, or empty for a dry run.
+  TAG: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || (inputs.version != '' && format('v{0}', inputs.version) || '') }}
 
 permissions:
   contents: write
@@ -28,11 +38,11 @@ jobs:
           ref: ${{ matrix.ref }}
 
       - name: Check that the tag matches gradle.properties
-        if: startsWith(github.ref, 'refs/tags/')
+        if: env.TAG != ''
         run: |
           version=$(grep '^version=' gradle.properties | cut -d= -f2 | tr -d '[:space:]')
-          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
-            echo "::error::The ${{ matrix.minecraft }} branch has version=$version in gradle.properties, but the tag is $GITHUB_REF_NAME."
+          if [ "v$version" != "$TAG" ]; then
+            echo "::error::The ${{ matrix.minecraft }} branch has version=$version in gradle.properties, but the release is $TAG."
             exit 1
           fi
 
@@ -69,7 +79,7 @@ jobs:
 
   release:
     needs: build
-    if: startsWith(github.ref, 'refs/tags/')
+    if: startsWith(github.ref, 'refs/tags/') || inputs.version != ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v5
@@ -82,12 +92,14 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ls -l jars
-          # A version with a suffix (v1.0.0-beta.1) is published as a pre-release.
+          # A version with a suffix (v1.0.0-beta.1) is published as a pre-release. When started from the Actions
+          # tab, this also creates the tag on the commit the workflow ran on.
           prerelease=()
-          if [[ "$GITHUB_REF_NAME" == *-* ]]; then prerelease=(--prerelease); fi
-          gh release create "$GITHUB_REF_NAME" jars/*.jar \
+          if [[ "$TAG" == *-* ]]; then prerelease=(--prerelease); fi
+          gh release create "$TAG" jars/*.jar \
             --repo "$GITHUB_REPOSITORY" \
-            --title "Future Backport ${GITHUB_REF_NAME#v}" \
+            --target "$GITHUB_SHA" \
+            --title "Future Backport ${TAG#v}" \
             --generate-notes "${prerelease[@]}"
 
   # Uploads each jar to Modrinth and/or CurseForge. Runs only when the repository has the project IDs as
@@ -95,7 +107,7 @@ jobs:
   # CURSEFORGE_TOKEN). A site whose token is missing is skipped.
   publish:
     needs: release
-    if: startsWith(github.ref, 'refs/tags/') && (vars.MODRINTH_ID != '' || vars.CURSEFORGE_ID != '')
+    if: (startsWith(github.ref, 'refs/tags/') || inputs.version != '') && (vars.MODRINTH_ID != '' || vars.CURSEFORGE_ID != '')
     strategy:
       fail-fast: false
       matrix:
@@ -114,7 +126,7 @@ jobs:
       - name: Work out the version
         id: version
         run: |
-          version="${GITHUB_REF_NAME#v}"
+          version="${TAG#v}"
           echo "version=$version" >> "$GITHUB_OUTPUT"
           case "$version" in
             *alpha*) echo "type=alpha" >> "$GITHUB_OUTPUT" ;;
@@ -135,4 +147,4 @@ jobs:
           loaders: ${{ matrix.loader }}
           game-versions: ${{ matrix.minecraft }}
           dependencies: ${{ matrix.loader == 'fabric' && 'fabric-api(required)' || '' }}
-          changelog: See https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}
+          changelog: See https://github.com/${{ github.repository }}/releases/tag/${{ env.TAG }}
