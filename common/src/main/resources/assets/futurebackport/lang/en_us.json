@@ -370,5 +370,7 @@
   "subtitles.entity.baby_wolf.hurt": "Puppy hurts",
   "subtitles.entity.baby_wolf.pant": "Puppy pants",
   "subtitles.entity.baby_wolf.whine": "Puppy whines",
-  "subtitles.entity.generic.big_fall": "Something fell"
+  "subtitles.entity.generic.big_fall": "Something fell",
+  "futurebackport.assets.download_failed.title": "Future Backport: textures not downloaded",
+  "futurebackport.assets.download_failed.description": "Could not reach Mojang. Restart the game while online."
 }

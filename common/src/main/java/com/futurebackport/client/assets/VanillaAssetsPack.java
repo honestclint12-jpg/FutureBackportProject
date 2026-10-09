@@ -31,8 +31,8 @@ public final class VanillaAssetsPack implements PackResources {
    private static final PackLocationInfo LOCATION = new PackLocationInfo(
       "futurebackport_vanilla_assets", Component.literal("Future Backport: Minecraft assets"), PackSource.BUILT_IN, Optional.empty()
    );
-   /** Just above the vanilla pack and below everything else, so resource packs can still retexture the mod. */
-   private static final PackSelectionConfig SELECTION = new PackSelectionConfig(true, Pack.Position.BOTTOM, false);
+   /** Always on and pinned to the bottom of the list, so every resource pack the player adds can retexture the mod. */
+   private static final PackSelectionConfig SELECTION = new PackSelectionConfig(true, Pack.Position.BOTTOM, true);
    public static final RepositorySource SOURCE = consumer -> {
       Pack.ResourcesSupplier resources = new Pack.ResourcesSupplier() {
          @Override

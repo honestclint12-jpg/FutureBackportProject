@@ -37,7 +37,9 @@ public final class DryFoliageColor {
          try {
             return LegacyStuffWrapper.getPixels(resourceManager, DryFoliageColor.LOCATION);
          } catch (IOException var4) {
-            throw new IllegalStateException("Failed to load dry foliage color texture", var4);
+            // Missing until the first-start asset download succeeds; get() falls back to DEFAULT meanwhile.
+            FutureBackport.LOGGER.warn("Could not load the dry foliage color texture, using the default color: {}", var4.toString());
+            return new int[0];
          }
       }
 

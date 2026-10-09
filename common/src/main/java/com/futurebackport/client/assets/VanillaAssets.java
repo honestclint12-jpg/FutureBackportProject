@@ -38,6 +38,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.toasts.SystemToast;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.GsonHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -130,6 +132,13 @@ public final class VanillaAssets {
             e
          );
          this.ready.completeExceptionally(e);
+         Minecraft minecraft = Minecraft.getInstance();
+         minecraft.execute(() -> SystemToast.add(
+            minecraft.getToasts(),
+            SystemToast.SystemToastId.PACK_LOAD_FAILURE,
+            Component.translatable("futurebackport.assets.download_failed.title"),
+            Component.translatable("futurebackport.assets.download_failed.description")
+         ));
       }
    }
 
@@ -222,8 +231,8 @@ public final class VanillaAssets {
             }
          }
          if (!failures.isEmpty()) {
-            IOException error = new IOException(failures.size() + " Minecraft asset downloads failed");
-            failures.forEach(error::addSuppressed);
+            IOException error = new IOException(failures.size() + " Minecraft asset downloads failed, the first ones shown below");
+            failures.stream().limit(3).forEach(error::addSuppressed);
             throw error;
          }
       } finally {
