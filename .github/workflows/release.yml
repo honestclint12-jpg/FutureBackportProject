@@ -82,7 +82,57 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ls -l jars
+          # A version with a suffix (v1.0.0-beta.1) is published as a pre-release.
+          prerelease=()
+          if [[ "$GITHUB_REF_NAME" == *-* ]]; then prerelease=(--prerelease); fi
           gh release create "$GITHUB_REF_NAME" jars/*.jar \
             --repo "$GITHUB_REPOSITORY" \
             --title "Future Backport ${GITHUB_REF_NAME#v}" \
-            --generate-notes
+            --generate-notes "${prerelease[@]}"
+
+  # Uploads each jar to Modrinth and/or CurseForge. Runs only when the repository has the project IDs as
+  # Actions variables (MODRINTH_ID, CURSEFORGE_ID) and the matching tokens as secrets (MODRINTH_TOKEN,
+  # CURSEFORGE_TOKEN). A site whose token is missing is skipped.
+  publish:
+    needs: release
+    if: startsWith(github.ref, 'refs/tags/') && (vars.MODRINTH_ID != '' || vars.CURSEFORGE_ID != '')
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { loader: neoforge, minecraft: '1.21.1', loader_name: NeoForge }
+          - { loader: fabric, minecraft: '1.21.1', loader_name: Fabric }
+          - { loader: forge, minecraft: '1.20.1', loader_name: Forge }
+          - { loader: fabric, minecraft: '1.20.1', loader_name: Fabric }
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v5
+        with:
+          path: jars
+          merge-multiple: true
+
+      - name: Work out the version
+        id: version
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          case "$version" in
+            *alpha*) echo "type=alpha" >> "$GITHUB_OUTPUT" ;;
+            *-*) echo "type=beta" >> "$GITHUB_OUTPUT" ;;
+            *) echo "type=release" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      - uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          modrinth-id: ${{ vars.MODRINTH_ID }}
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          curseforge-id: ${{ vars.CURSEFORGE_ID }}
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          files: jars/futurebackport-${{ matrix.loader }}-${{ matrix.minecraft }}-*.jar
+          name: Future Backport ${{ steps.version.outputs.version }} (${{ matrix.loader_name }} ${{ matrix.minecraft }})
+          version: ${{ steps.version.outputs.version }}+${{ matrix.loader }}-${{ matrix.minecraft }}
+          version-type: ${{ steps.version.outputs.type }}
+          loaders: ${{ matrix.loader }}
+          game-versions: ${{ matrix.minecraft }}
+          dependencies: ${{ matrix.loader == 'fabric' && 'fabric-api(required)' || '' }}
+          changelog: See https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}
