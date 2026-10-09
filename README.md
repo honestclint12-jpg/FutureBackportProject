@@ -87,6 +87,9 @@ Gradle runs on Java 21; the mod itself targets Java 17.
 ./gradlew :fabric:runServer     # Fabric dev server
 ```
 
+GitHub Actions (`.github/workflows/build.yml`) builds and runs the game tests on Forge and Fabric on every push and
+pull request. Releases are published from `main`, which builds this branch too (see the README there).
+
 ## License
 
 MIT, see [LICENSE](LICENSE). This covers the mod's code and its own files. Minecraft's textures and sounds belong
