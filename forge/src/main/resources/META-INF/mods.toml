@@ -7,6 +7,8 @@ issueTrackerURL="https://github.com/honestclint12-jpg/FutureBackportProject/issu
 modId="${mod_id}"
 version="${version}"
 displayName="${mod_name}"
+displayURL="https://github.com/honestclint12-jpg/FutureBackportProject"
+logoFile="futurebackport.png"
 authors="${mod_author}"
 description='''${description}'''
 
