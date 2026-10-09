@@ -132,14 +132,27 @@ public final class VanillaAssets {
             e
          );
          this.ready.completeExceptionally(e);
-         Minecraft minecraft = Minecraft.getInstance();
-         minecraft.execute(() -> SystemToast.add(
-            minecraft.getToasts(),
-            SystemToast.SystemToastId.PACK_LOAD_FAILURE,
-            Component.translatable("futurebackport.assets.download_failed.title"),
-            Component.translatable("futurebackport.assets.download_failed.description")
-         ));
+         showFailureToast();
       }
+   }
+
+   /** Waits until the first screen is up: a toast added under the loading screen would time out before anyone sees it. */
+   private static void showFailureToast() {
+      Minecraft minecraft = Minecraft.getInstance();
+      try {
+         for (int i = 0; i < 1200 && (minecraft.getOverlay() != null || minecraft.screen == null); i++) {
+            Thread.sleep(250L);
+         }
+      } catch (InterruptedException e) {
+         Thread.currentThread().interrupt();
+         return;
+      }
+      minecraft.execute(() -> SystemToast.add(
+         minecraft.getToasts(),
+         SystemToast.SystemToastId.PACK_LOAD_FAILURE,
+         Component.translatable("futurebackport.assets.download_failed.title"),
+         Component.translatable("futurebackport.assets.download_failed.description")
+      ));
    }
 
    private void download() throws Exception {
