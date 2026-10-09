@@ -39,6 +39,24 @@ Shared code may use vanilla members that NeoForge's own access transformer opens
 `common/src/main/resources/META-INF/accesstransformer.cfg` and mirrored in `futurebackport.accesswidener`
 for Fabric: keep the two in sync.
 
+## Minecraft textures and sounds
+
+The mod does not ship Mojang's textures and sounds. The first time the game starts, it downloads the ones the mod
+uses (about 1,300 files) from Mojang's own servers into `<game folder>/futurebackport/vanilla-assets` and loads
+them as a built-in resource pack. This takes about 10 seconds and only happens once; after that the game works
+offline. Each file is checked against its SHA-1 before it is used.
+
+- The list of files is `common/src/main/resources/futurebackport_vanilla_assets.json`. It names the Minecraft
+  version and path each file comes from. Only the needed files are fetched out of the client jar (HTTP range
+  requests), not the whole jar.
+- To add new textures or sounds from a newer Minecraft version, put them in `common/src/main/resources/assets` as
+  usual and run `python3 tools/vanilla-assets.py`. It moves every file that matches a vanilla file into the list.
+  Files that match nothing are the mod's own art and stay in the jar.
+- A few textures the original author edited are rebuilt from the vanilla files after downloading (see the
+  `overlay` and `patch` entries in the list).
+- If the first start has no internet connection, the mod's blocks and mobs show missing textures until a later
+  start can download them. Dedicated servers download nothing.
+
 ## Source history
 
 This source was recovered by decompiling `futurebackport-1.0.0.jar`, because the original project was not under
@@ -57,4 +75,5 @@ Requires Java 21.
 
 ## License
 
-MIT, see [LICENSE](LICENSE).
+MIT, see [LICENSE](LICENSE). This covers the mod's code and its own files. Minecraft's textures and sounds belong
+to Mojang; the mod downloads them from Mojang instead of redistributing them.

@@ -18,6 +18,9 @@
     "SimpleBlockFeatureMixin",
     "ZombieMixin"
   ],
+  "client": [
+    "client.PackRepositoryMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }
