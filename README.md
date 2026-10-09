@@ -21,11 +21,6 @@ spears and nautiluses, and more.
   the mod backports what it needs (see `ModDataMaps`, `MixinAttachmentService`, `LungeEnchantment`, `SpearEnchanting`).
 - Armadillos don't exist in 1.20.1, so the baby armadillo model is not included.
 
-## Building and testing
-
-GitHub Actions (`.github/workflows/build.yml`) builds and runs the game tests on Forge and Fabric on every push and
-pull request. Releases are published from `main`, which builds this branch too (see the README there).
-
 ## Layout
 
 ```
@@ -91,6 +86,9 @@ Gradle runs on Java 21; the mod itself targets Java 17.
 ./gradlew :fabric:runClient     # Fabric dev client
 ./gradlew :fabric:runServer     # Fabric dev server
 ```
+
+GitHub Actions (`.github/workflows/build.yml`) builds and runs the game tests on Forge and Fabric on every push and
+pull request. Releases are published from `main`, which builds this branch too (see the README there).
 
 ## License
 
