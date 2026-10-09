@@ -2,15 +2,10 @@ package com.futurebackport.client.assets;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -29,31 +24,38 @@ import java.util.zip.ZipInputStream;
  * the Range header get the whole file streamed once instead.
  */
 final class RemoteZip {
-   /** Neighbouring entries closer than this are fetched in one request. */
+   /** Neighbouring entries closer than this are fetched in one request... */
    private static final int MERGE_GAP = 64 * 1024;
+   /** ...as long as that request stays below this size, so requests stay small enough to run side by side. */
+   private static final int MAX_GROUP = 1024 * 1024;
    /** Room for a local file header's name and extra field, which can differ from the central directory's. */
    private static final int LOCAL_HEADER_SLACK = 30 + 1024;
 
    private record Entry(String name, int method, long compressedSize, long size, long offset) {
    }
 
-   private final HttpClient http;
+   /** Entries fetched with one range request. */
+   record Group(List<Entry> entries, long from, long to) {
+   }
+
+   /** Thrown by {@link #plan} when the server ignores range requests; use {@link #readWhole} then. */
+   static final class RangeUnsupportedException extends IOException {
+      RangeUnsupportedException(URI uri) {
+         super("No range requests for " + uri);
+      }
+   }
+
+   private final Http http;
    private final URI uri;
 
-   RemoteZip(HttpClient http, URI uri) {
+   RemoteZip(Http http, URI uri) {
       this.http = http;
       this.uri = uri;
    }
 
-   /** Calls {@code sink} with the uncompressed bytes of every wanted entry that exists. */
-   void read(Collection<String> wanted, BiConsumer<String, byte[]> sink) throws IOException, InterruptedException {
-      Map<String, Entry> directory;
-      try {
-         directory = this.readDirectory();
-      } catch (RangeUnsupportedException e) {
-         this.readWhole(wanted, sink);
-         return;
-      }
+   /** Reads the zip's directory and splits the wanted entries that exist into range requests. */
+   List<Group> plan(Collection<String> wanted) throws IOException {
+      Map<String, Entry> directory = this.readDirectory();
       List<Entry> entries = new ArrayList<>();
       for (String name : wanted) {
          Entry entry = directory.get(name);
@@ -62,29 +64,80 @@ final class RemoteZip {
          }
       }
       entries.sort(Comparator.comparingLong(Entry::offset));
+      List<Group> groups = new ArrayList<>();
       int start = 0;
       while (start < entries.size()) {
          int end = start + 1;
          long from = entries.get(start).offset();
-         long to = from + entries.get(start).compressedSize() + LOCAL_HEADER_SLACK;
-         while (end < entries.size() && entries.get(end).offset() - to < MERGE_GAP) {
-            to = Math.max(to, entries.get(end).offset() + entries.get(end).compressedSize() + LOCAL_HEADER_SLACK);
+         long to = end(entries.get(start));
+         while (end < entries.size() && entries.get(end).offset() - to < MERGE_GAP && end(entries.get(end)) - from <= MAX_GROUP) {
+            to = Math.max(to, end(entries.get(end)));
             end++;
          }
-         ByteBuffer block = ByteBuffer.wrap(this.range(from, to - 1)).order(ByteOrder.LITTLE_ENDIAN);
-         for (Entry entry : entries.subList(start, end)) {
-            sink.accept(entry.name(), extract(block, (int)(entry.offset() - from), entry));
-         }
+         groups.add(new Group(List.copyOf(entries.subList(start, end)), from, to));
          start = end;
+      }
+      return groups;
+   }
+
+   /**
+    * Fetches one group and calls {@code sink} with each entry's uncompressed bytes. An entry that cannot be read
+    * goes to {@code failed} without affecting the others; a failed request fails the whole group.
+    */
+   void read(Group group, BiConsumer<String, byte[]> sink, BiConsumer<String, IOException> failed) throws IOException {
+      ByteBuffer block = ByteBuffer.wrap(this.http.get(this.uri, "bytes=" + group.from() + "-" + (group.to() - 1), 206)).order(ByteOrder.LITTLE_ENDIAN);
+      for (Entry entry : group.entries()) {
+         byte[] data;
+         try {
+            data = extract(block, (int)(entry.offset() - group.from()), entry);
+         } catch (IOException | RuntimeException e) {
+            try {
+               // Most likely a local header longer than the slack allowed for: fetch this entry on its own.
+               data = this.readAlone(entry);
+            } catch (IOException e2) {
+               e2.addSuppressed(e);
+               failed.accept(entry.name(), e2);
+               continue;
+            }
+         }
+         sink.accept(entry.name(), data);
       }
    }
 
-   private Map<String, Entry> readDirectory() throws IOException, InterruptedException {
-      HttpResponse<byte[]> tailResponse = this.send("bytes=-" + (22 + 65535));
-      if (tailResponse.statusCode() != 206) {
-         throw new RangeUnsupportedException();
+   void readWhole(Collection<String> wanted, BiConsumer<String, byte[]> sink) throws IOException {
+      try (ZipInputStream zip = new ZipInputStream(this.http.stream(this.uri))) {
+         ZipEntry entry;
+         while ((entry = zip.getNextEntry()) != null) {
+            if (wanted.contains(entry.getName())) {
+               ByteArrayOutputStream out = new ByteArrayOutputStream();
+               zip.transferTo(out);
+               sink.accept(entry.getName(), out.toByteArray());
+            }
+         }
       }
-      long length = Long.parseLong(tailResponse.headers().firstValue("Content-Range").orElseThrow().replaceAll(".*/", ""));
+   }
+
+   private byte[] readAlone(Entry entry) throws IOException {
+      ByteBuffer header = ByteBuffer.wrap(this.http.get(this.uri, "bytes=" + entry.offset() + "-" + (entry.offset() + 29), 206)).order(ByteOrder.LITTLE_ENDIAN);
+      if (header.limit() < 30 || header.getInt(0) != 0x04034b50) {
+         throw new IOException("Bad local header for " + entry.name());
+      }
+      long length = 30L + Short.toUnsignedInt(header.getShort(26)) + Short.toUnsignedInt(header.getShort(28)) + entry.compressedSize();
+      ByteBuffer block = ByteBuffer.wrap(this.http.get(this.uri, "bytes=" + entry.offset() + "-" + (entry.offset() + length - 1), 206))
+         .order(ByteOrder.LITTLE_ENDIAN);
+      return extract(block, 0, entry);
+   }
+
+   private Map<String, Entry> readDirectory() throws IOException {
+      Http.Response tailResponse = this.http.getRange(this.uri, "bytes=-" + (22 + 65535));
+      if (tailResponse.status() != 206) {
+         throw new RangeUnsupportedException(this.uri);
+      }
+      String contentRange = tailResponse.contentRange();
+      if (contentRange == null || !contentRange.contains("/")) {
+         throw new IOException("No Content-Range for " + this.uri);
+      }
+      long length = Long.parseLong(contentRange.substring(contentRange.lastIndexOf('/') + 1).trim());
       byte[] tail = tailResponse.body();
       ByteBuffer buf = ByteBuffer.wrap(tail).order(ByteOrder.LITTLE_ENDIAN);
       int eocd = tail.length - 22;
@@ -99,7 +152,7 @@ final class RemoteZip {
       if (dirOffset == 0xFFFFFFFFL || dirOffset + dirSize > length) {
          throw new IOException("Unsupported zip layout in " + this.uri);
       }
-      ByteBuffer dir = ByteBuffer.wrap(this.range(dirOffset, dirOffset + dirSize - 1)).order(ByteOrder.LITTLE_ENDIAN);
+      ByteBuffer dir = ByteBuffer.wrap(this.http.get(this.uri, "bytes=" + dirOffset + "-" + (dirOffset + dirSize - 1), 206)).order(ByteOrder.LITTLE_ENDIAN);
       Map<String, Entry> entries = new HashMap<>();
       int pos = 0;
       while (pos + 46 <= dir.limit() && dir.getInt(pos) == 0x02014b50) {
@@ -117,8 +170,12 @@ final class RemoteZip {
       return entries;
    }
 
+   private static long end(Entry entry) {
+      return entry.offset() + entry.compressedSize() + LOCAL_HEADER_SLACK;
+   }
+
    private static byte[] extract(ByteBuffer block, int pos, Entry entry) throws IOException {
-      if (block.getInt(pos) != 0x04034b50) {
+      if (pos + 30 > block.limit() || block.getInt(pos) != 0x04034b50) {
          throw new IOException("Bad local header for " + entry.name());
       }
       int dataStart = pos + 30 + Short.toUnsignedInt(block.getShort(pos + 26)) + Short.toUnsignedInt(block.getShort(pos + 28));
@@ -152,45 +209,12 @@ final class RemoteZip {
       }
    }
 
-   private void readWhole(Collection<String> wanted, BiConsumer<String, byte[]> sink) throws IOException, InterruptedException {
-      HttpResponse<InputStream> response = this.http.send(HttpRequest.newBuilder(this.uri).timeout(Duration.ofMinutes(5)).GET().build(), HttpResponse.BodyHandlers.ofInputStream());
-      if (response.statusCode() != 200) {
-         response.body().close();
-         throw new IOException("HTTP " + response.statusCode() + " for " + this.uri);
-      }
-      try (ZipInputStream zip = new ZipInputStream(response.body())) {
-         ZipEntry entry;
-         while ((entry = zip.getNextEntry()) != null) {
-            if (wanted.contains(entry.getName())) {
-               ByteArrayOutputStream out = new ByteArrayOutputStream();
-               zip.transferTo(out);
-               sink.accept(entry.getName(), out.toByteArray());
-            }
-         }
-      }
-   }
-
-   private byte[] range(long from, long to) throws IOException, InterruptedException {
-      HttpResponse<byte[]> response = this.send("bytes=" + from + "-" + to);
-      if (response.statusCode() != 206) {
-         throw new IOException("HTTP " + response.statusCode() + " for a range of " + this.uri);
-      }
-      return response.body();
-   }
-
-   private HttpResponse<byte[]> send(String range) throws IOException, InterruptedException {
-      return this.http.send(HttpRequest.newBuilder(this.uri).timeout(Duration.ofMinutes(1)).header("Range", range).GET().build(), HttpResponse.BodyHandlers.ofByteArray());
-   }
-
    private static byte[] slice(ByteBuffer buf, int pos, int length) throws IOException {
-      if (pos < 0 || pos + length > buf.limit()) {
+      if (pos < 0 || length < 0 || pos + length > buf.limit()) {
          throw new IOException("Zip entry runs past the downloaded range");
       }
       byte[] out = new byte[length];
       buf.get(pos, out);
       return out;
-   }
-
-   private static final class RangeUnsupportedException extends IOException {
    }
 }

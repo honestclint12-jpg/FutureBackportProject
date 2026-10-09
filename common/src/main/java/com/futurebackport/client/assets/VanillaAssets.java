@@ -8,13 +8,7 @@ import com.mojang.blaze3d.platform.NativeImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.ProxySelector;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
@@ -22,8 +16,8 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HexFormat;
 import java.util.LinkedHashMap;
@@ -33,9 +27,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
@@ -136,11 +132,11 @@ public final class VanillaAssets {
       }
    }
 
-   /** Waits until the first screen is up: a toast added under the loading screen would time out before anyone sees it. */
+   /** Waits until the loading screen is gone: a toast added under it would time out before anyone sees it. */
    private static void showFailureToast() {
       Minecraft minecraft = Minecraft.getInstance();
       try {
-         for (int i = 0; i < 1200 && (minecraft.getOverlay() != null || minecraft.screen == null); i++) {
+         for (int i = 0; i < 1200 && (minecraft.getOverlay() != null || minecraft.screen == null && minecraft.level == null); i++) {
             Thread.sleep(250L);
          }
       } catch (InterruptedException e) {
@@ -156,32 +152,36 @@ public final class VanillaAssets {
    }
 
    private void download() throws Exception {
-      Path marker = this.root.resolve(COMPLETE_MARKER);
-      if (Files.exists(marker) && Files.readString(marker).trim().equals(this.manifestHash)
-         && this.files.keySet().stream().allMatch(path -> Files.isRegularFile(this.root.resolve(path)))) {
-         return;
-      }
       this.deleteStaleFiles();
+      // Plain files are checked against their SHA-1 on every start. Derived files have no fixed hash, so they are
+      // trusted once a complete download for this exact manifest has been recorded.
+      Path marker = this.root.resolve(COMPLETE_MARKER);
+      boolean complete = Files.exists(marker) && Files.readString(marker).trim().equals(this.manifestHash);
       Map<String, JsonObject> missing = new LinkedHashMap<>();
       for (Map.Entry<String, JsonObject> file : this.files.entrySet()) {
          Path target = this.root.resolve(file.getKey());
          JsonObject entry = file.getValue();
-         boolean derived = entry.has("overlay") || entry.has("patch");
-         if (derived || !Files.isRegularFile(target) || !sha1(Files.readAllBytes(target)).equals(expectedSha1(entry))) {
+         boolean ok = Files.isRegularFile(target) && (isDerived(entry) ? complete : sha1(Files.readAllBytes(target)).equals(expectedSha1(entry)));
+         if (!ok) {
             missing.put(file.getKey(), entry);
          }
       }
-      if (!missing.isEmpty()) {
-         FutureBackport.LOGGER.info("Downloading {} Minecraft texture and sound files from Mojang for Future Backport (first start only)", missing.size());
-         long start = System.nanoTime();
-         this.downloadAll(missing);
-         FutureBackport.LOGGER.info("Downloaded Future Backport's Minecraft assets in {} ms", (System.nanoTime() - start) / 1_000_000L);
+      if (missing.isEmpty()) {
+         if (!complete) {
+            Files.writeString(marker, this.manifestHash);
+         }
+         return;
       }
+      Files.deleteIfExists(marker);
+      FutureBackport.LOGGER.info("Downloading {} Minecraft texture and sound files from Mojang for Future Backport", missing.size());
+      long start = System.nanoTime();
+      this.downloadAll(missing);
       Files.writeString(marker, this.manifestHash);
+      FutureBackport.LOGGER.info("Downloaded Future Backport's Minecraft assets in {} ms", (System.nanoTime() - start) / 1_000_000L);
    }
 
    private void downloadAll(Map<String, JsonObject> missing) throws Exception {
-      HttpClient http = httpClient();
+      Http http = new Http(Minecraft.getInstance().getProxy());
       // Jar entries, including the images that derived files are built from, grouped by jar.
       Map<String, Set<String>> wantedByJar = new HashMap<>();
       for (JsonObject entry : missing.values()) {
@@ -189,44 +189,60 @@ public final class VanillaAssets {
             wantedByJar.computeIfAbsent(source.get("jar").getAsString(), jar -> new LinkedHashSet<>()).add(source.get("path").getAsString());
          }
       }
+      Map<String, Map<String, byte[]>> jarFiles = new ConcurrentHashMap<>();
+      List<Exception> failures = Collections.synchronizedList(new ArrayList<>());
+      // The first failed request stops all the others, so a dead connection fails within one timeout.
+      AtomicBoolean abort = new AtomicBoolean();
       ExecutorService executor = Executors.newFixedThreadPool(PARALLEL_DOWNLOADS, runnable -> {
          Thread thread = new Thread(runnable, "Future Backport asset download worker");
          thread.setDaemon(true);
          return thread;
       });
       try {
-         List<Future<?>> tasks = new ArrayList<>();
-         Map<String, Map<String, byte[]>> jarFiles = new ConcurrentHashMap<>();
+         // Step 1: read each jar's directory to plan its range requests.
+         Map<String, RemoteZip> zips = new HashMap<>();
+         Map<String, Future<List<RemoteZip.Group>>> plans = new HashMap<>();
          for (Map.Entry<String, Set<String>> jar : wantedByJar.entrySet()) {
             URI uri = this.jars.get(jar.getKey());
             if (uri == null) {
                throw new IOException("The asset list names an unknown Minecraft jar " + jar.getKey());
             }
-            Map<String, byte[]> out = new ConcurrentHashMap<>();
-            jarFiles.put(jar.getKey(), out);
-            tasks.add(executor.submit(() -> {
-               new RemoteZip(http, uri).read(jar.getValue(), out::put);
-               return null;
-            }));
+            RemoteZip zip = new RemoteZip(http, uri);
+            zips.put(jar.getKey(), zip);
+            jarFiles.put(jar.getKey(), new ConcurrentHashMap<>());
+            plans.put(jar.getKey(), executor.submit(() -> zip.plan(jar.getValue())));
          }
+         // Step 2: every range request and every sound file runs as its own task.
+         List<Future<?>> tasks = new ArrayList<>();
          for (Map.Entry<String, JsonObject> file : missing.entrySet()) {
             JsonObject entry = file.getValue();
             if (entry.has("object")) {
                String hash = entry.get("object").getAsString();
-               tasks.add(executor.submit(() -> {
-                  this.write(file.getKey(), verify(fetchObject(http, hash), hash, file.getKey()));
-                  return null;
-               }));
+               URI uri = URI.create(OBJECTS_URL + hash.substring(0, 2) + "/" + hash);
+               tasks.add(submit(executor, abort, failures, () -> this.write(file.getKey(), verify(http.get(uri, null, 200), hash, file.getKey()))));
             }
          }
-         List<Exception> failures = new ArrayList<>();
-         for (Future<?> task : tasks) {
+         for (Map.Entry<String, Future<List<RemoteZip.Group>>> plan : plans.entrySet()) {
+            String jar = plan.getKey();
+            RemoteZip zip = zips.get(jar);
+            Map<String, byte[]> out = jarFiles.get(jar);
             try {
-               task.get();
-            } catch (java.util.concurrent.ExecutionException e) {
-               failures.add(e.getCause() instanceof Exception cause ? cause : e);
+               for (RemoteZip.Group group : plan.getValue().get()) {
+                  tasks.add(submit(executor, abort, failures, () -> zip.read(group, out::put, (name, e) -> failures.add(e))));
+               }
+            } catch (ExecutionException e) {
+               if (e.getCause() instanceof RemoteZip.RangeUnsupportedException) {
+                  tasks.add(submit(executor, abort, failures, () -> zip.readWhole(wantedByJar.get(jar), out::put)));
+               } else {
+                  failures.add(e.getCause() instanceof Exception cause ? cause : e);
+                  abort.set(true);
+               }
             }
          }
+         for (Future<?> task : tasks) {
+            task.get();
+         }
+         // Step 3: write the jar files that arrived, building the derived ones.
          for (Map.Entry<String, JsonObject> file : missing.entrySet()) {
             JsonObject entry = file.getValue();
             if (!entry.has("jar")) {
@@ -234,7 +250,7 @@ public final class VanillaAssets {
             }
             try {
                byte[] base = sourceBytes(jarFiles, entry, file.getKey());
-               if (entry.has("overlay") || entry.has("patch")) {
+               if (isDerived(entry)) {
                   this.writeDerived(file.getKey(), base, entry, jarFiles);
                } else {
                   this.write(file.getKey(), base);
@@ -251,6 +267,24 @@ public final class VanillaAssets {
       } finally {
          executor.shutdownNow();
       }
+   }
+
+   private interface IoTask {
+      void run() throws IOException;
+   }
+
+   private static Future<?> submit(ExecutorService executor, AtomicBoolean abort, List<Exception> failures, IoTask task) {
+      return executor.submit(() -> {
+         if (abort.get()) {
+            return;
+         }
+         try {
+            task.run();
+         } catch (IOException | RuntimeException e) {
+            failures.add(e);
+            abort.set(true);
+         }
+      });
    }
 
    private void writeDerived(String path, byte[] base, JsonObject entry, Map<String, Map<String, byte[]>> jarFiles) throws IOException {
@@ -320,18 +354,12 @@ public final class VanillaAssets {
       return sources;
    }
 
-   @Nullable
-   private static String expectedSha1(JsonObject entry) {
-      return entry.has("object") ? entry.get("object").getAsString() : entry.get("sha1").getAsString();
+   private static boolean isDerived(JsonObject entry) {
+      return entry.has("overlay") || entry.has("patch");
    }
 
-   private static byte[] fetchObject(HttpClient http, String hash) throws IOException, InterruptedException {
-      URI uri = URI.create(OBJECTS_URL + hash.substring(0, 2) + "/" + hash);
-      HttpResponse<byte[]> response = http.send(HttpRequest.newBuilder(uri).timeout(Duration.ofMinutes(1)).GET().build(), HttpResponse.BodyHandlers.ofByteArray());
-      if (response.statusCode() != 200) {
-         throw new IOException("HTTP " + response.statusCode() + " for " + uri);
-      }
-      return response.body();
+   private static String expectedSha1(JsonObject entry) {
+      return entry.has("object") ? entry.get("object").getAsString() : entry.get("sha1").getAsString();
    }
 
    private static byte[] verify(byte[] bytes, String sha1, String forPath) throws IOException {
@@ -357,7 +385,7 @@ public final class VanillaAssets {
       }
    }
 
-   /** Removes files left behind by older versions of the mod, so they cannot shadow anything. */
+   /** Removes files that are not in the manifest (left by older versions of the mod, or added by hand). */
    private void deleteStaleFiles() throws IOException {
       Path assets = this.root.resolve("assets");
       if (!Files.isDirectory(assets)) {
@@ -370,15 +398,6 @@ public final class VanillaAssets {
             }
          }
       }
-   }
-
-   private static HttpClient httpClient() {
-      HttpClient.Builder builder = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(15)).followRedirects(HttpClient.Redirect.NORMAL);
-      Proxy proxy = Minecraft.getInstance().getProxy();
-      if (proxy != null && proxy.type() == Proxy.Type.HTTP && proxy.address() instanceof InetSocketAddress address) {
-         builder.proxy(ProxySelector.of(address));
-      }
-      return builder.build();
    }
 
    private static String sha1(byte[] bytes) {

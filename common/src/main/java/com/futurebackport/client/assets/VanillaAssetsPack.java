@@ -85,7 +85,11 @@ public final class VanillaAssetsPack implements PackResources {
    @Override
    public void listResources(PackType type, String namespace, String path, PackResources.ResourceOutput output) {
       if (type == PackType.CLIENT_RESOURCES && this.assets.containsUnder("assets/" + namespace + "/" + path)) {
-         this.files().listResources(type, namespace, path, output);
+         this.files().listResources(type, namespace, path, (location, resource) -> {
+            if (this.assets.contains("assets/" + location.getNamespace() + "/" + location.getPath())) {
+               output.accept(location, resource);
+            }
+         });
       }
    }
 
