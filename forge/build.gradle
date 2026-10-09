@@ -8,6 +8,8 @@ legacyForge {
     // mods built against it run on regular Forge 1.20.1 (47.1+).
     enable {
         neoForgeVersion = forge_version
+        // See common/build.gradle: the no-recompile jar used on CI breaks anonymous subclasses.
+        disableRecompilation = false
     }
     def at = project(':common').file('src/main/resources/META-INF/accesstransformer.cfg')
     if (at.exists()) {

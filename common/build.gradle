@@ -4,7 +4,12 @@ plugins {
 }
 
 legacyForge {
-    mcpVersion = minecraft_version
+    enable {
+        mcpVersion = minecraft_version
+        // ModDevGradle skips recompiling Minecraft when the CI variable is set. The jar it builds that way has every
+        // constructor parameter named "o", which javac rejects in anonymous subclasses, so always recompile.
+        disableRecompilation = false
+    }
     // Automatically enable AccessTransformers if the file exists
     def at = file('src/main/resources/META-INF/accesstransformer.cfg')
     if (at.exists()) {
