@@ -287,7 +287,7 @@ public class TransportItemsGoal extends Goal {
             return ItemStack.EMPTY;
          }
 
-         if (ItemStack.isSameItemSameComponents(slot, stack) && slot.getCount() < slot.getMaxStackSize()) {
+         if (ItemStack.isSameItemSameTags(slot, stack) && slot.getCount() < slot.getMaxStackSize()) {
             int add = Math.min(slot.getMaxStackSize() - slot.getCount(), stack.getCount());
             slot.grow(add);
             stack.shrink(add);

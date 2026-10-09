@@ -1,5 +1,7 @@
 package com.futurebackport;
 
+import com.futurebackport.item.VariantEggItem;
+
 import com.futurebackport.platform.registry.BlockEntry;
 
 import com.futurebackport.entity.AgeLock;
@@ -7,12 +9,15 @@ import com.futurebackport.entity.FarmAnimalVariant;
 import com.futurebackport.entity.SoundVariants;
 import com.futurebackport.registry.ModBlockEntities;
 import com.futurebackport.registry.ModBlocks;
+import com.futurebackport.registry.ModDataMaps;
 import com.futurebackport.registry.ModCreativeTabs;
 import com.futurebackport.registry.ModEffects;
+import com.futurebackport.registry.ModEnchantments;
 import com.futurebackport.registry.ModEntities;
 import com.futurebackport.registry.ModItems;
 import com.futurebackport.registry.ModMaterials;
 import com.futurebackport.registry.ModMenus;
+import com.futurebackport.registry.ModPaintings;
 import com.futurebackport.registry.ModParticles;
 import com.futurebackport.registry.ModSounds;
 import com.futurebackport.registry.ModWorldgen;
@@ -47,8 +52,8 @@ public class FutureBackport {
     */
    public static void bootstrapRegistries() {
       Object[] registries = {
-         ModSounds.SOUNDS, ModParticles.PARTICLES, ModEffects.EFFECTS, ModMaterials.ARMOR_MATERIALS,
-         ModBlocks.BLOCKS, ModEntities.ENTITIES, ModItems.ITEMS, ModBlockEntities.BLOCK_ENTITIES,
+         ModSounds.SOUNDS, ModParticles.PARTICLES, ModEffects.EFFECTS, 
+         ModBlocks.BLOCKS, ModEntities.ENTITIES, ModItems.ITEMS, ModEnchantments.ENCHANTMENTS, ModPaintings.PAINTINGS, ModBlockEntities.BLOCK_ENTITIES,
          ModWorldgen.FEATURES, ModWorldgen.TREE_DECORATORS, ModMenus.MENUS, ModCreativeTabs.CREATIVE_MODE_TABS,
          FarmAnimalVariant.ATTACHMENT, AgeLock.LOCKED, SoundVariants.ATTACHMENT
       };
@@ -56,7 +61,7 @@ public class FutureBackport {
    }
 
    public static ResourceLocation id(String path) {
-      return ResourceLocation.fromNamespaceAndPath("futurebackport", path);
+      return new ResourceLocation("futurebackport", path);
    }
 
    /** Common setup, on the main thread: hook this mod's blocks into vanilla systems. */
@@ -88,8 +93,9 @@ public class FutureBackport {
                ModBlocks.FIREFLY_BUSH,
                ModBlocks.BUSH
             );
-            DispenserBlock.registerProjectileBehavior((ItemLike)ModItems.BLUE_EGG.get());
-            DispenserBlock.registerProjectileBehavior((ItemLike)ModItems.BROWN_EGG.get());
+            DispenserBlock.registerBehavior(ModItems.BLUE_EGG.get(), VariantEggItem.DISPENSE_BEHAVIOR);
+            DispenserBlock.registerBehavior(ModItems.BROWN_EGG.get(), VariantEggItem.DISPENSE_BEHAVIOR);
+            ModDataMaps.registerCompostables();
             Services.PLATFORM.addPottedPlant(ModBlocks.PALE_OAK_SAPLING.getId(), ModBlocks.POTTED_PALE_OAK_SAPLING);
             Services.PLATFORM.addPottedPlant(ModBlocks.OPEN_EYEBLOSSOM.getId(), ModBlocks.POTTED_OPEN_EYEBLOSSOM);
             Services.PLATFORM.addPottedPlant(ModBlocks.CLOSED_EYEBLOSSOM.getId(), ModBlocks.POTTED_CLOSED_EYEBLOSSOM);

@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "futurebackport:resin_bricks"
+  },
+  "result": "futurebackport:resin_brick_wall",
+  "count": 1
+}

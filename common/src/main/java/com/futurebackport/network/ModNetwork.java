@@ -9,7 +9,7 @@ public final class ModNetwork {
     }
 
     public static void register() {
-        Services.NETWORK.playToClient(FarmAnimalVariantPayload.TYPE, FarmAnimalVariantPayload.STREAM_CODEC, FarmAnimalVariantPayload::handle);
-        Services.NETWORK.playToServer(SpearJabPayload.TYPE, SpearJabPayload.STREAM_CODEC, SpearJabPayload::handle);
+        Services.NETWORK.playToClient(FarmAnimalVariantPayload.TYPE, FarmAnimalVariantPayload::handle);
+        Services.NETWORK.playToServer(SpearJabPayload.TYPE, SpearJabPayload::handle);
     }
 }

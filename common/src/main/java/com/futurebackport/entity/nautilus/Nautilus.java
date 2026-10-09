@@ -1,5 +1,6 @@
 package com.futurebackport.entity.nautilus;
 
+import net.minecraft.world.item.crafting.Ingredient;
 import com.futurebackport.registry.ModEntities;
 import com.futurebackport.registry.ModSounds;
 import com.futurebackport.registry.ModTags;
@@ -34,7 +35,7 @@ public class Nautilus extends AbstractNautilus {
          }
       });
       this.goalSelector.addGoal(1, new BreedGoal(this, 0.4));
-      this.goalSelector.addGoal(2, new TemptGoal(this, 1.3, s -> s.is(ModTags.NAUTILUS_FOOD), false));
+      this.goalSelector.addGoal(2, new TemptGoal(this, 1.3, Ingredient.of(ModTags.NAUTILUS_FOOD), false));
       this.goalSelector.addGoal(3, new NautilusGoals.Charge(this, 0.6F, ModSounds.NAUTILUS_DASH));
       this.goalSelector.addGoal(4, new RandomSwimmingGoal(this, 1.0, 10));
       this.goalSelector.addGoal(5, new LookAtPlayerGoal(this, Player.class, 6.0F));
@@ -51,14 +52,10 @@ public class Nautilus extends AbstractNautilus {
       Nautilus baby = (Nautilus)((EntityType)ModEntities.NAUTILUS.get()).create(level);
       if (baby != null && this.isTame() && this.getOwnerUUID() != null) {
          baby.setOwnerUUID(this.getOwnerUUID());
-         baby.setTame(true, true);
+         baby.setTame(true);
       }
 
       return baby;
-   }
-
-   public EntityDimensions getDefaultDimensions(Pose pose) {
-      return this.isBaby() ? super.getDefaultDimensions(pose).scale(0.5F) : super.getDefaultDimensions(pose);
    }
 
    protected SoundEvent getAmbientSound() {
@@ -91,7 +88,7 @@ public class Nautilus extends AbstractNautilus {
 
    @Override
    protected void playEatingSound() {
-      this.makeSound((SoundEvent)(this.isBaby() ? ModSounds.BABY_NAUTILUS_EAT : ModSounds.NAUTILUS_EAT).get());
+      this.playSound((SoundEvent)(this.isBaby() ? ModSounds.BABY_NAUTILUS_EAT : ModSounds.NAUTILUS_EAT).get(), this.getSoundVolume(), this.getVoicePitch());
    }
 
    protected SoundEvent getSwimSound() {
@@ -118,7 +115,7 @@ public class Nautilus extends AbstractNautilus {
       }
    }
 
-   public boolean canBeLeashed() {
-      return !this.isAggravated() && super.canBeLeashed();
+   public boolean canBeLeashed(Player player) {
+      return !this.isAggravated() && super.canBeLeashed(player);
    }
 }

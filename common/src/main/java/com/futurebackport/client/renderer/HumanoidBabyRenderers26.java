@@ -117,8 +117,7 @@ public final class HumanoidBabyRenderers26 {
                                  netHeadYaw,
                                  headPitch,
                                  partialTick,
-                                 -1
-                              );
+                                 1.0F, 1.0F, 1.0F);
                            }
                         }
                      }
@@ -251,7 +250,7 @@ public final class HumanoidBabyRenderers26 {
                               ResourceLocation type = BuiltInRegistries.VILLAGER_TYPE.getKey(zombie.getVillagerData().getType());
                               ResourceLocation texture = HumanoidBabyRenderers26.tex("zombie_villager/baby/" + type.getPath());
                               if (Minecraft.getInstance().getResourceManager().getResource(texture).isPresent()) {
-                                 renderColoredCutoutModel(this.getParentModel(), texture, poseStack, buffers, light, zombie, -1);
+                                 renderColoredCutoutModel(this.getParentModel(), texture, poseStack, buffers, light, zombie, 1.0F, 1.0F, 1.0F);
                               }
                            }
                         }

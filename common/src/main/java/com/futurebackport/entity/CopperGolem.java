@@ -1,5 +1,8 @@
 package com.futurebackport.entity;
 
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.Pose;
+import com.futurebackport.util.Backports;
 import com.futurebackport.block.CopperGolemStatueBlock;
 import com.futurebackport.block.entity.CopperGolemStatueBlockEntity;
 import com.futurebackport.registry.ModBlocks;
@@ -45,7 +48,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.WeatheringCopper.WeatherState;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
@@ -70,21 +73,26 @@ public class CopperGolem extends AbstractGolem {
 
    public CopperGolem(EntityType<? extends AbstractGolem> type, Level level) {
       super(type, level);
+      this.setMaxUpStep(1.0F);
       if (this.getNavigation() instanceof GroundPathNavigation nav) {
          nav.setCanOpenDoors(true);
       }
 
       this.setPersistenceRequired();
-      this.setPathfindingMalus(PathType.DANGER_FIRE, 16.0F);
-      this.setPathfindingMalus(PathType.DANGER_OTHER, 16.0F);
-      this.setPathfindingMalus(PathType.DAMAGE_FIRE, -1.0F);
+      this.setPathfindingMalus(BlockPathTypes.DANGER_FIRE, 16.0F);
+      this.setPathfindingMalus(BlockPathTypes.DANGER_OTHER, 16.0F);
+      this.setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, -1.0F);
       this.transportCooldown = this.getRandom().nextInt(60, 100);
+   }
+
+   /** Eye height as a fraction of the (age-scaled) height; 1.20.1 has no EntityType eyeHeight. */
+   protected float getStandingEyeHeight(Pose pose, EntityDimensions dimensions) {
+      return dimensions.height * (0.8125F / 0.98F);
    }
 
    public static Builder createAttributes() {
       return Mob.createMobAttributes()
          .add(Attributes.MOVEMENT_SPEED, 0.2F)
-         .add(Attributes.STEP_HEIGHT, 1.0)
          .add(Attributes.MAX_HEALTH, 12.0)
          .add(Attributes.FOLLOW_RANGE, 48.0);
    }
@@ -102,10 +110,10 @@ public class CopperGolem extends AbstractGolem {
       this.goalSelector.addGoal(5, new RandomLookAroundGoal(this));
    }
 
-   protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder builder) {
-      super.defineSynchedData(builder);
-      builder.define(DATA_WEATHER_STATE, WeatherState.UNAFFECTED.ordinal());
-      builder.define(DATA_STATE, CopperGolem.State.IDLE.ordinal());
+   protected void defineSynchedData() {
+      super.defineSynchedData();
+      this.entityData.define(DATA_WEATHER_STATE, WeatherState.UNAFFECTED.ordinal());
+      this.entityData.define(DATA_STATE, CopperGolem.State.IDLE.ordinal());
    }
 
    public CopperGolem.State getState() {
@@ -127,7 +135,7 @@ public class CopperGolem extends AbstractGolem {
    public void addAdditionalSaveData(CompoundTag tag) {
       super.addAdditionalSaveData(tag);
       tag.putLong("next_weather_age", this.nextWeatheringTick);
-      tag.putString("weather_state", this.getWeatherState().getSerializedName());
+      tag.putString("weather_state", this.getWeatherState().name().toLowerCase(java.util.Locale.ROOT));
    }
 
    public void readAdditionalSaveData(CompoundTag tag) {
@@ -135,7 +143,7 @@ public class CopperGolem extends AbstractGolem {
       this.nextWeatheringTick = tag.contains("next_weather_age") ? tag.getLong("next_weather_age") : -1L;
 
       for (WeatherState state : WeatherState.values()) {
-         if (state.getSerializedName().equals(tag.getString("weather_state"))) {
+         if (state.name().toLowerCase(java.util.Locale.ROOT).equals(tag.getString("weather_state"))) {
             this.setWeatherState(state);
          }
       }
@@ -173,20 +181,20 @@ public class CopperGolem extends AbstractGolem {
          } else if (stack.is(Items.HONEYCOMB) && this.nextWeatheringTick != -2L) {
             level.levelEvent(null, 3003, this.blockPosition(), 0);
             this.nextWeatheringTick = -2L;
-            stack.consume(1, player);
+            Backports.consume(stack, 1, player);
             return InteractionResult.SUCCESS;
          } else if (stack.is(ItemTags.AXES) && this.nextWeatheringTick == -2L) {
             level.playSound(null, this, SoundEvents.AXE_SCRAPE, this.getSoundSource(), 1.0F, 1.0F);
             level.levelEvent(null, 3004, this.blockPosition(), 0);
             this.nextWeatheringTick = -1L;
-            stack.hurtAndBreak(1, player, CopperGolem.LivingEntityHand.slot(hand));
+            Backports.hurtAndBreak(stack, 1, player, CopperGolem.LivingEntityHand.slot(hand));
             return InteractionResult.SUCCESS;
          } else if (stack.is(ItemTags.AXES) && this.getWeatherState() != WeatherState.UNAFFECTED) {
             level.playSound(null, this, SoundEvents.AXE_SCRAPE, this.getSoundSource(), 1.0F, 1.0F);
             level.levelEvent(null, 3005, this.blockPosition(), 0);
             this.nextWeatheringTick = -1L;
             this.setWeatherState(WeatherState.values()[this.getWeatherState().ordinal() - 1]);
-            stack.hurtAndBreak(1, player, CopperGolem.LivingEntityHand.slot(hand));
+            Backports.hurtAndBreak(stack, 1, player, CopperGolem.LivingEntityHand.slot(hand));
             return InteractionResult.SUCCESS;
          } else {
             return super.mobInteract(player, hand);
@@ -298,9 +306,11 @@ public class CopperGolem extends AbstractGolem {
       this.playSound((SoundEvent)ModSounds.COPPER_GOLEM_SPAWN.get());
    }
 
-   public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData groupData) {
+   public SpawnGroupData finalizeSpawn(
+      ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData groupData, @Nullable CompoundTag tag
+   ) {
       this.playSound((SoundEvent)ModSounds.COPPER_GOLEM_SPAWN.get());
-      return super.finalizeSpawn(level, difficulty, spawnType, groupData);
+      return super.finalizeSpawn(level, difficulty, spawnType, groupData, tag);
    }
 
    private SoundEvent getSpinHeadSound() {

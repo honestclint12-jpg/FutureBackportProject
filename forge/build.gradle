@@ -1,0 +1,68 @@
+plugins {
+    id 'multiloader-loader'
+    id 'net.neoforged.moddev.legacyforge'
+}
+
+legacyForge {
+    // NeoForged's build of Forge for 1.20.1 (maven.minecraftforge.net isn't reachable from every build machine);
+    // mods built against it run on regular Forge 1.20.1 (47.1+).
+    enable {
+        neoForgeVersion = forge_version
+    }
+    def at = project(':common').file('src/main/resources/META-INF/accesstransformer.cfg')
+    if (at.exists()) {
+        accessTransformers.from(at.absolutePath)
+    }
+    runs {
+        configureEach {
+            systemProperty('forge.enabledGameTestNamespaces', mod_id)
+            ideName = "Forge ${it.name.capitalize()} (${project.path})"
+        }
+        client {
+            client()
+        }
+        server {
+            server()
+        }
+        // Runs every game test in the mod on a headless server and exits non-zero if any fail. Its own directory, so
+        // it never loads a world left behind by runServer.
+        gameTestServer {
+            type = 'gameTestServer'
+            gameDirectory = project.file('run-gametest')
+        }
+    }
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+mixin {
+    add sourceSets.main, "${mod_id}.refmap.json"
+    config "${mod_id}.mixins.json"
+}
+
+dependencies {
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+}
+
+jar {
+    manifest.attributes([
+            'MixinConfigs': "${mod_id}.mixins.json"
+    ])
+}
+
+// Forge 1.20.1's game test server is the dedicated server, which would generate (and keep) normal terrain. Start every
+// run from a fresh superflat world, like vanilla's GameTestServer, so tests never sit under hills or oceans.
+tasks.named('runGameTestServer') {
+    doFirst {
+        def dir = project.file('run-gametest')
+        project.delete(new File(dir, 'world'))
+        dir.mkdirs()
+        new File(dir, 'server.properties').text = 'level-type=minecraft\\:flat\nlevel-name=world\ngenerate-structures=false\nonline-mode=false\n'
+        new File(dir, 'eula.txt').text = 'eula=true\n'
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }

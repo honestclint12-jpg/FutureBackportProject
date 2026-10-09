@@ -3,7 +3,7 @@ package com.futurebackport.platform.services;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -13,6 +13,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SpawnEggItem;
@@ -54,6 +55,9 @@ public interface PlatformHelper {
     /** A biome's downfall after other mods' biome changes. */
     float getBiomeDownfall(Biome biome);
 
+    /** A music disc. Forge resolves the sound lazily; vanilla's RecordItem needs it at construction (sounds register before items on Fabric). */
+    Item musicDisc(int comparatorOutput, Supplier<SoundEvent> sound, Item.Properties properties, int lengthInSeconds);
+
     /** A creative tab builder; loaders lay tabs out differently. */
     CreativeModeTab.Builder creativeTabBuilder();
 
@@ -61,10 +65,10 @@ public interface PlatformHelper {
     <M extends AbstractContainerMenu> MenuType<M> createMenuType(MenuFactory<M> factory);
 
     /** Opens a menu and sends extra data to the client's {@link MenuFactory}. */
-    void openMenu(ServerPlayer player, MenuProvider provider, Consumer<RegistryFriendlyByteBuf> extraData);
+    void openMenu(ServerPlayer player, MenuProvider provider, Consumer<FriendlyByteBuf> extraData);
 
     @FunctionalInterface
     interface MenuFactory<M extends AbstractContainerMenu> {
-        M create(int containerId, Inventory inventory, RegistryFriendlyByteBuf extraData);
+        M create(int containerId, Inventory inventory, FriendlyByteBuf extraData);
     }
 }

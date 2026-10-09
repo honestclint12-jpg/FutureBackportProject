@@ -73,7 +73,7 @@ public class FarmAnimalTests {
       floor(helper);
       Cow calf = (Cow)helper.spawn(EntityType.COW, new BlockPos(3, 1, 3));
       calf.setAge(-24000);
-      ServerPlayer player = helper.makeMockServerPlayerInLevel();
+      ServerPlayer player = TestPlayers.mockServerPlayer(helper);
       player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack((ItemLike)ModBlocks.GOLDEN_DANDELION.get(), 2));
       player.interactOn(calf, InteractionHand.MAIN_HAND);
       helper.assertTrue(AgeLock.LOCKED.get(calf), "calf was not age locked");

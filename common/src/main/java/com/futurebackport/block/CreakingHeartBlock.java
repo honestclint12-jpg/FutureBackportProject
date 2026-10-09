@@ -4,7 +4,6 @@ import com.futurebackport.FutureBackport;
 import com.futurebackport.block.entity.CreakingHeartBlockEntity;
 import com.futurebackport.registry.ModBlockEntities;
 import com.futurebackport.registry.ModSounds;
-import com.mojang.serialization.MapCodec;
 import java.util.function.BiConsumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -42,7 +41,6 @@ import net.minecraft.world.level.block.state.properties.Property;
 import org.jetbrains.annotations.Nullable;
 
 public class CreakingHeartBlock extends BaseEntityBlock {
-   public static final MapCodec<CreakingHeartBlock> CODEC = simpleCodec(CreakingHeartBlock::new);
    public static final EnumProperty<Axis> AXIS = BlockStateProperties.AXIS;
    public static final EnumProperty<CreakingHeartState> STATE = EnumProperty.create("creaking_heart_state", CreakingHeartState.class);
    public static final BooleanProperty NATURAL = BooleanProperty.create("natural");
@@ -56,11 +54,7 @@ public class CreakingHeartBlock extends BaseEntityBlock {
       );
    }
 
-   protected MapCodec<CreakingHeartBlock> codec() {
-      return CODEC;
-   }
-
-   protected RenderShape getRenderShape(BlockState state) {
+   public RenderShape getRenderShape(BlockState state) {
       return RenderShape.MODEL;
    }
 
@@ -85,12 +79,12 @@ public class CreakingHeartBlock extends BaseEntityBlock {
       }
    }
 
-   protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+   public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
       level.scheduleTick(pos, this, 1);
       return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
    }
 
-   protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+   public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
       BlockState updated = updateState(state, level, pos);
       if (updated != state) {
          level.setBlock(pos, updated, 3);
@@ -133,7 +127,7 @@ public class CreakingHeartBlock extends BaseEntityBlock {
       return updateState((BlockState)this.defaultBlockState().setValue(AXIS, context.getClickedFace().getAxis()), context.getLevel(), context.getClickedPos());
    }
 
-   protected BlockState rotate(BlockState state, Rotation rotation) {
+   public BlockState rotate(BlockState state, Rotation rotation) {
       return RotatedPillarBlock.rotatePillar(state, rotation);
    }
 
@@ -141,7 +135,7 @@ public class CreakingHeartBlock extends BaseEntityBlock {
       builder.add(new Property[]{AXIS, STATE, NATURAL});
    }
 
-   protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+   public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
       if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof CreakingHeartBlockEntity heart) {
          heart.removeProtector(null);
       }
@@ -149,24 +143,14 @@ public class CreakingHeartBlock extends BaseEntityBlock {
       super.onRemove(state, level, pos, newState, movedByPiston);
    }
 
-   protected void onExplosionHit(BlockState state, Level level, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> dropConsumer) {
-      if (level.getBlockEntity(pos) instanceof CreakingHeartBlockEntity heart && explosion.getBlockInteraction() != BlockInteraction.TRIGGER_BLOCK) {
-         heart.removeProtector(level.damageSources().explosion(explosion));
-         if (explosion.getIndirectSourceEntity() instanceof Player player) {
-            this.tryAwardExperience(player, state, level, pos);
-         }
-      }
 
-      super.onExplosionHit(state, level, pos, explosion, dropConsumer);
-   }
-
-   public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+   public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
       if (level.getBlockEntity(pos) instanceof CreakingHeartBlockEntity heart) {
          heart.removeProtector(player.damageSources().playerAttack(player));
          this.tryAwardExperience(player, state, level, pos);
       }
 
-      return super.playerWillDestroy(level, pos, state, player);
+      super.playerWillDestroy(level, pos, state, player);
    }
 
    private void tryAwardExperience(Player player, BlockState state, Level level, BlockPos pos) {
@@ -175,11 +159,11 @@ public class CreakingHeartBlock extends BaseEntityBlock {
       }
    }
 
-   protected boolean hasAnalogOutputSignal(BlockState state) {
+   public boolean hasAnalogOutputSignal(BlockState state) {
       return true;
    }
 
-   protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+   public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
       if (state.getValue(STATE) == CreakingHeartState.UPROOTED) {
          return 0;
       } else {

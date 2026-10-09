@@ -32,11 +32,11 @@ public class Parched extends AbstractSkeleton {
    public static boolean checkSpawnRules(
       EntityType<? extends Monster> type, ServerLevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random
    ) {
-      return Monster.checkMonsterSpawnRules(type, level, spawnType, pos, random) && (MobSpawnType.isSpawner(spawnType) || level.canSeeSky(pos));
+      return Monster.checkMonsterSpawnRules(type, level, spawnType, pos, random) && (spawnType == MobSpawnType.SPAWNER || level.canSeeSky(pos));
    }
 
-   protected AbstractArrow getArrow(ItemStack arrow, float velocity, @Nullable ItemStack weapon) {
-      AbstractArrow projectile = super.getArrow(arrow, velocity, weapon);
+   protected AbstractArrow getArrow(ItemStack arrow, float velocity) {
+      AbstractArrow projectile = super.getArrow(arrow, velocity);
       if (projectile instanceof Arrow tipped) {
          tipped.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 600));
       }

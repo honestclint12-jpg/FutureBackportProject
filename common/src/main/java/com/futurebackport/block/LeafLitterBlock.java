@@ -1,7 +1,6 @@
 package com.futurebackport.block;
 
 import com.google.common.collect.UnmodifiableIterator;
-import com.mojang.serialization.MapCodec;
 import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
@@ -25,7 +24,6 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class LeafLitterBlock extends BushBlock {
-   public static final MapCodec<LeafLitterBlock> CODEC = simpleCodec(LeafLitterBlock::new);
    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
    public static final IntegerProperty SEGMENT_AMOUNT = IntegerProperty.create("segment_amount", 1, 4);
    private final Map<BlockState, VoxelShape> shapes = new HashMap<>();
@@ -64,30 +62,26 @@ public class LeafLitterBlock extends BushBlock {
       };
    }
 
-   protected MapCodec<LeafLitterBlock> codec() {
-      return CODEC;
-   }
-
-   protected BlockState rotate(BlockState state, Rotation rotation) {
+   public BlockState rotate(BlockState state, Rotation rotation) {
       return (BlockState)state.setValue(FACING, rotation.rotate((Direction)state.getValue(FACING)));
    }
 
-   protected BlockState mirror(BlockState state, Mirror mirror) {
+   public BlockState mirror(BlockState state, Mirror mirror) {
       return state.rotate(mirror.getRotation((Direction)state.getValue(FACING)));
    }
 
-   protected boolean canBeReplaced(BlockState state, BlockPlaceContext context) {
+   public boolean canBeReplaced(BlockState state, BlockPlaceContext context) {
       return !context.isSecondaryUseActive() && context.getItemInHand().is(this.asItem()) && state.getValue(SEGMENT_AMOUNT) < 4
          ? true
          : super.canBeReplaced(state, context);
    }
 
-   protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+   public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
       BlockPos below = pos.below();
       return level.getBlockState(below).isFaceSturdy(level, below, Direction.UP);
    }
 
-   protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+   public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
       return this.shapes.get(state);
    }
 

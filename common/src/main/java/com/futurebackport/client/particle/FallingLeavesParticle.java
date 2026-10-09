@@ -6,7 +6,7 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.TextureSheetParticle;
-import net.minecraft.core.particles.ColorParticleOption;
+import com.futurebackport.particle.ColorParticleOption;
 import net.minecraft.core.particles.SimpleParticleType;
 
 public class FallingLeavesParticle extends TextureSheetParticle {

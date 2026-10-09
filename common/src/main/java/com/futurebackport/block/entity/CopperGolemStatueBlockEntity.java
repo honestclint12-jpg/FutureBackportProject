@@ -6,9 +6,6 @@ import com.futurebackport.registry.ModBlockEntities;
 import com.futurebackport.registry.ModEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup.Provider;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.component.DataComponentMap.Builder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Component.Serializer;
@@ -50,25 +47,17 @@ public class CopperGolemStatueBlockEntity extends BlockEntity {
       }
    }
 
-   protected void collectImplicitComponents(Builder components) {
-      super.collectImplicitComponents(components);
-      components.set(DataComponents.CUSTOM_NAME, this.name);
-   }
 
-   protected void applyImplicitComponents(BlockEntity.DataComponentInput input) {
-      super.applyImplicitComponents(input);
-      this.name = (Component)input.get(DataComponents.CUSTOM_NAME);
-   }
 
-   protected void saveAdditional(CompoundTag tag, Provider registries) {
-      super.saveAdditional(tag, registries);
+   protected void saveAdditional(CompoundTag tag) {
+      super.saveAdditional(tag);
       if (this.name != null) {
-         tag.putString("CustomName", Serializer.toJson(this.name, registries));
+         tag.putString("CustomName", Serializer.toJson(this.name));
       }
    }
 
-   protected void loadAdditional(CompoundTag tag, Provider registries) {
-      super.loadAdditional(tag, registries);
-      this.name = tag.contains("CustomName") ? Serializer.fromJson(tag.getString("CustomName"), registries) : null;
+   public void load(CompoundTag tag) {
+      super.load(tag);
+      this.name = tag.contains("CustomName") ? Serializer.fromJson(tag.getString("CustomName")) : null;
    }
 }

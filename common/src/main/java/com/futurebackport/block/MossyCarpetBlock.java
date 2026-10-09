@@ -2,7 +2,6 @@ package com.futurebackport.block;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.UnmodifiableIterator;
-import com.mojang.serialization.MapCodec;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -39,7 +38,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class MossyCarpetBlock extends Block implements BonemealableBlock {
-   public static final MapCodec<MossyCarpetBlock> CODEC = simpleCodec(MossyCarpetBlock::new);
    public static final BooleanProperty BASE = BlockStateProperties.BOTTOM;
    public static final EnumProperty<WallSide> NORTH = BlockStateProperties.NORTH_WALL;
    public static final EnumProperty<WallSide> EAST = BlockStateProperties.EAST_WALL;
@@ -94,23 +92,19 @@ public class MossyCarpetBlock extends Block implements BonemealableBlock {
       return shape.isEmpty() ? Shapes.block() : shape;
    }
 
-   protected MapCodec<MossyCarpetBlock> codec() {
-      return CODEC;
-   }
-
-   protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+   public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
       return this.shapes.get(state);
    }
 
-   protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+   public VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
       return state.getValue(BASE) ? this.shapes.get(this.defaultBlockState()) : Shapes.empty();
    }
 
-   protected boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
+   public boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
       return true;
    }
 
-   protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+   public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
       BlockState below = level.getBlockState(pos.below());
       return state.getValue(BASE) ? !below.isAir() : below.is(this) && (Boolean)below.getValue(BASE);
    }
@@ -216,7 +210,7 @@ public class MossyCarpetBlock extends Block implements BonemealableBlock {
       }
    }
 
-   protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+   public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
       if (!state.canSurvive(level, pos)) {
          return Blocks.AIR.defaultBlockState();
       } else {
@@ -229,7 +223,7 @@ public class MossyCarpetBlock extends Block implements BonemealableBlock {
       builder.add(new Property[]{BASE, NORTH, EAST, SOUTH, WEST});
    }
 
-   protected BlockState rotate(BlockState state, Rotation rotation) {
+   public BlockState rotate(BlockState state, Rotation rotation) {
       return switch (rotation) {
          case CLOCKWISE_180 -> (BlockState)((BlockState)((BlockState)((BlockState)state.setValue(NORTH, (WallSide)state.getValue(SOUTH)))
                   .setValue(EAST, (WallSide)state.getValue(WEST)))
@@ -247,7 +241,7 @@ public class MossyCarpetBlock extends Block implements BonemealableBlock {
       };
    }
 
-   protected BlockState mirror(BlockState state, Mirror mirror) {
+   public BlockState mirror(BlockState state, Mirror mirror) {
       return switch (mirror) {
          case LEFT_RIGHT -> (BlockState)((BlockState)state.setValue(NORTH, (WallSide)state.getValue(SOUTH))).setValue(SOUTH, (WallSide)state.getValue(NORTH));
          case FRONT_BACK -> (BlockState)((BlockState)state.setValue(EAST, (WallSide)state.getValue(WEST))).setValue(WEST, (WallSide)state.getValue(EAST));
@@ -255,7 +249,7 @@ public class MossyCarpetBlock extends Block implements BonemealableBlock {
       };
    }
 
-   public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
+   public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state, boolean isClient) {
       return (Boolean)state.getValue(BASE) && !this.createTopperWithSideChance(level, pos, () -> true).isAir();
    }
 

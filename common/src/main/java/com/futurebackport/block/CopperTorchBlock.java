@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 public class CopperTorchBlock extends TorchBlock {
    public CopperTorchBlock(Properties properties) {
-      super(ParticleTypes.FLAME, properties);
+      super(properties, ParticleTypes.FLAME);
    }
 
    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
@@ -27,7 +27,7 @@ public class CopperTorchBlock extends TorchBlock {
 
    public static class Wall extends WallTorchBlock {
       public Wall(Properties properties) {
-         super(ParticleTypes.FLAME, properties);
+         super(properties, ParticleTypes.FLAME);
       }
 
       public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {

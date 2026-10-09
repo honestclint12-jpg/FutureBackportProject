@@ -1,5 +1,6 @@
 package com.futurebackport.client.model;
 
+import com.futurebackport.client.util.ArgbColor;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.DrownedModel;
@@ -56,8 +57,8 @@ public final class BabyHumanoids {
    }
 
    static void renderUnscaled(Iterable<ModelPart> head, Iterable<ModelPart> body, PoseStack poseStack, VertexConsumer buffer, int light, int overlay, int color) {
-      head.forEach(p -> p.render(poseStack, buffer, light, overlay, color));
-      body.forEach(p -> p.render(poseStack, buffer, light, overlay, color));
+      head.forEach(p -> p.render(poseStack, buffer, light, overlay, ArgbColor.red(color), ArgbColor.green(color), ArgbColor.blue(color), ArgbColor.alpha(color)));
+      body.forEach(p -> p.render(poseStack, buffer, light, overlay, ArgbColor.red(color), ArgbColor.green(color), ArgbColor.blue(color), ArgbColor.alpha(color)));
    }
 
    public static LayerDefinition zombieLayer(CubeDeformation g) {
@@ -185,7 +186,8 @@ public final class BabyHumanoids {
          BabyHumanoids.remap(this, BabyHumanoids.Skeleton.ZOMBIE);
       }
 
-      public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int light, int overlay, int color) {
+      public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int light, int overlay, float red, float green, float blue, float alpha) {
+         int color = ArgbColor.pack(red, green, blue, alpha);
          BabyHumanoids.renderUnscaled(this.headParts(), this.bodyParts(), poseStack, buffer, light, overlay, color);
       }
    }
@@ -208,7 +210,8 @@ public final class BabyHumanoids {
          this.head.getChild("right_ear").zRot -= 0.43633235F;
       }
 
-      public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int light, int overlay, int color) {
+      public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int light, int overlay, float red, float green, float blue, float alpha) {
+         int color = ArgbColor.pack(red, green, blue, alpha);
          BabyHumanoids.renderUnscaled(this.headParts(), this.bodyParts(), poseStack, buffer, light, overlay, color);
       }
    }
@@ -242,7 +245,8 @@ public final class BabyHumanoids {
          BabyHumanoids.remap(this, BabyHumanoids.Skeleton.ZOMBIE);
       }
 
-      public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int light, int overlay, int color) {
+      public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int light, int overlay, float red, float green, float blue, float alpha) {
+         int color = ArgbColor.pack(red, green, blue, alpha);
          BabyHumanoids.renderUnscaled(this.headParts(), this.bodyParts(), poseStack, buffer, light, overlay, color);
       }
    }
@@ -261,7 +265,8 @@ public final class BabyHumanoids {
          BabyHumanoids.remap(this, BabyHumanoids.Skeleton.ZOMBIE_VILLAGER);
       }
 
-      public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int light, int overlay, int color) {
+      public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int light, int overlay, float red, float green, float blue, float alpha) {
+         int color = ArgbColor.pack(red, green, blue, alpha);
          BabyHumanoids.renderUnscaled(this.headParts(), this.bodyParts(), poseStack, buffer, light, overlay, color);
       }
    }

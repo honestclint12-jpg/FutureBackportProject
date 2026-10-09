@@ -1,5 +1,13 @@
 package com.futurebackport.gametest;
 
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.GameType;
+import net.minecraft.world.entity.player.Player;
+import com.futurebackport.registry.ModDataMaps;
+import net.minecraft.world.level.block.ChangeOverTimeBlock;
 import com.futurebackport.block.entity.CopperChestBlockEntity;
 import com.futurebackport.registry.CopperFamily;
 import com.futurebackport.registry.ModBlocks;
@@ -36,13 +44,15 @@ public class CopperTests {
    )
    public static void copperOxidizesAndWaxes(GameTestHelper helper) {
       CopperFamily bars = ModBlocks.COPPER_BARS;
+      // 1.20.1's static WeatheringCopper.getNext only knows vanilla blocks; the mod's blocks answer through ModDataMaps.
+      BlockState unaffectedBars = ((Block)bars.weathering().get(WeatherState.UNAFFECTED).get()).defaultBlockState();
       helper.assertTrue(
-         WeatheringCopper.getNext((Block)bars.weathering().get(WeatherState.UNAFFECTED).get()).orElse(null)
+         ((ChangeOverTimeBlock<?>)unaffectedBars.getBlock()).getNext(unaffectedBars).map(BlockState::getBlock).orElse(null)
             == bars.weathering().get(WeatherState.EXPOSED).get(),
          "bars do not oxidize"
       );
       helper.assertTrue(
-         WeatheringCopper.getNext(Blocks.LIGHTNING_ROD).orElse(null) == ModBlocks.LIGHTNING_ROD.weathering().get(WeatherState.EXPOSED).get(),
+         ModDataMaps.nextOxidized(Blocks.LIGHTNING_ROD).orElse(null) == ModBlocks.LIGHTNING_ROD.weathering().get(WeatherState.EXPOSED).get(),
          "vanilla lightning rod has no next stage"
       );
       helper.assertTrue(
@@ -50,10 +60,14 @@ public class CopperTests {
             == ModBlocks.LIGHTNING_ROD.waxed().get(WeatherState.UNAFFECTED).get(),
          "vanilla lightning rod cannot be waxed"
       );
-      helper.assertTrue(
-         WeatheringCopper.getPrevious((Block)ModBlocks.COPPER_LANTERN.weathering().get(WeatherState.OXIDIZED).get()).isPresent(),
-         "oxidized lantern cannot be scraped"
-      );
+      // Scrape with a real axe: Forge answers through BlockToolModificationEvent, Fabric through OxidizableBlocksRegistry.
+      BlockPos lantern = new BlockPos(1, 1, 1);
+      helper.setBlock(lantern, (Block)ModBlocks.COPPER_LANTERN.weathering().get(WeatherState.OXIDIZED).get());
+      Player player = TestPlayers.mock(helper, GameType.SURVIVAL);
+      player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_AXE));
+      BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(helper.absolutePos(lantern)), Direction.UP, helper.absolutePos(lantern), false);
+      Items.IRON_AXE.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, hit));
+      helper.assertBlockPresent((Block)ModBlocks.COPPER_LANTERN.weathering().get(WeatherState.WEATHERED).get(), lantern);
       helper.assertTrue(((Block)bars.weathering().get(WeatherState.UNAFFECTED).get()).defaultBlockState().isRandomlyTicking(), "copper bars do not tick");
       helper.assertTrue(!((Block)bars.weathering().get(WeatherState.OXIDIZED).get()).defaultBlockState().isRandomlyTicking(), "oxidized bars still tick");
       helper.succeed();
@@ -112,8 +126,7 @@ public class CopperTests {
    )
    public static void lootInjectionAddsCopperHorseArmor(GameTestHelper helper) {
       MinecraftServer server = helper.getLevel().getServer();
-      LootTable table = server.reloadableRegistries()
-         .getLootTable(ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.withDefaultNamespace("chests/desert_pyramid")));
+      LootTable table = server.getLootData().getLootTable(new ResourceLocation("chests/desert_pyramid"));
       BlockPos origin = helper.absolutePos(BlockPos.ZERO);
       LootParams params = new Builder(helper.getLevel()).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(origin)).create(LootContextParamSets.CHEST);
       boolean found = false;

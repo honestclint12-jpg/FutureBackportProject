@@ -38,7 +38,7 @@ public class CopperGolemTests {
       helper.setBlock(copper, Blocks.WEATHERED_COPPER);
       helper.setBlock(copper.above(), (BlockState)Blocks.CARVED_PUMPKIN.defaultBlockState().setValue(CarvedPumpkinBlock.FACING, Direction.EAST));
       // Only this test's arena: tests run side by side and others spawn golems too.
-      List<CopperGolem> golems = helper.getEntities(ModEntities.COPPER_GOLEM.get());
+      List<CopperGolem> golems = TestPlayers.entities(helper, ModEntities.COPPER_GOLEM.get());
       helper.assertTrue(golems.size() == 1, "expected one copper golem, found " + golems.size());
       helper.assertTrue(golems.get(0).getWeatherState() == WeatherState.WEATHERED, "golem should match the copper's age");
       BlockState chest = helper.getBlockState(copper);
@@ -94,7 +94,7 @@ public class CopperGolemTests {
          state.getBlock() instanceof CopperGolemStatueBlock s && s.getWeatherState() == WeatherState.OXIDIZED, "golem did not become an oxidized statue"
       );
       helper.assertTrue(!golem.isAlive(), "golem should be gone");
-      Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+      Player player = TestPlayers.mock(helper, GameType.SURVIVAL);
       Block statueBlock = (Block)ModBlocks.COPPER_GOLEM_STATUE.weathering().get(WeatherState.UNAFFECTED).get();
       helper.setBlock(pos, statueBlock);
       CopperGolemStatueBlockEntity be = (CopperGolemStatueBlockEntity)helper.getBlockEntity(pos);
@@ -103,10 +103,12 @@ public class CopperGolemTests {
       be.createStatue(stand);
       BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(helper.absolutePos(pos)), Direction.UP, helper.absolutePos(pos), false);
       int before = helper.getBlockState(pos).getAnalogOutputSignal(helper.getLevel(), helper.absolutePos(pos));
-      helper.getBlockState(pos).useItemOn(ItemStack.EMPTY, helper.getLevel(), player, InteractionHand.MAIN_HAND, hit);
+      player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+      helper.getBlockState(pos).use(helper.getLevel(), player, InteractionHand.MAIN_HAND, hit);
       int after = helper.getBlockState(pos).getAnalogOutputSignal(helper.getLevel(), helper.absolutePos(pos));
       helper.assertTrue(before == 1 && after == 2, "pose comparator output went " + before + " -> " + after);
-      helper.getBlockState(pos).useItemOn(new ItemStack(Items.IRON_AXE), helper.getLevel(), player, InteractionHand.MAIN_HAND, hit);
+      player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_AXE));
+      helper.getBlockState(pos).use(helper.getLevel(), player, InteractionHand.MAIN_HAND, hit);
       helper.assertBlockNotPresent(statueBlock, pos);
       List<CopperGolem> revived = helper.getLevel().getEntitiesOfClass(CopperGolem.class, new AABB(helper.absolutePos(pos)).inflate(2.0));
       helper.assertTrue(revived.size() == 1 && "Rusty".equals(revived.get(0).getCustomName().getString()), "statue did not turn back into Rusty");

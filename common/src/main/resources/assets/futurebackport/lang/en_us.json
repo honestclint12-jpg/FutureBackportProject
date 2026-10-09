@@ -353,7 +353,6 @@
   "subtitles.entity.baby_cat.purr": "Kitten purrs",
   "subtitles.entity.baby_chicken.ambient": "Chick peeps",
   "subtitles.entity.baby_chicken.death": "Chick dies",
-  "subtitles.entity.baby_chicken.hurt": "Chick hurts",
   "subtitles.entity.baby_horse.ambient": "Foal neighs",
   "subtitles.entity.baby_horse.angry": "Foal neighs",
   "subtitles.entity.baby_horse.breathe": "Foal breathes",
@@ -371,6 +370,10 @@
   "subtitles.entity.baby_wolf.pant": "Puppy pants",
   "subtitles.entity.baby_wolf.whine": "Puppy whines",
   "subtitles.entity.generic.big_fall": "Something fell",
+  "item.futurebackport.music_disc_tears.desc": "Amos Roddy - Tears",
+  "item.futurebackport.music_disc_lava_chicken.desc": "Hyper Potions - Lava Chicken",
+  "item.futurebackport.music_disc_bounce.desc": "fingerspit - Bounce",
+  "subtitles.entity.baby_chicken.hurt": "Chick hurts",
   "futurebackport.assets.download_failed.title": "Future Backport: textures not downloaded",
   "futurebackport.assets.download_failed.description": "Could not reach Mojang. Restart the game while online."
 }

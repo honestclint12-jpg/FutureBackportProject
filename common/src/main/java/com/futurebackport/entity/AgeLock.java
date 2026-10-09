@@ -1,5 +1,6 @@
 package com.futurebackport.entity;
 
+import com.futurebackport.util.Backports;
 import com.futurebackport.platform.Services;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -47,7 +48,7 @@ public final class AgeLock {
                LOCKED.set(mob, locked);
                mob.setAge(-24000);
                PARTICLE_TIMER.set(mob, 40);
-               stack.consume(1, player);
+               Backports.consume(stack, 1, player);
                if (locked) {
                   mob.setPersistenceRequired();
                }

@@ -30,14 +30,14 @@ public class CreakingRenderer extends MobRenderer<Creaking, CreakingModel> {
       return TEXTURE;
    }
 
-   protected void setupRotations(Creaking creaking, PoseStack poseStack, float bob, float yBodyRot, float partialTick, float scale) {
+   protected void setupRotations(Creaking creaking, PoseStack poseStack, float bob, float yBodyRot, float partialTick) {
       if (creaking.isTearingDown()) {
          int deathTime = creaking.deathTime;
          creaking.deathTime = 0;
-         super.setupRotations(creaking, poseStack, bob, yBodyRot, partialTick, scale);
+         super.setupRotations(creaking, poseStack, bob, yBodyRot, partialTick);
          creaking.deathTime = deathTime;
       } else {
-         super.setupRotations(creaking, poseStack, bob, yBodyRot, partialTick, scale);
+         super.setupRotations(creaking, poseStack, bob, yBodyRot, partialTick);
       }
    }
 
@@ -71,7 +71,7 @@ public class CreakingRenderer extends MobRenderer<Creaking, CreakingModel> {
             this.model.prepareMobModel(creaking, limbSwing, limbSwingAmount, partialTick);
             this.model.setupAnim(creaking, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
             VertexConsumer consumer = buffer.getBuffer(RenderType.eyes(CreakingRenderer.EYES_TEXTURE));
-            this.model.renderToBuffer(poseStack, consumer, 15728880, LivingEntityRenderer.getOverlayCoords(creaking, 0.0F));
+            this.model.renderToBuffer(poseStack, consumer, 15728880, LivingEntityRenderer.getOverlayCoords(creaking, 0.0F), 1.0F, 1.0F, 1.0F, 1.0F);
          }
       }
    }

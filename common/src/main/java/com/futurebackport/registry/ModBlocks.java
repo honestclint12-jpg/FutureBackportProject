@@ -69,100 +69,100 @@ public class ModBlocks {
    private static final MapColor PALE_OAK_PLANKS_COLOR = MapColor.QUARTZ;
    private static final MapColor PALE_OAK_BARK_COLOR = MapColor.STONE;
    public static final BlockEntry<Block> PALE_OAK_PLANKS = BLOCKS.registerSimpleBlock(
-      "pale_oak_planks", Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.OAK_PLANKS).mapColor(PALE_OAK_PLANKS_COLOR)
+      "pale_oak_planks", Properties.copy(net.minecraft.world.level.block.Blocks.OAK_PLANKS).mapColor(PALE_OAK_PLANKS_COLOR)
    );
    public static final BlockEntry<RotatedPillarBlock> PALE_OAK_LOG = BLOCKS.registerBlock(
       "pale_oak_log",
       RotatedPillarBlock::new,
-      Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.OAK_LOG)
+      Properties.copy(net.minecraft.world.level.block.Blocks.OAK_LOG)
          .mapColor(s -> s.getValue(RotatedPillarBlock.AXIS) == Axis.Y ? PALE_OAK_PLANKS_COLOR : PALE_OAK_BARK_COLOR)
    );
    public static final BlockEntry<RotatedPillarBlock> PALE_OAK_WOOD = BLOCKS.registerBlock(
-      "pale_oak_wood", RotatedPillarBlock::new, Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.OAK_WOOD).mapColor(PALE_OAK_BARK_COLOR)
+      "pale_oak_wood", RotatedPillarBlock::new, Properties.copy(net.minecraft.world.level.block.Blocks.OAK_WOOD).mapColor(PALE_OAK_BARK_COLOR)
    );
    public static final BlockEntry<RotatedPillarBlock> STRIPPED_PALE_OAK_LOG = BLOCKS.registerBlock(
       "stripped_pale_oak_log",
       RotatedPillarBlock::new,
-      Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.STRIPPED_OAK_LOG).mapColor(PALE_OAK_PLANKS_COLOR)
+      Properties.copy(net.minecraft.world.level.block.Blocks.STRIPPED_OAK_LOG).mapColor(PALE_OAK_PLANKS_COLOR)
    );
    public static final BlockEntry<RotatedPillarBlock> STRIPPED_PALE_OAK_WOOD = BLOCKS.registerBlock(
       "stripped_pale_oak_wood",
       RotatedPillarBlock::new,
-      Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.STRIPPED_OAK_WOOD).mapColor(PALE_OAK_PLANKS_COLOR)
+      Properties.copy(net.minecraft.world.level.block.Blocks.STRIPPED_OAK_WOOD).mapColor(PALE_OAK_PLANKS_COLOR)
    );
    public static final BlockEntry<StairBlock> PALE_OAK_STAIRS = BLOCKS.register(
-      "pale_oak_stairs", () -> new StairBlock(((Block)PALE_OAK_PLANKS.get()).defaultBlockState(), Properties.ofFullCopy((BlockBehaviour)PALE_OAK_PLANKS.get()))
+      "pale_oak_stairs", () -> new StairBlock(((Block)PALE_OAK_PLANKS.get()).defaultBlockState(), Properties.copy((BlockBehaviour)PALE_OAK_PLANKS.get()))
    );
    public static final BlockEntry<SlabBlock> PALE_OAK_SLAB = BLOCKS.registerBlock(
-      "pale_oak_slab", SlabBlock::new, Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.OAK_SLAB).mapColor(PALE_OAK_PLANKS_COLOR)
+      "pale_oak_slab", SlabBlock::new, Properties.copy(net.minecraft.world.level.block.Blocks.OAK_SLAB).mapColor(PALE_OAK_PLANKS_COLOR)
    );
    public static final BlockEntry<FenceBlock> PALE_OAK_FENCE = BLOCKS.registerBlock(
-      "pale_oak_fence", FenceBlock::new, Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.OAK_FENCE).mapColor(PALE_OAK_PLANKS_COLOR)
+      "pale_oak_fence", FenceBlock::new, Properties.copy(net.minecraft.world.level.block.Blocks.OAK_FENCE).mapColor(PALE_OAK_PLANKS_COLOR)
    );
    public static final BlockEntry<FenceGateBlock> PALE_OAK_FENCE_GATE = BLOCKS.registerBlock(
       "pale_oak_fence_gate",
-      p -> new FenceGateBlock(ModWoodTypes.PALE_OAK, p),
-      Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.OAK_FENCE_GATE).mapColor(PALE_OAK_PLANKS_COLOR)
+      p -> new FenceGateBlock(p, ModWoodTypes.PALE_OAK),
+      Properties.copy(net.minecraft.world.level.block.Blocks.OAK_FENCE_GATE).mapColor(PALE_OAK_PLANKS_COLOR)
    );
    public static final BlockEntry<DoorBlock> PALE_OAK_DOOR = BLOCKS.registerBlock(
       "pale_oak_door",
-      p -> new DoorBlock(ModWoodTypes.PALE_OAK_SET, p),
-      Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.OAK_DOOR).mapColor(PALE_OAK_PLANKS_COLOR)
+      p -> new DoorBlock(p, ModWoodTypes.PALE_OAK_SET),
+      Properties.copy(net.minecraft.world.level.block.Blocks.OAK_DOOR).mapColor(PALE_OAK_PLANKS_COLOR)
    );
    public static final BlockEntry<TrapDoorBlock> PALE_OAK_TRAPDOOR = BLOCKS.registerBlock(
       "pale_oak_trapdoor",
-      p -> new TrapDoorBlock(ModWoodTypes.PALE_OAK_SET, p),
-      Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.OAK_TRAPDOOR).mapColor(PALE_OAK_PLANKS_COLOR)
+      p -> new TrapDoorBlock(p, ModWoodTypes.PALE_OAK_SET),
+      Properties.copy(net.minecraft.world.level.block.Blocks.OAK_TRAPDOOR).mapColor(PALE_OAK_PLANKS_COLOR)
    );
    public static final BlockEntry<ButtonBlock> PALE_OAK_BUTTON = BLOCKS.registerBlock(
-      "pale_oak_button", p -> new ButtonBlock(ModWoodTypes.PALE_OAK_SET, 30, p), Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.OAK_BUTTON)
+      "pale_oak_button", p -> new ButtonBlock(p, ModWoodTypes.PALE_OAK_SET, 30, true), Properties.copy(net.minecraft.world.level.block.Blocks.OAK_BUTTON)
    );
    public static final BlockEntry<PressurePlateBlock> PALE_OAK_PRESSURE_PLATE = BLOCKS.registerBlock(
       "pale_oak_pressure_plate",
-      p -> new PressurePlateBlock(ModWoodTypes.PALE_OAK_SET, p),
-      Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.OAK_PRESSURE_PLATE).mapColor(PALE_OAK_PLANKS_COLOR)
+      p -> new PressurePlateBlock(PressurePlateBlock.Sensitivity.EVERYTHING, p, ModWoodTypes.PALE_OAK_SET),
+      Properties.copy(net.minecraft.world.level.block.Blocks.OAK_PRESSURE_PLATE).mapColor(PALE_OAK_PLANKS_COLOR)
    );
    public static final BlockEntry<StandingSignBlock> PALE_OAK_SIGN = BLOCKS.registerBlock(
       "pale_oak_sign",
-      p -> new StandingSignBlock(ModWoodTypes.PALE_OAK, p),
-      Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.OAK_SIGN).mapColor(PALE_OAK_PLANKS_COLOR)
+      p -> new StandingSignBlock(p, ModWoodTypes.PALE_OAK),
+      Properties.copy(net.minecraft.world.level.block.Blocks.OAK_SIGN).mapColor(PALE_OAK_PLANKS_COLOR)
    );
    public static final BlockEntry<WallSignBlock> PALE_OAK_WALL_SIGN = BLOCKS.register(
       "pale_oak_wall_sign",
       () -> new WallSignBlock(
-         ModWoodTypes.PALE_OAK,
-         Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.OAK_WALL_SIGN).mapColor(PALE_OAK_PLANKS_COLOR).dropsLike((Block)PALE_OAK_SIGN.get())
+         Properties.copy(net.minecraft.world.level.block.Blocks.OAK_WALL_SIGN).mapColor(PALE_OAK_PLANKS_COLOR).dropsLike((Block)PALE_OAK_SIGN.get()),
+         ModWoodTypes.PALE_OAK
       )
    );
    public static final BlockEntry<CeilingHangingSignBlock> PALE_OAK_HANGING_SIGN = BLOCKS.registerBlock(
       "pale_oak_hanging_sign",
-      p -> new CeilingHangingSignBlock(ModWoodTypes.PALE_OAK, p),
-      Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.OAK_HANGING_SIGN).mapColor(PALE_OAK_PLANKS_COLOR)
+      p -> new CeilingHangingSignBlock(p, ModWoodTypes.PALE_OAK),
+      Properties.copy(net.minecraft.world.level.block.Blocks.OAK_HANGING_SIGN).mapColor(PALE_OAK_PLANKS_COLOR)
    );
    public static final BlockEntry<WallHangingSignBlock> PALE_OAK_WALL_HANGING_SIGN = BLOCKS.register(
       "pale_oak_wall_hanging_sign",
       () -> new WallHangingSignBlock(
-         ModWoodTypes.PALE_OAK,
-         Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.OAK_WALL_HANGING_SIGN)
+         Properties.copy(net.minecraft.world.level.block.Blocks.OAK_WALL_HANGING_SIGN)
             .mapColor(PALE_OAK_PLANKS_COLOR)
-            .dropsLike((Block)PALE_OAK_HANGING_SIGN.get())
+            .dropsLike((Block)PALE_OAK_HANGING_SIGN.get()),
+         ModWoodTypes.PALE_OAK
       )
    );
    public static final BlockEntry<ParticleLeavesBlock> PALE_OAK_LEAVES = BLOCKS.registerBlock(
       "pale_oak_leaves",
       p -> new ParticleLeavesBlock(0.02F, ModParticles.PALE_OAK_LEAVES, p),
-      Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.DARK_OAK_LEAVES).mapColor(MapColor.METAL)
+      Properties.copy(net.minecraft.world.level.block.Blocks.DARK_OAK_LEAVES).mapColor(MapColor.METAL)
    );
    public static final BlockEntry<SaplingBlock> PALE_OAK_SAPLING = BLOCKS.registerBlock(
       "pale_oak_sapling",
       p -> new SaplingBlock(ModTreeGrowers.PALE_OAK, p),
-      Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.DARK_OAK_SAPLING).mapColor(MapColor.METAL)
+      Properties.copy(net.minecraft.world.level.block.Blocks.DARK_OAK_SAPLING).mapColor(MapColor.METAL)
    );
    public static final BlockEntry<FlowerPotBlock> POTTED_PALE_OAK_SAPLING = BLOCKS.register(
       "potted_pale_oak_sapling",
       () -> new FlowerPotBlock(
          PALE_OAK_SAPLING.get(),
-         Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.POTTED_DARK_OAK_SAPLING)
+         Properties.copy(net.minecraft.world.level.block.Blocks.POTTED_DARK_OAK_SAPLING)
       )
    );
    public static final BlockEntry<FeaturePlacerBlock> PALE_MOSS_BLOCK = BLOCKS.registerBlock(
@@ -195,13 +195,13 @@ public class ModBlocks {
    public static final BlockEntry<PottedEyeblossomBlock> POTTED_OPEN_EYEBLOSSOM = BLOCKS.register(
       "potted_open_eyeblossom",
       () -> new PottedEyeblossomBlock(
-         true, OPEN_EYEBLOSSOM, ModBlocks.POTTED_CLOSED_EYEBLOSSOM, Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.POTTED_POPPY).randomTicks()
+         true, OPEN_EYEBLOSSOM, ModBlocks.POTTED_CLOSED_EYEBLOSSOM, Properties.copy(net.minecraft.world.level.block.Blocks.POTTED_POPPY).randomTicks()
       )
    );
    public static final BlockEntry<PottedEyeblossomBlock> POTTED_CLOSED_EYEBLOSSOM = BLOCKS.register(
       "potted_closed_eyeblossom",
       () -> new PottedEyeblossomBlock(
-         false, CLOSED_EYEBLOSSOM, POTTED_OPEN_EYEBLOSSOM, Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.POTTED_POPPY).randomTicks()
+         false, CLOSED_EYEBLOSSOM, POTTED_OPEN_EYEBLOSSOM, Properties.copy(net.minecraft.world.level.block.Blocks.POTTED_POPPY).randomTicks()
       )
    );
    public static final BlockEntry<CreakingHeartBlock> CREAKING_HEART = BLOCKS.registerBlock(
@@ -239,7 +239,7 @@ public class ModBlocks {
    );
    public static final BlockEntry<PinkPetalsBlock> WILDFLOWERS = BLOCKS.registerBlock(
       "wildflowers",
-      PinkPetalsBlock::new,
+      p -> new PinkPetalsBlock(p) {},
       Properties.of().mapColor(MapColor.PLANT).noCollission().sound(SoundType.PINK_PETALS).pushReaction(PushReaction.DESTROY)
    );
    public static final BlockEntry<SpreadingBushBlock> BUSH = BLOCKS.registerBlock(
@@ -259,13 +259,13 @@ public class ModBlocks {
       "tall_dry_grass", () -> new DryVegetationBlock(true, SHORT_DRY_GRASS, plantProperties(MapColor.COLOR_YELLOW).replaceable().offsetType(OffsetType.XYZ))
    );
    public static final BlockEntry<FlowerBlock> GOLDEN_DANDELION = BLOCKS.registerBlock(
-      "golden_dandelion", p -> new FlowerBlock(MobEffects.SATURATION, 0.35F, p), Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.DANDELION)
+      "golden_dandelion", p -> new FlowerBlock(MobEffects.SATURATION, 7, p), Properties.copy(net.minecraft.world.level.block.Blocks.DANDELION)
    );
    public static final BlockEntry<FlowerPotBlock> POTTED_GOLDEN_DANDELION = BLOCKS.register(
       "potted_golden_dandelion",
       () -> new FlowerPotBlock(
          GOLDEN_DANDELION.get(),
-         Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.POTTED_DANDELION)
+         Properties.copy(net.minecraft.world.level.block.Blocks.POTTED_DANDELION)
       )
    );
    public static final BlockEntry<CopperTorchBlock> COPPER_TORCH = BLOCKS.registerBlock(
@@ -330,23 +330,23 @@ public class ModBlocks {
    public static final Map<String, BlockEntry<ShelfBlock>> SHELVES = new LinkedHashMap<>();
    public static final StoneFamily SULFUR = StoneFamily.register("sulfur", "sulfur", () -> stoneProperties(MapColor.COLOR_YELLOW, ModSounds.SULFUR));
    public static final StoneFamily POLISHED_SULFUR = StoneFamily.register(
-      "polished_sulfur", "polished_sulfur", () -> Properties.ofLegacyCopy((BlockBehaviour)SULFUR.base().get())
+      "polished_sulfur", "polished_sulfur", () -> Properties.copy((BlockBehaviour)SULFUR.base().get())
    );
    public static final StoneFamily SULFUR_BRICKS = StoneFamily.register(
-      "sulfur_bricks", "sulfur_brick", () -> Properties.ofLegacyCopy((BlockBehaviour)SULFUR.base().get())
+      "sulfur_bricks", "sulfur_brick", () -> Properties.copy((BlockBehaviour)SULFUR.base().get())
    );
    public static final BlockEntry<Block> CHISELED_SULFUR = BLOCKS.register(
-      "chiseled_sulfur", () -> new Block(Properties.ofLegacyCopy((BlockBehaviour)SULFUR.base().get()))
+      "chiseled_sulfur", () -> new Block(Properties.copy((BlockBehaviour)SULFUR.base().get()))
    );
    public static final StoneFamily CINNABAR = StoneFamily.register("cinnabar", "cinnabar", () -> stoneProperties(MapColor.COLOR_RED, ModSounds.CINNABAR));
    public static final StoneFamily POLISHED_CINNABAR = StoneFamily.register(
-      "polished_cinnabar", "polished_cinnabar", () -> Properties.ofLegacyCopy((BlockBehaviour)CINNABAR.base().get())
+      "polished_cinnabar", "polished_cinnabar", () -> Properties.copy((BlockBehaviour)CINNABAR.base().get())
    );
    public static final StoneFamily CINNABAR_BRICKS = StoneFamily.register(
-      "cinnabar_bricks", "cinnabar_brick", () -> Properties.ofLegacyCopy((BlockBehaviour)CINNABAR.base().get())
+      "cinnabar_bricks", "cinnabar_brick", () -> Properties.copy((BlockBehaviour)CINNABAR.base().get())
    );
    public static final BlockEntry<Block> CHISELED_CINNABAR = BLOCKS.register(
-      "chiseled_cinnabar", () -> new Block(Properties.ofLegacyCopy((BlockBehaviour)CINNABAR.base().get()))
+      "chiseled_cinnabar", () -> new Block(Properties.copy((BlockBehaviour)CINNABAR.base().get()))
    );
    public static final CopperFamily COPPER_CHEST = CopperFamily.register(
       "copper_chest",

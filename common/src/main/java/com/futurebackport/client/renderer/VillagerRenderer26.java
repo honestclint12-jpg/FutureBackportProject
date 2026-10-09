@@ -161,7 +161,7 @@ public class VillagerRenderer26 extends VillagerRenderer {
                ResourceLocation key = BuiltInRegistries.VILLAGER_TYPE.getKey(type);
                ResourceLocation texture = FutureBackport.id("textures/entity/villager/baby/" + key.getPath() + ".png");
                return Minecraft.getInstance().getResourceManager().getResource(texture).map(r -> texture);
-            }).ifPresent(texture -> renderColoredCutoutModel(this.getParentModel(), texture, poseStack, buffers, light, villager, -1));
+            }).ifPresent(texture -> renderColoredCutoutModel(this.getParentModel(), texture, poseStack, buffers, light, villager, 1.0F, 1.0F, 1.0F));
          }
       }
    }

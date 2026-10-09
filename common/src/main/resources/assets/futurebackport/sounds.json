@@ -2854,15 +2854,13 @@
   },
   "item.armor.equip_nautilus": {
     "sounds": [
-      "item/armor/equip_wolf1",
-      "item/armor/equip_wolf2"
+      "mob/horse/armor"
     ],
     "subtitle": "subtitles.item.armor.equip_nautilus"
   },
   "item.armor.unequip_nautilus": {
     "sounds": [
-      "item/armor/unequip_wolf1",
-      "item/armor/unequip_wolf2"
+      "mob/horse/armor"
     ],
     "subtitle": "subtitles.item.armor.unequip_nautilus"
   },

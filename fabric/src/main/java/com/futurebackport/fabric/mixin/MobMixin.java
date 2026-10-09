@@ -1,5 +1,7 @@
 package com.futurebackport.fabric.mixin;
 
+import net.minecraft.nbt.CompoundTag;
+
 import com.futurebackport.entity.FarmAnimalVariantEvents;
 import com.futurebackport.entity.SoundVariants;
 import net.minecraft.world.DifficultyInstance;
@@ -19,7 +21,7 @@ abstract class MobMixin {
 
     @Inject(method = "finalizeSpawn", at = @At("RETURN"))
     private void futurebackport$finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType,
-                                             @Nullable SpawnGroupData groupData, CallbackInfoReturnable<SpawnGroupData> cir) {
+                                             @Nullable SpawnGroupData groupData, @Nullable CompoundTag tag, CallbackInfoReturnable<SpawnGroupData> cir) {
         Mob self = (Mob) (Object) this;
         FarmAnimalVariantEvents.onFinalizeSpawn(self, level, spawnType);
         SoundVariants.onFinalizeSpawn(self, level);

@@ -23,11 +23,11 @@ public class PottedEyeblossomBlock extends FlowerPotBlock {
       this.opposite = opposite;
    }
 
-   protected boolean isRandomlyTicking(BlockState state) {
+   public boolean isRandomlyTicking(BlockState state) {
       return true;
    }
 
-   protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+   public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
       if (EyeblossomBlock.shouldBeOpen(level, this.open) != this.open) {
          level.setBlock(pos, this.opposite.get().defaultBlockState(), 3);
          EyeblossomBlock.Type newType = this.open ? EyeblossomBlock.Type.CLOSED : EyeblossomBlock.Type.OPEN;

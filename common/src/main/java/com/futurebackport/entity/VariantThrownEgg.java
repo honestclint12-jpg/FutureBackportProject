@@ -51,10 +51,6 @@ public class VariantThrownEgg extends ThrownEgg {
                if (chick != null) {
                   chick.setAge(-24000);
                   chick.moveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), 0.0F);
-                  if (!chick.fudgePositionAfterSizeChange(EntityDimensions.fixed(0.0F, 0.0F))) {
-                     break;
-                  }
-
                   FarmAnimalVariant.ATTACHMENT.set(chick, this.variant);
                   this.level().addFreshEntity(chick);
                }

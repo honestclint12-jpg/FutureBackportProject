@@ -1,7 +1,6 @@
 package com.futurebackport.block;
 
 import com.futurebackport.FutureBackport;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -16,7 +15,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class CactusFlowerBlock extends BushBlock {
-   public static final MapCodec<CactusFlowerBlock> CODEC = simpleCodec(CactusFlowerBlock::new);
    public static final TagKey<Block> SUPPORT_OVERRIDE = TagKey.create(Registries.BLOCK, FutureBackport.id("support_override_cactus_flower"));
    private static final VoxelShape SHAPE = box(1.0, 0.0, 1.0, 15.0, 12.0, 15.0);
 
@@ -24,11 +22,7 @@ public class CactusFlowerBlock extends BushBlock {
       super(properties);
    }
 
-   protected MapCodec<CactusFlowerBlock> codec() {
-      return CODEC;
-   }
-
-   protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+   public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
       return SHAPE;
    }
 

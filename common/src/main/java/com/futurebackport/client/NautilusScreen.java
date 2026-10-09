@@ -11,9 +11,9 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class NautilusScreen extends AbstractContainerScreen<NautilusMenu> {
    private static final ResourceLocation BACKGROUND = FutureBackport.id("textures/gui/container/nautilus.png");
-   private static final ResourceLocation SLOT = ResourceLocation.withDefaultNamespace("container/slot");
-   private static final ResourceLocation SADDLE_SLOT = ResourceLocation.withDefaultNamespace("container/horse/saddle_slot");
-   private static final ResourceLocation ARMOR_ICON = FutureBackport.id("container/slot/nautilus_armor_inventory");
+   /** 1.20.1 has no GUI sprite atlas: the slot frames come from the horse screen texture, as HorseInventoryScreen draws them. */
+   private static final ResourceLocation HORSE_INVENTORY = new ResourceLocation("textures/gui/container/horse.png");
+   private static final ResourceLocation ARMOR_ICON = FutureBackport.id("textures/gui/sprites/container/slot/nautilus_armor_inventory.png");
    private float mouseX;
    private float mouseY;
 
@@ -26,15 +26,15 @@ public class NautilusScreen extends AbstractContainerScreen<NautilusMenu> {
       int y = this.topPos;
       graphics.blit(BACKGROUND, x, y, 0, 0, this.imageWidth, this.imageHeight);
       if (((NautilusMenu)this.menu).nautilus.isSaddleable()) {
-         graphics.blitSprite(SADDLE_SLOT, x + 7, y + 17, 18, 18);
-         graphics.blitSprite(SLOT, x + 7, y + 35, 18, 18);
+         graphics.blit(HORSE_INVENTORY, x + 7, y + 17, 18, 220, 18, 18);
+         graphics.blit(HORSE_INVENTORY, x + 7, y + 35, 0, 220, 18, 18);
          if (((NautilusMenu)this.menu).getSlot(1).getItem().isEmpty()) {
-            graphics.blitSprite(ARMOR_ICON, x + 8, y + 36, 16, 16);
+            graphics.blit(ARMOR_ICON, x + 8, y + 36, 0, 0, 16, 16, 16, 16);
          }
       }
 
       InventoryScreen.renderEntityInInventoryFollowsMouse(
-         graphics, x + 26, y + 18, x + 78, y + 70, 13, 0.25F, this.mouseX, this.mouseY, ((NautilusMenu)this.menu).nautilus
+         graphics, x + 52, y + 60, 13, (float)(x + 52) - this.mouseX, (float)(y + 25) - this.mouseY, ((NautilusMenu)this.menu).nautilus
       );
    }
 

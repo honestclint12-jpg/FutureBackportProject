@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "futurebackport:sulfur"
+    }
+  },
+  "pattern": [
+    "###"
+  ],
+  "result": {
+    "item": "futurebackport:sulfur_slab",
+    "count": 6
+  }
+}

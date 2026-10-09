@@ -64,7 +64,7 @@ public final class MountBabyRenderers26 {
                case BLACK -> "black";
                case GRAY -> "gray";
                case DARK_BROWN -> "darkbrown";
-               default -> throw new MatchException(null, null);
+               default -> throw new IllegalStateException();
             } + "_baby");
          }
       );
@@ -428,7 +428,7 @@ public final class MountBabyRenderers26 {
          ResourceLocation texture = TEXTURES.get(horse.getMarkings());
          if (texture != null && !horse.isInvisible()) {
             ((MountBabyRenderers26.BabyEquineModel)this.getParentModel())
-               .renderToBuffer(poseStack, buffers.getBuffer(RenderType.entityTranslucent(texture)), light, LivingEntityRenderer.getOverlayCoords(horse, 0.0F));
+               .renderToBuffer(poseStack, buffers.getBuffer(RenderType.entityTranslucent(texture)), light, LivingEntityRenderer.getOverlayCoords(horse, 0.0F), 1.0F, 1.0F, 1.0F, 1.0F);
          }
       }
    }

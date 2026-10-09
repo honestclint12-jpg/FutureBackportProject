@@ -1,9 +1,0 @@
-{
-  "type": "minecraft:stonecutting",
-  "ingredient": {
-    "item": "futurebackport:polished_cinnabar"
-  },
-  "result": {
-    "id": "futurebackport:cinnabar_brick_stairs"
-  }
-}

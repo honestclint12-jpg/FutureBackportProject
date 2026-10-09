@@ -13,7 +13,6 @@ import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.render.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.ColorResolverRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.event.client.player.ClientPreAttackCallback;
@@ -93,17 +92,16 @@ public class FutureBackportFabricClient implements ClientModInitializer {
                         lazy.get().renderByItem(stack, context, pose, buffers, light, overlay));
             }
         });
-        ColorResolverRegistry.register(DryFoliageColor.RESOLVER);
         ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new DryFoliageReloadListener());
     }
 
     /** Vanilla only builds sign materials for its own wood types, without namespaces. */
     private static void addSignMaterials(WoodType woodType) {
-        ResourceLocation name = ResourceLocation.parse(woodType.name());
+        ResourceLocation name = new ResourceLocation(woodType.name());
         Sheets.SIGN_MATERIALS.putIfAbsent(woodType, new Material(Sheets.SIGN_SHEET,
-                ResourceLocation.fromNamespaceAndPath(name.getNamespace(), "entity/signs/" + name.getPath())));
+                new ResourceLocation(name.getNamespace(), "entity/signs/" + name.getPath())));
         Sheets.HANGING_SIGN_MATERIALS.putIfAbsent(woodType, new Material(Sheets.SIGN_SHEET,
-                ResourceLocation.fromNamespaceAndPath(name.getNamespace(), "entity/signs/hanging/" + name.getPath())));
+                new ResourceLocation(name.getNamespace(), "entity/signs/hanging/" + name.getPath())));
     }
 
     private static final class LazyItemRenderer {

@@ -1,5 +1,6 @@
 {
-  "loader": "neoforge:separate_transforms",
+  "loader": "forge:separate_transforms",
+  "parent": "futurebackport:item/netherite_spear_in_hand",
   "base": {
     "parent": "futurebackport:item/netherite_spear_in_hand"
   },

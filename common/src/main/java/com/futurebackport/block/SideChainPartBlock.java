@@ -28,7 +28,7 @@ public interface SideChainPartBlock {
          return List.of();
       } else {
          SideChainPartBlock.Neighbors neighbors = this.getNeighbors(level, pos, this.getFacing(state));
-         List<BlockPos> results = new LinkedList<>();
+         LinkedList<BlockPos> results = new LinkedList<>();
          results.add(pos);
          this.addBlocksConnectingTowards(neighbors::left, SideChainPart.LEFT, results::addFirst);
          this.addBlocksConnectingTowards(neighbors::right, SideChainPart.RIGHT, results::addLast);

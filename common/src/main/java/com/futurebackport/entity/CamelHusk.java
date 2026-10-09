@@ -1,5 +1,9 @@
 package com.futurebackport.entity;
 
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobType;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.nbt.CompoundTag;
 import com.futurebackport.registry.ModSounds;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -42,9 +46,15 @@ public class CamelHusk extends Camel {
 
    public static boolean checkSpawnRules(EntityType<? extends Mob> type, ServerLevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random) {
       return level.getDifficulty() != Difficulty.PEACEFUL
-         && (MobSpawnType.ignoresLightRequirements(spawnType) || Monster.isDarkEnoughToSpawn(level, pos, random))
+         && (spawnType == MobSpawnType.SPAWNER || Monster.isDarkEnoughToSpawn(level, pos, random))
          && Mob.checkMobSpawnRules(type, level, spawnType, pos, random)
-         && (MobSpawnType.isSpawner(spawnType) || level.canSeeSky(pos));
+         && (spawnType == MobSpawnType.SPAWNER || level.canSeeSky(pos));
+   }
+
+   /** Undead (1.21 uses the zombies entity tag; 1.20.1 asks the mob). */
+   @Override
+   public MobType getMobType() {
+      return MobType.UNDEAD;
    }
 
    public boolean removeWhenFarAway(double distanceToClosestPlayer) {
@@ -55,13 +65,20 @@ public class CamelHusk extends Camel {
       return this.getFirstPassenger() instanceof Mob;
    }
 
+   /** The husk riding in front steers, saddle or not (1.20.1's Camel only lets a saddled camel be controlled). */
+   @Nullable
+   @Override
+   public LivingEntity getControllingPassenger() {
+      return this.getFirstPassenger() instanceof Mob mob ? mob : super.getControllingPassenger();
+   }
+
    public InteractionResult mobInteract(Player player, InteractionHand hand) {
       this.setPersistenceRequired();
       return super.mobInteract(player, hand);
    }
 
-   public boolean canBeLeashed() {
-      return !this.isMobControlled() && super.canBeLeashed();
+   public boolean canBeLeashed(Player player) {
+      return !this.isMobControlled() && super.canBeLeashed(player);
    }
 
    public boolean isFood(ItemStack stack) {
@@ -81,8 +98,10 @@ public class CamelHusk extends Camel {
       return false;
    }
 
-   public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData groupData) {
-      return super.finalizeSpawn(level, difficulty, spawnType, new AgeableMobGroupData(false));
+   public SpawnGroupData finalizeSpawn(
+      ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData groupData, @Nullable CompoundTag tag
+   ) {
+      return super.finalizeSpawn(level, difficulty, spawnType, new AgeableMobGroupData(false), tag);
    }
 
    protected SoundEvent getAmbientSound() {
@@ -98,7 +117,7 @@ public class CamelHusk extends Camel {
    }
 
    protected void playStepSound(BlockPos pos, BlockState state) {
-      if (state.is(BlockTags.CAMEL_SAND_STEP_SOUND_BLOCKS)) {
+      if (state.getSoundType() == SoundType.SAND) {
          this.playSound((SoundEvent)ModSounds.CAMEL_HUSK_STEP_SAND.get(), 0.4F, 1.0F);
       } else {
          this.playSound((SoundEvent)ModSounds.CAMEL_HUSK_STEP.get(), 0.4F, 1.0F);
@@ -113,14 +132,13 @@ public class CamelHusk extends Camel {
       return (SoundEvent)ModSounds.CAMEL_HUSK_SADDLE.get();
    }
 
-   public void makeSound(@Nullable SoundEvent sound) {
-      if (sound != null) {
-         Supplier<SoundEvent> swapped = SOUND_SWAPS.get(sound);
-         if (swapped != null) {
-            sound = swapped.get();
-         }
+   /** Camels play most sounds through playSound in 1.20.1 (there is no makeSound to hook). */
+   public void playSound(SoundEvent sound, float volume, float pitch) {
+      Supplier<SoundEvent> swapped = SOUND_SWAPS.get(sound);
+      if (swapped != null) {
+         sound = swapped.get();
       }
 
-      super.makeSound(sound);
+      super.playSound(sound, volume, pitch);
    }
 }

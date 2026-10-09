@@ -23,5 +23,5 @@ plugins {
 
 rootProject.name = 'futurebackport'
 include('common')
-include('neoforge')
+include('forge')
 include('fabric')

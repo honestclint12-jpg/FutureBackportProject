@@ -4,7 +4,7 @@ import com.futurebackport.registry.ModParticles;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ColorParticleOption;
+import com.futurebackport.particle.ColorParticleOption;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.util.ParticleUtils;
 import net.minecraft.util.RandomSource;

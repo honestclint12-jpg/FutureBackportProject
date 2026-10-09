@@ -1,0 +1,60 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "group": "harness_dye",
+  "ingredients": [
+    {
+      "item": "minecraft:green_dye"
+    },
+    [
+      {
+        "item": "futurebackport:white_harness"
+      },
+      {
+        "item": "futurebackport:orange_harness"
+      },
+      {
+        "item": "futurebackport:magenta_harness"
+      },
+      {
+        "item": "futurebackport:light_blue_harness"
+      },
+      {
+        "item": "futurebackport:yellow_harness"
+      },
+      {
+        "item": "futurebackport:lime_harness"
+      },
+      {
+        "item": "futurebackport:pink_harness"
+      },
+      {
+        "item": "futurebackport:gray_harness"
+      },
+      {
+        "item": "futurebackport:light_gray_harness"
+      },
+      {
+        "item": "futurebackport:cyan_harness"
+      },
+      {
+        "item": "futurebackport:purple_harness"
+      },
+      {
+        "item": "futurebackport:blue_harness"
+      },
+      {
+        "item": "futurebackport:brown_harness"
+      },
+      {
+        "item": "futurebackport:red_harness"
+      },
+      {
+        "item": "futurebackport:black_harness"
+      }
+    ]
+  ],
+  "result": {
+    "item": "futurebackport:green_harness"
+  }
+}

@@ -1,5 +1,6 @@
 package com.futurebackport.client.renderer;
 
+import com.futurebackport.client.util.ArgbColor;
 import com.futurebackport.FutureBackport;
 import com.futurebackport.client.model.FarmAnimalModels;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -20,15 +21,14 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.EntityRendererProvider.Context;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor.ARGB32;
 import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.item.DyeColor;
 
 public class SheepRenderer26 extends MobRenderer<Sheep, EntityModel<Sheep>> {
    public static final ModelLayerLocation BABY = new ModelLayerLocation(FutureBackport.id("sheep_baby"), "main");
-   private static final ResourceLocation ADULT_TEXTURE = ResourceLocation.withDefaultNamespace("textures/entity/sheep/sheep.png");
+   private static final ResourceLocation ADULT_TEXTURE = new ResourceLocation("textures/entity/sheep/sheep.png");
    private static final ResourceLocation BABY_TEXTURE = FutureBackport.id("textures/entity/sheep/sheep_baby.png");
-   private static final ResourceLocation ADULT_WOOL = ResourceLocation.withDefaultNamespace("textures/entity/sheep/sheep_fur.png");
+   private static final ResourceLocation ADULT_WOOL = new ResourceLocation("textures/entity/sheep/sheep_fur.png");
    private static final ResourceLocation BABY_WOOL = FutureBackport.id("textures/entity/sheep/sheep_wool_baby.png");
    private static final ResourceLocation UNDERCOAT = FutureBackport.id("textures/entity/sheep/sheep_wool_undercoat.png");
    private final SheepModel<Sheep> adult = (SheepModel<Sheep>)this.model;
@@ -59,9 +59,12 @@ public class SheepRenderer26 extends MobRenderer<Sheep, EntityModel<Sheep>> {
          int k = sheep.tickCount / 25 + sheep.getId();
          int count = DyeColor.values().length;
          float f = (sheep.tickCount % 25 + partialTick) / 25.0F;
-         return ARGB32.lerp(f, Sheep.getColor(DyeColor.byId(k % count)), Sheep.getColor(DyeColor.byId((k + 1) % count)));
+         float[] from = Sheep.getColorArray(DyeColor.byId(k % count));
+         float[] to = Sheep.getColorArray(DyeColor.byId((k + 1) % count));
+         return ArgbColor.pack(from[0] * (1.0F - f) + to[0] * f, from[1] * (1.0F - f) + to[1] * f, from[2] * (1.0F - f) + to[2] * f, 1.0F);
       } else {
-         return Sheep.getColor(sheep.getColor());
+         float[] color = Sheep.getColorArray(sheep.getColor());
+         return ArgbColor.pack(color[0], color[1], color[2], 1.0F);
       }
    }
 
@@ -143,8 +146,7 @@ public class SheepRenderer26 extends MobRenderer<Sheep, EntityModel<Sheep>> {
                netHeadYaw,
                headPitch,
                partialTick,
-               SheepRenderer26.woolColor(sheep, partialTick)
-            );
+               ArgbColor.red(SheepRenderer26.woolColor(sheep, partialTick)), ArgbColor.green(SheepRenderer26.woolColor(sheep, partialTick)), ArgbColor.blue(SheepRenderer26.woolColor(sheep, partialTick)));
          }
       }
    }
@@ -187,8 +189,7 @@ public class SheepRenderer26 extends MobRenderer<Sheep, EntityModel<Sheep>> {
                netHeadYaw,
                headPitch,
                partialTick,
-               SheepRenderer26.woolColor(sheep, partialTick)
-            );
+               ArgbColor.red(SheepRenderer26.woolColor(sheep, partialTick)), ArgbColor.green(SheepRenderer26.woolColor(sheep, partialTick)), ArgbColor.blue(SheepRenderer26.woolColor(sheep, partialTick)));
          }
       }
    }

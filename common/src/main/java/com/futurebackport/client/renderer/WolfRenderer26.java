@@ -1,5 +1,6 @@
 package com.futurebackport.client.renderer;
 
+import com.futurebackport.client.util.ArgbColor;
 import com.futurebackport.FutureBackport;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -25,7 +26,6 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.util.FastColor.ARGB32;
 import net.minecraft.world.entity.animal.Wolf;
 
 public class WolfRenderer26 extends WolfRenderer {
@@ -61,15 +61,20 @@ public class WolfRenderer26 extends WolfRenderer {
       public void render(Wolf wolf, float yaw, float partialTick, PoseStack poseStack, MultiBufferSource buffers, int light) {
          if (wolf.isWet()) {
             float shade = wolf.getWetShade(partialTick);
-            ((WolfRenderer26.BabyWolfModel)this.model).color = ARGB32.colorFromFloat(1.0F, shade, shade, shade);
+            ((WolfRenderer26.BabyWolfModel)this.model).color = ArgbColor.pack(shade, shade, shade, 1.0F);
          }
 
          super.render(wolf, yaw, partialTick, poseStack, buffers, light);
          ((WolfRenderer26.BabyWolfModel)this.model).color = -1;
       }
 
+      /** 1.20.1 wolves have no variants: the same three textures vanilla's WolfRenderer picks from. */
+      private static final ResourceLocation WOLF = new ResourceLocation("textures/entity/wolf/wolf.png");
+      private static final ResourceLocation WOLF_TAME = new ResourceLocation("textures/entity/wolf/wolf_tame.png");
+      private static final ResourceLocation WOLF_ANGRY = new ResourceLocation("textures/entity/wolf/wolf_angry.png");
+
       public ResourceLocation getTextureLocation(Wolf wolf) {
-         ResourceLocation adult = wolf.getTexture();
+         ResourceLocation adult = wolf.isTame() ? WOLF_TAME : wolf.isAngry() ? WOLF_ANGRY : WOLF;
          return this.babyTextures.computeIfAbsent(adult, a -> {
             ResourceLocation baby = FutureBackport.id(a.getPath().replace(".png", "_baby.png"));
             return Minecraft.getInstance().getResourceManager().getResource(baby).isPresent() ? baby : a;
@@ -187,8 +192,10 @@ public class WolfRenderer26 extends WolfRenderer {
          this.tail.zRot = wolf.getBodyRollAngle(this.partialTick, -0.2F);
       }
 
-      public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int light, int overlay, int tint) {
-         super.renderToBuffer(poseStack, buffer, light, overlay, this.color == -1 ? tint : ARGB32.multiply(tint, this.color));
+      public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int light, int overlay, float red, float green, float blue, float alpha) {
+         int tint = ArgbColor.pack(red, green, blue, alpha);
+         int color = this.color == -1 ? tint : ArgbColor.multiply(tint, this.color);
+         super.renderToBuffer(poseStack, buffer, light, overlay, ArgbColor.red(color), ArgbColor.green(color), ArgbColor.blue(color), ArgbColor.alpha(color));
       }
    }
 
@@ -210,13 +217,17 @@ public class WolfRenderer26 extends WolfRenderer {
          float headPitch
       ) {
          if (wolf.isTame() && !wolf.isInvisible()) {
+            float[] collar = wolf.getCollarColor().getTextureDiffuseColors();
             ((WolfRenderer26.BabyWolfModel)this.getParentModel())
                .renderToBuffer(
                   poseStack,
                   buffers.getBuffer(RenderType.entityCutoutNoCull(WolfRenderer26.BabyRenderer.COLLAR)),
                   light,
                   OverlayTexture.NO_OVERLAY,
-                  wolf.getCollarColor().getTextureDiffuseColor()
+                  collar[0],
+                  collar[1],
+                  collar[2],
+                  1.0F
                );
          }
       }

@@ -1,5 +1,8 @@
 package com.futurebackport.entity;
 
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.Pose;
+import com.futurebackport.util.Backports;
 import com.futurebackport.FutureBackport;
 import com.futurebackport.item.HarnessItem;
 import com.futurebackport.registry.ModEntities;
@@ -57,6 +60,8 @@ public class HappyGhast extends Animal {
    private static final TagKey<Item> FOOD = TagKey.create(Registries.ITEM, FutureBackport.id("happy_ghast_food"));
    private static final TagKey<Item> TEMPT_ITEMS = TagKey.create(Registries.ITEM, FutureBackport.id("happy_ghast_tempt_items"));
    private static final EntityDataAccessor<Boolean> STAYS_STILL = SynchedEntityData.defineId(HappyGhast.class, EntityDataSerializers.BOOLEAN);
+   /** The harness. 1.20.1 has no BODY equipment slot, so it is synced and saved here. */
+   private static final EntityDataAccessor<ItemStack> BODY_ITEM = SynchedEntityData.defineId(HappyGhast.class, EntityDataSerializers.ITEM_STACK);
    private int serverStillTimeout;
    private static final double TEMPT_RANGE = 16.0;
 
@@ -65,6 +70,22 @@ public class HappyGhast extends Animal {
       this.moveControl = new HappyGhast.GhastMoveControl(this);
       this.lookControl = new HappyGhast.HappyGhastLookControl();
       this.setNoGravity(true);
+   }
+
+   /** Eye height as a fraction of the (age-scaled) height; 1.20.1 has no EntityType eyeHeight. */
+   protected float getStandingEyeHeight(Pose pose, EntityDimensions dimensions) {
+      return dimensions.height * (2.6F / 4.0F);
+   }
+
+   private static final Vec3[] SEATS = new Vec3[]{new Vec3(0.0, 4.0, 1.7), new Vec3(-1.7, 4.0, 0.0), new Vec3(0.0, 4.0, -1.7), new Vec3(1.7, 4.0, 0.0)};
+
+   /** Four seats on top, one per rider (1.21 passenger attachments). */
+   protected void positionRider(Entity passenger, Entity.MoveFunction move) {
+      if (this.hasPassenger(passenger)) {
+         int index = Math.max(0, this.getPassengers().indexOf(passenger)) % SEATS.length;
+         Vec3 seat = SEATS[index].scale(this.getScale()).yRot(-this.getYRot() * (float) (Math.PI / 180.0));
+         move.accept(passenger, this.getX() + seat.x, this.getY() + seat.y + passenger.getMyRidingOffset(), this.getZ() + seat.z);
+      }
    }
 
    public static Builder createAttributes() {
@@ -196,8 +217,16 @@ public class HappyGhast extends Animal {
       return stack.is(FOOD);
    }
 
+   public ItemStack getBodyItem() {
+      return this.entityData.get(BODY_ITEM);
+   }
+
+   public void setBodyItem(ItemStack stack) {
+      this.entityData.set(BODY_ITEM, stack);
+   }
+
    public boolean isWearingHarness() {
-      return this.getItemBySlot(EquipmentSlot.BODY).getItem() instanceof HarnessItem;
+      return this.getBodyItem().getItem() instanceof HarnessItem;
    }
 
    public InteractionResult mobInteract(Player player, InteractionHand hand) {
@@ -207,16 +236,16 @@ public class HappyGhast extends Animal {
          ItemStack stack = player.getItemInHand(hand);
          if (stack.getItem() instanceof HarnessItem && !this.isWearingHarness()) {
             if (!this.level().isClientSide()) {
-               this.setItemSlot(EquipmentSlot.BODY, stack.copyWithCount(1));
-               stack.consume(1, player);
+               this.setBodyItem(stack.copyWithCount(1));
+               Backports.consume(stack, 1, player);
                this.level().playSound(null, this, (SoundEvent)ModSounds.HAPPY_GHAST_EQUIP.get(), this.getSoundSource(), 1.0F, 1.0F);
             }
 
             return InteractionResult.sidedSuccess(this.level().isClientSide());
          } else if (stack.is(Items.SHEARS) && this.isWearingHarness() && !this.isVehicle()) {
             if (!this.level().isClientSide()) {
-               this.spawnAtLocation(this.getItemBySlot(EquipmentSlot.BODY));
-               this.setItemSlot(EquipmentSlot.BODY, ItemStack.EMPTY);
+               this.spawnAtLocation(this.getBodyItem());
+               this.setBodyItem(ItemStack.EMPTY);
                this.level().playSound(null, this, (SoundEvent)ModSounds.HAPPY_GHAST_UNEQUIP.get(), this.getSoundSource(), 1.0F, 1.0F);
             }
 
@@ -236,7 +265,7 @@ public class HappyGhast extends Animal {
    protected void dropEquipment() {
       super.dropEquipment();
       if (this.isWearingHarness()) {
-         this.spawnAtLocation(this.getItemBySlot(EquipmentSlot.BODY));
+         this.spawnAtLocation(this.getBodyItem());
       }
    }
 
@@ -338,9 +367,10 @@ public class HappyGhast extends Animal {
       }
    }
 
-   protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder builder) {
-      super.defineSynchedData(builder);
-      builder.define(STAYS_STILL, false);
+   protected void defineSynchedData() {
+      super.defineSynchedData();
+      this.entityData.define(STAYS_STILL, false);
+      this.entityData.define(BODY_ITEM, ItemStack.EMPTY);
    }
 
    private void setServerStillTimeout(int timeout) {
@@ -375,11 +405,17 @@ public class HappyGhast extends Animal {
    public void addAdditionalSaveData(CompoundTag tag) {
       super.addAdditionalSaveData(tag);
       tag.putInt("still_timeout", this.serverStillTimeout);
+      if (!this.getBodyItem().isEmpty()) {
+         tag.put("body_armor_item", this.getBodyItem().save(new CompoundTag()));
+      }
    }
 
    public void readAdditionalSaveData(CompoundTag tag) {
       super.readAdditionalSaveData(tag);
       this.setServerStillTimeout(tag.getInt("still_timeout"));
+      if (tag.contains("body_armor_item", 10)) {
+         this.setBodyItem(ItemStack.of(tag.getCompound("body_armor_item")));
+      }
    }
 
    public Vec3 getDismountLocationForPassenger(LivingEntity passenger) {

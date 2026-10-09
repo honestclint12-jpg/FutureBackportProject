@@ -62,7 +62,7 @@ public class HappyGhastRenderer extends MobRenderer<HappyGhast, HappyGhastModels
          float netHeadYaw,
          float headPitch
       ) {
-         if (ghast.getItemBySlot(EquipmentSlot.BODY).getItem() instanceof HarnessItem harness && !ghast.isBaby()) {
+         if (ghast.getBodyItem().getItem() instanceof HarnessItem harness && !ghast.isBaby()) {
             ResourceLocation texture = FutureBackport.id(
                "textures/entity/equipment/happy_ghast_body/" + harness.getColor().getSerializedName() + "_harness.png"
             );
@@ -70,7 +70,7 @@ public class HappyGhastRenderer extends MobRenderer<HappyGhast, HappyGhastModels
             this.model
                .renderToBuffer(
                   poseStack, buffer.getBuffer(RenderType.entityCutoutNoCull(texture)), packedLight, LivingEntityRenderer.getOverlayCoords(ghast, 0.0F)
-               );
+               , 1.0F, 1.0F, 1.0F, 1.0F);
          }
       }
    }

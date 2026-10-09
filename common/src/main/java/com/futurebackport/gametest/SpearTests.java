@@ -16,7 +16,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class SpearTests {
    private static Player spearman(GameTestHelper helper) {
-      Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+      Player player = TestPlayers.mock(helper, GameType.SURVIVAL);
       Vec3 pos = Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(2, 1, 2)));
       player.moveTo(pos.x, pos.y, pos.z, 0.0F, 0.0F);
       player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack((ItemLike)ModItems.IRON_SPEAR.get()));
@@ -58,7 +58,7 @@ public class SpearTests {
       player.setXRot(20.0F);
       SpearItem spear = (SpearItem)ModItems.IRON_SPEAR.get();
       ItemStack stack = player.getMainHandItem();
-      int justAfterDelay = spear.getUseDuration(stack, player) - 12 - 1;
+      int justAfterDelay = spear.getUseDuration(stack) - 12 - 1;
       player.zo = player.getZ() - 0.4;
       spear.onUseTick(helper.getLevel(), player, stack, justAfterDelay);
       float dealt = target.getMaxHealth() - target.getHealth();

@@ -1,5 +1,6 @@
 package com.futurebackport.registry;
 
+import net.minecraft.util.GsonHelper;
 import com.futurebackport.FutureBackport;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -33,13 +34,13 @@ public final class CreativePlacements {
             Object var9;
             try (InputStream stream = CreativePlacements.class.getResourceAsStream("/assets/futurebackport/creative_placements.json")) {
                if (stream != null) {
-                  for (JsonElement element : JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonArray()) {
+                  for (JsonElement element : GsonHelper.parseArray(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
                      JsonObject entry = element.getAsJsonObject();
                      list.add(
                         new CreativePlacements.Placement(
-                           ResourceLocation.parse(entry.get("tab").getAsString()),
-                           ResourceLocation.parse(entry.get("after").getAsString()),
-                           ResourceLocation.parse(entry.get("item").getAsString())
+                           new ResourceLocation(entry.get("tab").getAsString()),
+                           new ResourceLocation(entry.get("after").getAsString()),
+                           new ResourceLocation(entry.get("item").getAsString())
                         )
                      );
                   }

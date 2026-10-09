@@ -1,6 +1,5 @@
 package com.futurebackport.block;
 
-import com.mojang.serialization.MapCodec;
 import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -20,10 +19,6 @@ public class ParticleLeavesBlock extends LeavesBlock {
       super(properties);
       this.leafParticleChance = leafParticleChance;
       this.leafParticle = leafParticle;
-   }
-
-   public MapCodec<? extends LeavesBlock> codec() {
-      return simpleCodec(p -> new ParticleLeavesBlock(this.leafParticleChance, this.leafParticle, p));
    }
 
    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {

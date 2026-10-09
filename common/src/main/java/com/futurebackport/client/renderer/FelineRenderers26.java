@@ -212,8 +212,8 @@ public final class FelineRenderers26 {
          return this.texture.apply(entity);
       }
 
-      protected void setupRotations(T entity, PoseStack poseStack, float bob, float yBodyRot, float partialTick, float scale) {
-         super.setupRotations(entity, poseStack, bob, yBodyRot, partialTick, scale);
+      protected void setupRotations(T entity, PoseStack poseStack, float bob, float yBodyRot, float partialTick) {
+         super.setupRotations(entity, poseStack, bob, yBodyRot, partialTick);
          if (entity instanceof Cat cat) {
             float lie = cat.getLieDownAmount(partialTick);
             if (lie > 0.0F) {
@@ -238,7 +238,7 @@ public final class FelineRenderers26 {
 
       public Cat26(Context context) {
          super(context);
-         this.baby = new FelineRenderers26.BabyRenderer<>(context, cat -> this.babyTextures.computeIfAbsent(cat.getTextureId(), adult -> {
+         this.baby = new FelineRenderers26.BabyRenderer<>(context, cat -> this.babyTextures.computeIfAbsent(cat.getResourceLocation(), adult -> {
             ResourceLocation baby = FutureBackport.id(adult.getPath().replace("/cat/", "/cat/cat_").replace(".png", "_baby.png"));
             return Minecraft.getInstance().getResourceManager().getResource(baby).isPresent() ? baby : adult;
          }));
@@ -276,13 +276,17 @@ public final class FelineRenderers26 {
          if (cat.isTame() && !cat.isInvisible()) {
             poseStack.pushPose();
             poseStack.scale(1.01F, 1.01F, 1.01F);
+            float[] collar = cat.getCollarColor().getTextureDiffuseColors();
             ((FelineRenderers26.BabyFelineModel)this.getParentModel())
                .renderToBuffer(
                   poseStack,
                   buffers.getBuffer(RenderType.entityCutoutNoCull(COLLAR)),
                   light,
                   OverlayTexture.NO_OVERLAY,
-                  cat.getCollarColor().getTextureDiffuseColor()
+                  collar[0],
+                  collar[1],
+                  collar[2],
+                  1.0F
                );
             poseStack.popPose();
          }

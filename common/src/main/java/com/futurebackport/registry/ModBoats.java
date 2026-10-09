@@ -4,8 +4,7 @@ import com.futurebackport.FutureBackport;
 import net.minecraft.world.entity.vehicle.Boat;
 
 /**
- * Boat types are an enum in 1.21.1, so each loader has to add the pale oak constant itself
- * (NeoForge: enum extension in META-INF/enumextensions.json).
+ * Boat types are an enum, so the pale oak constant is added by BoatTypeMixin (common, for both 1.20.1 loaders).
  */
 public final class ModBoats {
    public static final String PALE_OAK_NAME = "futurebackport:pale_oak";

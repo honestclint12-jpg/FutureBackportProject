@@ -1,5 +1,8 @@
 package com.futurebackport.client.renderer;
 
+import org.jetbrains.annotations.Nullable;
+import net.minecraft.world.item.DyeableLeatherItem;
+import com.futurebackport.client.util.ArgbColor;
 import com.futurebackport.FutureBackport;
 import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.HashMap;
@@ -25,10 +28,7 @@ import net.minecraft.util.FastColor.ARGB32;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ArmorMaterial.Layer;
-import net.minecraft.world.item.component.DyedItemColor;
 
 public class BabyArmorLayer<T extends LivingEntity, M extends HumanoidModel<T>> extends RenderLayer<T, M> {
    public static final ModelLayerLocation HUMANOID_INNER = layer("inner");
@@ -84,12 +84,12 @@ public class BabyArmorLayer<T extends LivingEntity, M extends HumanoidModel<T>> 
                BabyArmorLayer.ArmorModel model = slot == EquipmentSlot.LEGS ? this.inner : this.outer;
                model.pose((HumanoidModel<?>)this.getParentModel(), this.bodySkeleton, PARTS.get(slot));
 
-               for (Layer layer : ((ArmorMaterial)armor.getMaterial().value()).layers()) {
-                  ResourceLocation texture = babyTexture(layer.texture(false));
-                  if (texture != null) {
-                     int color = layer.dyeable() ? ARGB32.opaque(DyedItemColor.getOrDefault(stack, -6265536)) : -1;
-                     model.root.render(poseStack, buffers.getBuffer(RenderType.armorCutoutNoCull(texture)), light, OverlayTexture.NO_OVERLAY, color);
-                  }
+               boolean legs = slot == EquipmentSlot.LEGS;
+               if (armor instanceof DyeableLeatherItem dyeable) {
+                  this.renderLayer(poseStack, buffers, light, model, armorTexture(armor, legs, null), dyeable.getColor(stack));
+                  this.renderLayer(poseStack, buffers, light, model, armorTexture(armor, legs, "overlay"), -1);
+               } else {
+                  this.renderLayer(poseStack, buffers, light, model, armorTexture(armor, legs, null), -1);
                }
 
                if (stack.hasFoil()) {
@@ -98,6 +98,30 @@ public class BabyArmorLayer<T extends LivingEntity, M extends HumanoidModel<T>> 
             }
          }
       }
+   }
+
+   private void renderLayer(
+      PoseStack poseStack, MultiBufferSource buffers, int light, BabyArmorLayer.ArmorModel model, ResourceLocation adultTexture, int color
+   ) {
+      ResourceLocation texture = babyTexture(adultTexture);
+      if (texture != null) {
+         model.root.render(
+            poseStack,
+            buffers.getBuffer(RenderType.armorCutoutNoCull(texture)),
+            light,
+            OverlayTexture.NO_OVERLAY,
+            ArgbColor.red(color),
+            ArgbColor.green(color),
+            ArgbColor.blue(color),
+            1.0F
+         );
+      }
+   }
+
+   /** The adult armor texture, named like vanilla's HumanoidArmorLayer does in 1.20.1. */
+   private static ResourceLocation armorTexture(ArmorItem armor, boolean legs, @Nullable String overlay) {
+      ResourceLocation name = new ResourceLocation(armor.getMaterial().getName());
+      return name.withPath(path -> "textures/models/armor/" + path + "_layer_" + (legs ? 2 : 1) + (overlay == null ? "" : "_" + overlay) + ".png");
    }
 
    private static ResourceLocation babyTexture(ResourceLocation adultTexture) {

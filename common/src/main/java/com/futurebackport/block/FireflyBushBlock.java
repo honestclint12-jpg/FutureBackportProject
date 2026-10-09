@@ -2,7 +2,6 @@ package com.futurebackport.block;
 
 import com.futurebackport.registry.ModParticles;
 import com.futurebackport.registry.ModSounds;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.sounds.SoundEvent;
@@ -14,15 +13,9 @@ import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.levelgen.Heightmap.Types;
 
 public class FireflyBushBlock extends SpreadingBushBlock {
-   public static final MapCodec<FireflyBushBlock> CODEC = simpleCodec(FireflyBushBlock::new);
 
    public FireflyBushBlock(Properties properties) {
       super(properties);
-   }
-
-   @Override
-   protected MapCodec<? extends FireflyBushBlock> codec() {
-      return CODEC;
    }
 
    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {

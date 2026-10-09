@@ -99,7 +99,7 @@ public class NautilusRenderer<T extends AbstractNautilus> extends MobRenderer<T,
          if (!nautilus.isBaby() && nautilus.getBodyArmorItem().getItem() instanceof NautilusArmorItem armor) {
             this.model.prepareMobModel(nautilus, limbSwing, limbSwingAmount, partialTick);
             this.model.setupAnim(nautilus, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
-            this.model.renderToBuffer(poseStack, buffers.getBuffer(RenderType.entityCutoutNoCull(armor.getTexture())), light, OverlayTexture.NO_OVERLAY);
+            this.model.renderToBuffer(poseStack, buffers.getBuffer(RenderType.entityCutoutNoCull(armor.getTexture())), light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
          }
       }
    }
@@ -128,7 +128,7 @@ public class NautilusRenderer<T extends AbstractNautilus> extends MobRenderer<T,
             this.model.prepareMobModel(nautilus, limbSwing, limbSwingAmount, partialTick);
             this.model.setupAnim(nautilus, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
             this.model
-               .renderToBuffer(poseStack, buffers.getBuffer(RenderType.entityCutoutNoCull(NautilusRenderer.SADDLE_TEXTURE)), light, OverlayTexture.NO_OVERLAY);
+               .renderToBuffer(poseStack, buffers.getBuffer(RenderType.entityCutoutNoCull(NautilusRenderer.SADDLE_TEXTURE)), light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
          }
       }
    }

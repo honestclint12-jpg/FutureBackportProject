@@ -1,0 +1,36 @@
+{
+  "pools": [
+    {
+      "rolls": 3.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "damage": {
+                "type": "minecraft:uniform",
+                "max": 1.0,
+                "min": 0.8
+              },
+              "function": "minecraft:set_damage"
+            },
+            {
+              "function": "minecraft:enchant_randomly"
+            }
+          ],
+          "name": "futurebackport:diamond_spear",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "futurebackport:diamond_spear",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:empty",
+          "weight": 100
+        }
+      ]
+    }
+  ]
+}

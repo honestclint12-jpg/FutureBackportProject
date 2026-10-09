@@ -1,6 +1,5 @@
 package com.futurebackport.block;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -10,7 +9,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BonemealableBlock;
-import net.minecraft.world.level.block.BonemealableBlock.Type;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
@@ -23,11 +21,7 @@ public class FeaturePlacerBlock extends Block implements BonemealableBlock {
       this.feature = feature;
    }
 
-   protected MapCodec<? extends Block> codec() {
-      return simpleCodec(p -> new FeaturePlacerBlock(this.feature, p));
-   }
-
-   public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
+   public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state, boolean isClient) {
       return level.getBlockState(pos.above()).isAir();
    }
 
@@ -42,7 +36,4 @@ public class FeaturePlacerBlock extends Block implements BonemealableBlock {
          .ifPresent(patch -> ((ConfiguredFeature)patch.value()).place(level, level.getChunkSource().getGenerator(), random, pos.above()));
    }
 
-   public Type getType() {
-      return Type.NEIGHBOR_SPREADER;
-   }
 }

@@ -11,20 +11,18 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Stands in for NeoForge's EntityInteract event, which fires inside interactOn (after the spectator check). Fabric's
- * UseEntityCallback only fires from the network handlers, so fake players and direct calls would skip it.
+ * Stands in for Forge's EntityInteract event, which fires at the start of Player#interactOn. Fabric's
+ * UseEntityCallback only covers interactions that arrive over the network, so fake players would skip the age lock.
  */
 @Mixin(Player.class)
 abstract class PlayerMixin {
 
     @Inject(method = "interactOn", at = @At("HEAD"), cancellable = true)
-    private void futurebackport$interactOn(Entity target, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
+    private void futurebackport$ageLock(Entity target, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
         Player self = (Player) (Object) this;
-        if (!self.isSpectator()) {
-            InteractionResult result = AgeLock.onInteract(self, self.level(), target, self.getItemInHand(hand));
-            if (result != null) {
-                cir.setReturnValue(result);
-            }
+        InteractionResult result = AgeLock.onInteract(self, self.level(), target, self.getItemInHand(hand));
+        if (result != null) {
+            cir.setReturnValue(result);
         }
     }
 }

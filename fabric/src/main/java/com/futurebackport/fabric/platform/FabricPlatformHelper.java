@@ -1,7 +1,6 @@
 package com.futurebackport.fabric.platform;
 
 import com.futurebackport.platform.services.PlatformHelper;
-import io.netty.buffer.Unpooled;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
@@ -10,9 +9,8 @@ import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -24,7 +22,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.RecordItem;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
@@ -89,27 +89,23 @@ public final class FabricPlatformHelper implements PlatformHelper {
     }
 
     @Override
-    public <M extends AbstractContainerMenu> MenuType<M> createMenuType(MenuFactory<M> factory) {
-        // Fabric sends the extra data as a typed object; carry the raw bytes and rebuild a buffer on the client.
-        return new ExtendedScreenHandlerType<>(
-                (containerId, inventory, data) -> factory.create(containerId, inventory, wrap(data, inventory)),
-                ByteBufCodecs.BYTE_ARRAY);
-    }
-
-    private static RegistryFriendlyByteBuf wrap(byte[] data, Inventory inventory) {
-        return new RegistryFriendlyByteBuf(Unpooled.wrappedBuffer(data), inventory.player.registryAccess());
+    public Item musicDisc(int comparatorOutput, Supplier<SoundEvent> sound, Item.Properties properties, int lengthInSeconds) {
+        // Sound events register before items on Fabric (see FabricRegistrationFactory), so the sound exists here.
+        return new RecordItem(comparatorOutput, sound.get(), properties, lengthInSeconds) {
+        };
     }
 
     @Override
-    public void openMenu(ServerPlayer player, MenuProvider provider, Consumer<RegistryFriendlyByteBuf> extraData) {
-        RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), player.registryAccess());
-        extraData.accept(buf);
-        byte[] data = new byte[buf.readableBytes()];
-        buf.readBytes(data);
-        player.openMenu(new ExtendedScreenHandlerFactory<byte[]>() {
+    public <M extends AbstractContainerMenu> MenuType<M> createMenuType(MenuFactory<M> factory) {
+        return new ExtendedScreenHandlerType<>(factory::create);
+    }
+
+    @Override
+    public void openMenu(ServerPlayer player, MenuProvider provider, Consumer<FriendlyByteBuf> extraData) {
+        player.openMenu(new ExtendedScreenHandlerFactory() {
             @Override
-            public byte[] getScreenOpeningData(ServerPlayer target) {
-                return data;
+            public void writeScreenOpeningData(ServerPlayer target, FriendlyByteBuf buf) {
+                extraData.accept(buf);
             }
 
             @Override

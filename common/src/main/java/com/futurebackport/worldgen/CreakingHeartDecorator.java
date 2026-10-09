@@ -7,6 +7,7 @@ import com.futurebackport.registry.ModWorldgen;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -37,7 +38,7 @@ public class CreakingHeartDecorator extends TreeDecorator {
       List<BlockPos> logs = context.logs();
       if (!logs.isEmpty() && !(random.nextFloat() >= this.probability)) {
          List<BlockPos> candidates = new ArrayList<>(logs);
-         Util.shuffle(candidates, random);
+         Collections.shuffle(candidates, new java.util.Random(random.nextLong()));
          candidates.stream()
             .filter(pos -> {
                for (Direction direction : Direction.values()) {

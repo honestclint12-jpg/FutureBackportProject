@@ -3,22 +3,32 @@
   "minVersion": "0.8",
   "package": "com.futurebackport.mixin",
   "refmap": "${mod_id}.refmap.json",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "BoatMixin",
+    "BoatTypeInvoker",
+    "BoatTypeMixin",
     "CactusBlockMixin",
     "CamelMixin",
     "CarvedPumpkinBlockMixin",
     "ChestBlockEntityMixin",
     "ChickenMixin",
     "DrownedMixin",
+    "EnchantmentHelperMixin",
+    "EnchantmentMixin",
+    "EntityAttachmentMixin",
     "EntityMixin",
+    "HoneycombItemMixin",
     "LeavesBlockMixin",
     "LightningRodBlockMixin",
     "OverworldBiomeBuilderMixin",
+    "ServerPlayerAttachmentMixin",
     "SimpleBlockFeatureMixin",
     "ZombieMixin"
   ],
   "client": [
+    "client.BoatNamesMixin",
+    "client.BoatRendererMixin",
     "client.PackRepositoryMixin"
   ],
   "injectors": {

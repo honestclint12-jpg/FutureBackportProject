@@ -1,5 +1,6 @@
 package com.futurebackport.gametest;
 
+import net.minecraft.world.entity.MobType;
 import com.futurebackport.FutureBackport;
 import com.futurebackport.entity.CamelHusk;
 import com.futurebackport.entity.CamelHuskSpawning;
@@ -149,7 +150,7 @@ public class WorldgenTests {
       helper.assertTrue(camel.getControllingPassenger() == husk, "husk does not steer the camel husk");
       helper.assertTrue(camel.isFood(new ItemStack(Items.RABBIT_FOOT)) && !camel.isFood(new ItemStack(Items.CACTUS)), "wrong food");
       helper.assertTrue(!camel.canFallInLove(), "camel husk can breed");
-      helper.assertTrue(camel.getType().is(EntityTypeTags.UNDEAD) && ((EntityType)ModEntities.PARCHED.get()).is(EntityTypeTags.UNDEAD), "not undead");
+      helper.assertTrue(camel.getMobType() == MobType.UNDEAD && ModEntities.PARCHED.get().create(helper.getLevel()).getMobType() == MobType.UNDEAD, "not undead");
       helper.succeed();
    }
 
@@ -174,7 +175,7 @@ public class WorldgenTests {
          "meadow has no wildflowers"
       );
       Reference<PlacedFeature> oldGrass = placed.getHolderOrThrow(
-         ResourceKey.create(Registries.PLACED_FEATURE, ResourceLocation.withDefaultNamespace("patch_grass_plain"))
+         ResourceKey.create(Registries.PLACED_FEATURE, new ResourceLocation("patch_grass_plain"))
       );
       helper.assertTrue(
          ((Biome)biomes.getOrThrow(Biomes.MEADOW)).getGenerationSettings().features().stream().noneMatch(set -> set.contains(oldGrass)),

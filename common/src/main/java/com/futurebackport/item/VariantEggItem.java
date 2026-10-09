@@ -4,6 +4,8 @@ import com.futurebackport.entity.FarmAnimalVariant;
 import com.futurebackport.entity.VariantThrownEgg;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
+import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
+import net.minecraft.core.dispenser.DispenseItemBehavior;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -44,9 +46,19 @@ public class VariantEggItem extends EggItem {
       }
 
       player.awardStat(Stats.ITEM_USED.get(this));
-      stack.consume(1, player);
+      if (!player.getAbilities().instabuild) {
+         stack.shrink(1);
+      }
       return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
    }
+
+   /** Dispensers fire variant eggs like vanilla eggs (1.20.1 has no ProjectileItem). */
+   public static final DispenseItemBehavior DISPENSE_BEHAVIOR = new AbstractProjectileDispenseBehavior() {
+      @Override
+      protected Projectile getProjectile(Level level, Position pos, ItemStack stack) {
+         return ((VariantEggItem)stack.getItem()).asProjectile(level, pos, stack, null);
+      }
+   };
 
    public Projectile asProjectile(Level level, Position pos, ItemStack stack, Direction direction) {
       VariantThrownEgg egg = new VariantThrownEgg(level, pos.x(), pos.y(), pos.z(), this.variant, this);

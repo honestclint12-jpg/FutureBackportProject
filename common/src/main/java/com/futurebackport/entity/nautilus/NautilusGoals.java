@@ -98,7 +98,8 @@ public final class NautilusGoals {
                   DamageSource source = this.nautilus.damageSources().mobAttack(this.nautilus);
                   float damage = (float)this.nautilus.getAttributeValue(Attributes.ATTACK_DAMAGE);
                   if (victim.hurt(source, damage)) {
-                     EnchantmentHelper.doPostAttackEffects(level, victim, source);
+                     EnchantmentHelper.doPostHurtEffects(victim, this.nautilus);
+                     EnchantmentHelper.doPostDamageEffects(this.nautilus, victim);
                   }
 
                   int speedLevel = this.nautilus.hasEffect(MobEffects.MOVEMENT_SPEED)

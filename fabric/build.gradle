@@ -30,7 +30,7 @@ loom {
             ideConfigGenerated(true)
             runDir('runs/server')
         }
-        // Runs every game test in the mod on a headless server and exits non-zero if any fail (same as NeoForge's).
+        // Runs every game test in the mod on a headless server and exits non-zero if any fail (same as Forge's).
         gameTestServer {
             server()
             setConfigName('Fabric Game Test Server')

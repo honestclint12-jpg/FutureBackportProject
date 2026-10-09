@@ -26,7 +26,7 @@ public final class FabricRegistrationFactory implements RegistrationFactory {
     private static final List<Provider<?>> PROVIDERS = new ArrayList<>();
     /** Armor materials hold sound events and are held by armor items, so they can't wait for vanilla's slot after items. */
     private static final List<ResourceKey<?>> FIRST = List.of(
-            Registries.SOUND_EVENT, Registries.MOB_EFFECT, Registries.PARTICLE_TYPE, Registries.ARMOR_MATERIAL,
+            Registries.SOUND_EVENT, Registries.MOB_EFFECT, Registries.PARTICLE_TYPE,
             Registries.BLOCK, Registries.ENTITY_TYPE, Registries.ITEM);
     private static boolean registered;
 
@@ -87,7 +87,7 @@ public final class FabricRegistrationFactory implements RegistrationFactory {
             if (registered) {
                 throw new IllegalStateException("Too late to register " + modId + ":" + name);
             }
-            ResourceLocation id = ResourceLocation.fromNamespaceAndPath(modId, name);
+            ResourceLocation id = new ResourceLocation(modId, name);
             Entry<R, T> entry = new Entry<>(id, ResourceKey.create(registryKey, id), factory);
             entries.add(entry);
             pending.add(entry);
