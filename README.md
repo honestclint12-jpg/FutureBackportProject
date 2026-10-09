@@ -86,7 +86,12 @@ keeps the jars as a downloadable artifact of each run.
 Set `version` in `gradle.properties`, then push a tag named `v<version>` (for example `v1.0.1`) on `main`. The
 release workflow builds and tests both Minecraft versions and publishes a GitHub Release with all four jars
 (NeoForge and Fabric for 1.21.1, Forge and Fabric for 1.20.1). It checks that the tag matches `version` on both
-branches first, so bump `version` on `minecraft-1.20.1` too.
+branches first, so bump `version` on `minecraft-1.20.1` too. A version with a suffix, such as `1.0.0-beta.1`, is
+published as a pre-release.
+
+To also upload the jars to Modrinth and CurseForge, add the projects' IDs as repository variables
+(`MODRINTH_ID`, `CURSEFORGE_ID`) and API tokens as repository secrets (`MODRINTH_TOKEN`, `CURSEFORGE_TOKEN`) under
+Settings → Secrets and variables → Actions. Without them, that step is skipped.
 
 ## License
 

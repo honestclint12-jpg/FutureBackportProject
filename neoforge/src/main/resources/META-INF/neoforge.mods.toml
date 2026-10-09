@@ -15,7 +15,7 @@ loaderVersion="[1,)" #mandatory
 license="${license}"
 
 # A URL to refer people to when problems occur with this mod
-#issueTrackerURL="https://change.me.to.your.issue.tracker.example.invalid/" #optional
+issueTrackerURL="https://github.com/honestclint12-jpg/FutureBackportProject/issues"
 
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #mandatory
@@ -24,7 +24,7 @@ license="${license}"
 modId="futurebackport" #mandatory
 
 # The version number of the mod
-version="1.0.0" #mandatory
+version="${version}" #mandatory
 
 # A display name for the mod
 displayName="Future Backport" #mandatory
@@ -35,21 +35,19 @@ enumExtensions="META-INF/enumextensions.json"
 #updateJSONURL="https://change.me.example.invalid/updates.json" #optional
 
 # A URL for the "homepage" for this mod, displayed in the mod UI
-#displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #optional
+displayURL="https://github.com/honestclint12-jpg/FutureBackportProject"
 
 # A file name (in the root of the mod JAR) containing a logo for display
-#logoFile="examplemod.png" #optional
+logoFile="futurebackport.png"
 
 # A text field displayed in the mod UI
 #credits="" #optional
 
 # The authors of the mod, displayed in the mod UI (optional)
-#authors=""
+authors="${mod_author}"
 
 # The description text for the mod (multi line!) (#mandatory)
-description='''
-Brings blocks, items, mobs and biomes from newer Minecraft versions to 1.21.1.
-'''
+description='''${description}'''
 
 # The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.
 [[mixins]]
