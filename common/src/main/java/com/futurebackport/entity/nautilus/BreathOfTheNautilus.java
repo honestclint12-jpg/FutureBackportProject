@@ -10,7 +10,7 @@ public final class BreathOfTheNautilus {
 
    /** The effect lets its holder breathe underwater... */
    public static boolean canBreathe(LivingEntity entity) {
-      return entity.hasEffect(ModEffects.BREATH_OF_THE_NAUTILUS.holder());
+      return entity.hasEffect(ModEffects.BREATH_OF_THE_NAUTILUS.get());
    }
 
    /** ...but, unlike water breathing or conduit power, does not refill air while active. */

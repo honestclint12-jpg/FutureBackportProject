@@ -1,5 +1,7 @@
 package com.futurebackport.entity.nautilus;
 
+import net.minecraft.world.entity.MobType;
+import net.minecraft.world.item.crafting.Ingredient;
 import com.futurebackport.registry.ModSounds;
 import com.futurebackport.registry.ModTags;
 import java.util.EnumSet;
@@ -36,12 +38,18 @@ public class ZombieNautilus extends AbstractNautilus {
       super(type, level);
    }
 
+   /** Undead (1.21 uses the zombies entity tag; 1.20.1 asks the mob). */
+   @Override
+   public MobType getMobType() {
+      return MobType.UNDEAD;
+   }
+
    public static Builder createAttributes() {
       return AbstractNautilus.createAttributes().add(Attributes.MOVEMENT_SPEED, 1.1F);
    }
 
    protected void registerGoals() {
-      this.goalSelector.addGoal(1, new TemptGoal(this, 0.9, s -> s.is(ModTags.NAUTILUS_FOOD), false));
+      this.goalSelector.addGoal(1, new TemptGoal(this, 0.9, Ingredient.of(ModTags.NAUTILUS_FOOD), false));
       this.goalSelector.addGoal(2, new NautilusGoals.Charge(this, 0.5F, ModSounds.ZOMBIE_NAUTILUS_DASH));
       this.goalSelector.addGoal(3, new ZombieNautilus.ChaseTarget());
       this.goalSelector.addGoal(4, new RandomSwimmingGoal(this, 1.0, 10));
@@ -56,9 +64,9 @@ public class ZombieNautilus extends AbstractNautilus {
    }
 
    @Override
-   protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder builder) {
-      super.defineSynchedData(builder);
-      builder.define(DATA_VARIANT, ZombieNautilus.Variant.TEMPERATE.ordinal());
+   protected void defineSynchedData() {
+      super.defineSynchedData();
+      this.entityData.define(DATA_VARIANT, ZombieNautilus.Variant.TEMPERATE.ordinal());
    }
 
    public ZombieNautilus.Variant getVariant() {
@@ -82,16 +90,18 @@ public class ZombieNautilus extends AbstractNautilus {
    }
 
    @Override
-   public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData groupData) {
+   public SpawnGroupData finalizeSpawn(
+      ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData groupData, @Nullable CompoundTag tag
+   ) {
       this.setVariant(
          level.getBiome(this.blockPosition()).is(ModTags.SPAWNS_CORAL_VARIANT_ZOMBIE_NAUTILUS) ? ZombieNautilus.Variant.WARM : ZombieNautilus.Variant.TEMPERATE
       );
-      return super.finalizeSpawn(level, difficulty, spawnType, groupData);
+      return super.finalizeSpawn(level, difficulty, spawnType, groupData, tag);
    }
 
    public void aiStep() {
       if (this.isAlive() && this.isSunBurnTick() && this.getBodyArmorItem().isEmpty()) {
-         this.igniteForSeconds(8.0F);
+         this.setSecondsOnFire(8);
       }
 
       super.aiStep();
@@ -134,15 +144,15 @@ public class ZombieNautilus extends AbstractNautilus {
 
    @Override
    protected void playEatingSound() {
-      this.makeSound((SoundEvent)ModSounds.ZOMBIE_NAUTILUS_EAT.get());
+      this.playSound((SoundEvent)ModSounds.ZOMBIE_NAUTILUS_EAT.get(), this.getSoundVolume(), this.getVoicePitch());
    }
 
    protected SoundEvent getSwimSound() {
       return (SoundEvent)ModSounds.ZOMBIE_NAUTILUS_SWIM.get();
    }
 
-   public boolean canBeLeashed() {
-      return !this.isAggravated() && !this.isMobControlled() && super.canBeLeashed();
+   public boolean canBeLeashed(Player player) {
+      return !this.isAggravated() && !this.isMobControlled() && super.canBeLeashed(player);
    }
 
    @Override

@@ -2,7 +2,7 @@ package com.futurebackport.fabric;
 
 import com.futurebackport.FutureBackport;
 import com.futurebackport.entity.FarmAnimalVariantEvents;
-import com.futurebackport.fabric.compat.NeoForgeDataOnFabric;
+import com.futurebackport.fabric.compat.ForgeDataOnFabric;
 import com.futurebackport.fabric.mixin.BlockEntityTypeAccessor;
 import com.futurebackport.fabric.platform.FabricRegistrationFactory;
 import com.futurebackport.fabric.mixin.SpawnPlacementsInvoker;
@@ -19,12 +19,14 @@ import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRe
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.SpawnPlacementType;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.Heightmap;
 
-/** Fabric entry point: everything NeoForge does through events happens here, right after registration. */
+/**
+ * Fabric entry point: everything Forge does through events happens here, right after registration. Interaction with
+ * entities (the golden dandelion age lock) goes through PlayerMixin, where Forge fires EntityInteract.
+ */
 public class FutureBackportFabric implements ModInitializer {
 
     @Override
@@ -35,7 +37,7 @@ public class FutureBackportFabric implements ModInitializer {
         ModEntities.registerAttributes(FabricDefaultAttributeRegistry::register);
         ModEntities.registerSpawnPlacements(new SpawnPlacementRegistrar() {
             @Override
-            public <T extends Mob> void register(EntityType<T> type, SpawnPlacementType placement, Heightmap.Types heightmap, SpawnPlacements.SpawnPredicate<T> predicate) {
+            public <T extends Mob> void register(EntityType<T> type, SpawnPlacements.Type placement, Heightmap.Types heightmap, SpawnPlacements.SpawnPredicate<T> predicate) {
                 SpawnPlacementsInvoker.futurebackport$register(type, placement, heightmap, predicate);
             }
         });
@@ -46,11 +48,10 @@ public class FutureBackportFabric implements ModInitializer {
             accessor.futurebackport$setValidBlocks(valid);
         });
         FutureBackport.commonSetup();
-        NeoForgeDataOnFabric.apply();
+        ForgeDataOnFabric.apply();
 
         ItemGroupEvents.MODIFY_ENTRIES_ALL.register((tab, entries) -> BuiltInRegistries.CREATIVE_MODE_TAB.getResourceKey(tab)
                 .ifPresent(key -> CreativePlacements.apply(key, (after, item) -> entries.addAfter(after, item))));
         EntityTrackingEvents.START_TRACKING.register(FarmAnimalVariantEvents::onStartTracking);
-        // Golden dandelion age lock: PlayerMixin (NeoForge's EntityInteract fires inside Player#interactOn).
     }
 }

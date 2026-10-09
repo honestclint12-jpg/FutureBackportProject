@@ -1,9 +1,8 @@
 package com.futurebackport.platform.services;
 
+import com.futurebackport.platform.network.Payload;
 import com.futurebackport.platform.network.PayloadHandler;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import com.futurebackport.platform.network.PayloadType;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 
@@ -13,14 +12,14 @@ import net.minecraft.world.entity.Entity;
  */
 public interface NetworkService {
 
-    <P extends CustomPacketPayload> void playToClient(CustomPacketPayload.Type<P> type, StreamCodec<? super RegistryFriendlyByteBuf, P> codec, PayloadHandler<P> handler);
+    <P extends Payload> void playToClient(PayloadType<P> type, PayloadHandler<P> handler);
 
-    <P extends CustomPacketPayload> void playToServer(CustomPacketPayload.Type<P> type, StreamCodec<? super RegistryFriendlyByteBuf, P> codec, PayloadHandler<P> handler);
+    <P extends Payload> void playToServer(PayloadType<P> type, PayloadHandler<P> handler);
 
-    void sendToPlayer(ServerPlayer player, CustomPacketPayload payload);
+    void sendToPlayer(ServerPlayer player, Payload payload);
 
-    void sendToPlayersTrackingEntity(Entity entity, CustomPacketPayload payload);
+    void sendToPlayersTrackingEntity(Entity entity, Payload payload);
 
     /** Client only. */
-    void sendToServer(CustomPacketPayload payload);
+    void sendToServer(Payload payload);
 }

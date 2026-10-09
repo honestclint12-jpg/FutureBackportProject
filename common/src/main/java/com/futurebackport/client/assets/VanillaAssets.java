@@ -145,7 +145,7 @@ public final class VanillaAssets {
       }
       minecraft.execute(() -> SystemToast.add(
          minecraft.getToasts(),
-         SystemToast.SystemToastId.PACK_LOAD_FAILURE,
+         SystemToast.SystemToastIds.PACK_LOAD_FAILURE,
          Component.translatable("futurebackport.assets.download_failed.title"),
          Component.translatable("futurebackport.assets.download_failed.description")
       ));

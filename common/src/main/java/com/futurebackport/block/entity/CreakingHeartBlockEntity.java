@@ -19,7 +19,6 @@ import java.util.UUID;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -119,7 +118,7 @@ public class CreakingHeartBlockEntity extends BlockEntity {
                      Creaking creaking = spawnProtector(serverLevel, heart);
                      if (creaking != null) {
                         heart.setCreakingInfo(creaking);
-                        creaking.makeSound((SoundEvent)ModSounds.CREAKING_SPAWN.get());
+                        creaking.playSound((SoundEvent)ModSounds.CREAKING_SPAWN.get(), 1.0F, 1.0F);
                         level.playSound(null, pos, (SoundEvent)ModSounds.CREAKING_HEART_SPAWN.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
                      }
                   }
@@ -217,8 +216,8 @@ public class CreakingHeartBlockEntity extends BlockEntity {
       return ClientboundBlockEntityDataPacket.create(this);
    }
 
-   public CompoundTag getUpdateTag(Provider registries) {
-      return this.saveCustomOnly(registries);
+   public CompoundTag getUpdateTag() {
+      return this.saveWithoutMetadata();
    }
 
    public void creakingHurt() {
@@ -332,15 +331,15 @@ public class CreakingHeartBlockEntity extends BlockEntity {
 
    private int computeAnalogOutputSignal() {
       if (this.creakingInfo != null && !this.getCreakingProtector().isEmpty()) {
-         double scaled = Math.clamp(this.distanceToCreaking(), 0.0, 32.0) / 32.0;
+         double scaled = net.minecraft.util.Mth.clamp(this.distanceToCreaking(), 0.0, 32.0) / 32.0;
          return 15 - (int)Math.floor(scaled * 15.0);
       } else {
          return 0;
       }
    }
 
-   protected void loadAdditional(CompoundTag tag, Provider registries) {
-      super.loadAdditional(tag, registries);
+   public void load(CompoundTag tag) {
+      super.load(tag);
       if (tag.hasUUID("creaking")) {
          this.setCreakingInfo(tag.getUUID("creaking"));
       } else {
@@ -348,8 +347,8 @@ public class CreakingHeartBlockEntity extends BlockEntity {
       }
    }
 
-   protected void saveAdditional(CompoundTag tag, Provider registries) {
-      super.saveAdditional(tag, registries);
+   protected void saveAdditional(CompoundTag tag) {
+      super.saveAdditional(tag);
       if (this.creakingInfo != null) {
          tag.putUUID("creaking", (UUID)this.creakingInfo.map(Entity::getUUID, uuid -> uuid));
       }

@@ -4,9 +4,6 @@ import com.futurebackport.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.HolderLookup.Provider;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.component.DataComponentMap.Builder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -15,7 +12,6 @@ import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -31,16 +27,16 @@ public class ShelfBlockEntity extends BlockEntity implements Container {
       super((BlockEntityType)ModBlockEntities.SHELF.get(), pos, state);
    }
 
-   protected void loadAdditional(CompoundTag tag, Provider registries) {
-      super.loadAdditional(tag, registries);
+   public void load(CompoundTag tag) {
+      super.load(tag);
       this.items.clear();
-      ContainerHelper.loadAllItems(tag, this.items, registries);
+      ContainerHelper.loadAllItems(tag, this.items);
       this.alignItemsToBottom = tag.getBoolean("align_items_to_bottom");
    }
 
-   protected void saveAdditional(CompoundTag tag, Provider registries) {
-      super.saveAdditional(tag, registries);
-      ContainerHelper.saveAllItems(tag, this.items, true, registries);
+   protected void saveAdditional(CompoundTag tag) {
+      super.saveAdditional(tag);
+      ContainerHelper.saveAllItems(tag, this.items, true);
       tag.putBoolean("align_items_to_bottom", this.alignItemsToBottom);
    }
 
@@ -48,9 +44,9 @@ public class ShelfBlockEntity extends BlockEntity implements Container {
       return ClientboundBlockEntityDataPacket.create(this);
    }
 
-   public CompoundTag getUpdateTag(Provider registries) {
+   public CompoundTag getUpdateTag() {
       CompoundTag tag = new CompoundTag();
-      ContainerHelper.saveAllItems(tag, this.items, true, registries);
+      ContainerHelper.saveAllItems(tag, this.items, true);
       tag.putBoolean("align_items_to_bottom", this.alignItemsToBottom);
       return tag;
    }
@@ -69,7 +65,7 @@ public class ShelfBlockEntity extends BlockEntity implements Container {
       return previous;
    }
 
-   public void setChanged(@Nullable Holder<GameEvent> event) {
+   public void setChanged(@Nullable GameEvent event) {
       super.setChanged();
       if (this.level != null) {
          if (event != null) {
@@ -122,17 +118,6 @@ public class ShelfBlockEntity extends BlockEntity implements Container {
       this.items.clear();
    }
 
-   protected void applyImplicitComponents(BlockEntity.DataComponentInput input) {
-      super.applyImplicitComponents(input);
-      ((ItemContainerContents)input.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY)).copyInto(this.items);
-   }
 
-   protected void collectImplicitComponents(Builder components) {
-      super.collectImplicitComponents(components);
-      components.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(this.items));
-   }
 
-   public void removeComponentsFromTag(CompoundTag tag) {
-      tag.remove("Items");
-   }
 }

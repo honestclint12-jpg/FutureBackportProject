@@ -1,5 +1,7 @@
 package com.futurebackport.mixin;
 
+import net.minecraft.nbt.CompoundTag;
+
 import com.futurebackport.entity.CamelHuskSpawning;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.MobSpawnType;
@@ -19,7 +21,7 @@ public class ZombieMixin {
       at = {@At("TAIL")}
    )
    private void futurebackport$camelHusk(
-      ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, SpawnGroupData groupData, CallbackInfoReturnable<SpawnGroupData> cir
+      ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, SpawnGroupData groupData, CompoundTag tag, CallbackInfoReturnable<SpawnGroupData> cir
    ) {
       if ((Object)this instanceof Husk husk) {
          CamelHuskSpawning.afterHuskSpawn(husk, level, difficulty, spawnType);

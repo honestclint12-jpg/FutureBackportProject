@@ -1,34 +1,44 @@
 package com.futurebackport.item;
 
 import com.futurebackport.FutureBackport;
+import java.util.UUID;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Item.Properties;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
-import net.minecraft.world.item.component.ItemAttributeModifiers.Builder;
 
+/** Nautilus body armor. The nautilus applies {@link #applyModifiers} itself (1.20.1 has no BODY slot modifiers). */
 public class NautilusArmorItem extends Item {
    private final ResourceLocation texture;
+   private final int defense;
+   private final float toughness;
+   private final float knockbackResistance;
 
    public NautilusArmorItem(String material, int defense, float toughness, float knockbackResistance, Properties properties) {
-      super(properties.stacksTo(1).attributes(attributes(defense, toughness, knockbackResistance)));
+      super(properties.stacksTo(1));
       this.texture = FutureBackport.id("textures/entity/equipment/nautilus_body/" + material + ".png");
+      this.defense = defense;
+      this.toughness = toughness;
+      this.knockbackResistance = knockbackResistance;
    }
 
-   private static ItemAttributeModifiers attributes(int defense, float toughness, float knockbackResistance) {
-      ResourceLocation id = FutureBackport.id("armor.body");
-      Builder builder = ItemAttributeModifiers.builder()
-         .add(Attributes.ARMOR, new AttributeModifier(id, defense, Operation.ADD_VALUE), EquipmentSlotGroup.BODY)
-         .add(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(id, toughness, Operation.ADD_VALUE), EquipmentSlotGroup.BODY);
-      if (knockbackResistance > 0.0F) {
-         builder.add(Attributes.KNOCKBACK_RESISTANCE, new AttributeModifier(id, knockbackResistance, Operation.ADD_VALUE), EquipmentSlotGroup.BODY);
+   public void applyModifiers(LivingEntity entity, UUID id) {
+      add(entity, Attributes.ARMOR, id, this.defense);
+      add(entity, Attributes.ARMOR_TOUGHNESS, id, this.toughness);
+      if (this.knockbackResistance > 0.0F) {
+         add(entity, Attributes.KNOCKBACK_RESISTANCE, id, this.knockbackResistance);
       }
+   }
 
-      return builder.build();
+   private static void add(LivingEntity entity, Attribute attribute, UUID id, double amount) {
+      AttributeInstance instance = entity.getAttribute(attribute);
+      if (instance != null && amount != 0.0) {
+         instance.addTransientModifier(new AttributeModifier(id, "Nautilus armor", amount, Operation.ADDITION));
+      }
    }
 
    public ResourceLocation getTexture() {

@@ -23,7 +23,7 @@ public class FloraTests {
       BlockPos abs = helper.absolutePos(pos);
       BlockState state = helper.getLevel().getBlockState(abs);
       BonemealableBlock block = (BonemealableBlock)state.getBlock();
-      helper.assertTrue(block.isValidBonemealTarget(helper.getLevel(), abs, state), state + " is not a valid bonemeal target");
+      helper.assertTrue(block.isValidBonemealTarget(helper.getLevel(), abs, state, false), state + " is not a valid bonemeal target");
       block.performBonemeal(helper.getLevel(), helper.getLevel().getRandom(), abs, state);
    }
 

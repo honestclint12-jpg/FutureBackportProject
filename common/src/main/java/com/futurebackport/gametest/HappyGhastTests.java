@@ -39,7 +39,7 @@ public class HappyGhastTests {
          }
       }
 
-      List<HappyGhast> ghasts = helper.getLevel().getEntitiesOfClass(HappyGhast.class, new AABB(helper.absolutePos(BlockPos.ZERO)).inflate(16.0));
+      List<HappyGhast> ghasts = TestPlayers.entities(helper, ModEntities.HAPPY_GHAST.get());
       helper.assertTrue(ghasts.size() == 1 && ghasts.get(0).isBaby(), "expected one ghastling, found " + ghasts.size());
       helper.assertBlockNotPresent((Block)ModBlocks.DRIED_GHAST.get(), pos);
       helper.succeed();
@@ -50,7 +50,7 @@ public class HappyGhastTests {
    )
    public static void harnessedHappyGhastCanBeRidden(GameTestHelper helper) {
       HappyGhast ghast = (HappyGhast)helper.spawn((EntityType)ModEntities.HAPPY_GHAST.get(), new BlockPos(5, 2, 5));
-      ServerPlayer player = helper.makeMockServerPlayerInLevel();
+      ServerPlayer player = TestPlayers.mockServerPlayer(helper);
       player.setGameMode(GameType.SURVIVAL);
       player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack((ItemLike)ModItems.HARNESSES.get(DyeColor.RED).get()));
       ghast.mobInteract(player, InteractionHand.MAIN_HAND);
@@ -59,7 +59,7 @@ public class HappyGhastTests {
       ghast.mobInteract(player, InteractionHand.MAIN_HAND);
       helper.assertTrue(player.getVehicle() == ghast, "player did not mount the happy ghast");
       helper.assertTrue(ghast.getControllingPassenger() == player || ghast.isOnStillTimeout(), "rider does not control the happy ghast");
-      helper.assertTrue(ghast.getItemBySlot(EquipmentSlot.BODY).is((Item)ModItems.HARNESSES.get(DyeColor.RED).get()), "wrong body item");
+      helper.assertTrue(ghast.getBodyItem().is((Item)ModItems.HARNESSES.get(DyeColor.RED).get()), "wrong body item");
       helper.succeed();
    }
 }

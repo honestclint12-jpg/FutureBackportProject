@@ -1,5 +1,6 @@
 package com.futurebackport.client.model;
 
+import com.futurebackport.client.util.ArgbColor;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.Model;
@@ -20,11 +21,12 @@ public class CopperGolemStatueModel extends Model {
       this.root = roots.getChild("root");
    }
 
-   public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int light, int overlay, int color) {
+   public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int light, int overlay, float red, float green, float blue, float alpha) {
+      int color = ArgbColor.pack(red, green, blue, alpha);
       this.root.resetPose();
       this.root.y = 0.0F;
       this.root.zRot = (float) Math.PI;
-      this.root.render(poseStack, buffer, light, overlay, color);
+      this.root.render(poseStack, buffer, light, overlay, ArgbColor.red(color), ArgbColor.green(color), ArgbColor.blue(color), ArgbColor.alpha(color));
    }
 
    public static LayerDefinition createRunningPoseLayer() {

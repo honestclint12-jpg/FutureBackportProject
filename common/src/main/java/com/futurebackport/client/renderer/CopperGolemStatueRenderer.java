@@ -16,12 +16,11 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider.Context;
 import net.minecraft.core.Direction;
-import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.BlockItemStateProperties;
 import net.minecraft.world.level.block.WeatheringCopper.WeatherState;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -57,7 +56,7 @@ public class CopperGolemStatueRenderer implements BlockEntityRenderer<CopperGole
    }
 
    static void draw(CopperGolemStatueModel model, WeatherState weather, PoseStack poseStack, MultiBufferSource buffers, int light, int overlay) {
-      model.renderToBuffer(poseStack, buffers.getBuffer(model.renderType(CopperGolemRenderer.texture(weather))), light, overlay, -1);
+      model.renderToBuffer(poseStack, buffers.getBuffer(model.renderType(CopperGolemRenderer.texture(weather))), light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
    }
 
    public static class ItemRenderer extends BlockEntityWithoutLevelRenderer {
@@ -77,10 +76,10 @@ public class CopperGolemStatueRenderer implements BlockEntityRenderer<CopperGole
                this.models = CopperGolemStatueRenderer.bakeModels(Minecraft.getInstance().getEntityModels());
             }
 
-            CopperGolemStatueBlock.Pose pose = (CopperGolemStatueBlock.Pose)((BlockItemStateProperties)stack.getOrDefault(
-                  DataComponents.BLOCK_STATE, BlockItemStateProperties.EMPTY
-               ))
-               .get(CopperGolemStatueBlock.POSE);
+            CompoundTag blockState = stack.getTagElement("BlockStateTag");
+            CopperGolemStatueBlock.Pose pose = blockState == null
+               ? null
+               : CopperGolemStatueBlock.POSE.getValue(blockState.getString(CopperGolemStatueBlock.POSE.getName())).orElse(null);
             poseStack.pushPose();
             poseStack.translate(0.5F, 0.0F, 0.5F);
             CopperGolemStatueRenderer.draw(

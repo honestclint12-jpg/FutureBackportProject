@@ -2,13 +2,11 @@ package com.futurebackport.platform.util;
 
 import com.google.common.base.Suppliers;
 import java.util.function.Supplier;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.block.Block;
 
-/** Plain {@link Tier} implementation (NeoForge's {@code SimpleTier} is not available on other loaders). */
-public record SimpleToolTier(TagKey<Block> incorrectBlocksForDrops, int uses, float speed, float attackDamageBonus,
+/** Plain {@link Tier} implementation (Forge's {@code ForgeTier} is not available on other loaders). */
+public record SimpleToolTier(int level, int uses, float speed, float attackDamageBonus,
                              int enchantmentValue, Supplier<Ingredient> repairIngredientSupplier) implements Tier {
 
     public SimpleToolTier {
@@ -31,8 +29,8 @@ public record SimpleToolTier(TagKey<Block> incorrectBlocksForDrops, int uses, fl
     }
 
     @Override
-    public TagKey<Block> getIncorrectBlocksForDrops() {
-        return incorrectBlocksForDrops;
+    public int getLevel() {
+        return level;
     }
 
     @Override

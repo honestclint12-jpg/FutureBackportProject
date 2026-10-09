@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "futurebackport:sulfur"
+  },
+  "result": "futurebackport:chiseled_sulfur",
+  "count": 1
+}

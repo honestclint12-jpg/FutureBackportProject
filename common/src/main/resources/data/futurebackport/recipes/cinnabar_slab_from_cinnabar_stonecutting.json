@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "futurebackport:cinnabar"
+  },
+  "result": "futurebackport:cinnabar_slab",
+  "count": 2
+}

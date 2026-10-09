@@ -1,0 +1,8 @@
+{
+  "type": "forge:add_features",
+  "biomes": [
+    "minecraft:desert"
+  ],
+  "features": "futurebackport:patch_dry_grass_desert",
+  "step": "vegetal_decoration"
+}

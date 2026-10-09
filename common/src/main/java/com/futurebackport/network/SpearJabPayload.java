@@ -2,19 +2,21 @@ package com.futurebackport.network;
 
 import com.futurebackport.FutureBackport;
 import com.futurebackport.item.SpearItem;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type;
+import com.futurebackport.platform.network.Payload;
+import com.futurebackport.platform.network.PayloadType;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 
-public record SpearJabPayload() implements CustomPacketPayload {
-   public static final Type<SpearJabPayload> TYPE = new Type(FutureBackport.id("spear_jab"));
-   public static final StreamCodec<ByteBuf, SpearJabPayload> STREAM_CODEC = StreamCodec.unit(new SpearJabPayload());
+public record SpearJabPayload() implements Payload {
+   public static final PayloadType<SpearJabPayload> TYPE = new PayloadType<>(
+      FutureBackport.id("spear_jab"), SpearJabPayload.class, buf -> new SpearJabPayload());
 
-   public Type<? extends CustomPacketPayload> type() {
+   public PayloadType<SpearJabPayload> type() {
       return TYPE;
+   }
+
+   public void write(FriendlyByteBuf buf) {
    }
 
    public static void handle(SpearJabPayload payload, Player player) {

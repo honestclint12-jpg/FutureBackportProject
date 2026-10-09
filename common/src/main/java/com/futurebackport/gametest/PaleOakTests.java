@@ -58,7 +58,7 @@ public class PaleOakTests {
       // Strip with a real axe: NeoForge reads its strippables data map, Fabric its StrippableBlockRegistry.
       BlockPos log = new BlockPos(1, 1, 1);
       helper.setBlock(log, (Block)ModBlocks.PALE_OAK_LOG.get());
-      Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+      Player player = TestPlayers.mock(helper, GameType.SURVIVAL);
       player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_AXE));
       BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(helper.absolutePos(log)), Direction.UP, helper.absolutePos(log), false);
       Items.IRON_AXE.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, hit));

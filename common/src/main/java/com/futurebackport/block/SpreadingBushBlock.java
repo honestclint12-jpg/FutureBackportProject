@@ -1,6 +1,5 @@
 package com.futurebackport.block;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -15,22 +14,17 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class SpreadingBushBlock extends BushBlock implements BonemealableBlock {
-   public static final MapCodec<SpreadingBushBlock> CODEC = simpleCodec(SpreadingBushBlock::new);
    private static final VoxelShape SHAPE = box(0.0, 0.0, 0.0, 16.0, 13.0, 16.0);
 
    public SpreadingBushBlock(Properties properties) {
       super(properties);
    }
 
-   protected MapCodec<? extends SpreadingBushBlock> codec() {
-      return CODEC;
-   }
-
-   protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+   public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
       return SHAPE;
    }
 
-   public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
+   public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state, boolean isClient) {
       return BonemealSpreading.hasSpreadableNeighbourPos(level, pos, state);
    }
 

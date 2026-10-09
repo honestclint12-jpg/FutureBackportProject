@@ -69,7 +69,7 @@ public class PaleGardenTests {
    )
    public static void heartSpawnsCreakingAtNight(GameTestHelper helper) {
       buildHeart(helper);
-      ServerPlayer player = helper.makeMockServerPlayerInLevel();
+      ServerPlayer player = TestPlayers.mockServerPlayer(helper);
       player.setGameMode(GameType.SURVIVAL);
       player.moveTo(helper.absoluteVec(new Vec3(2.0, 1.0, 2.0)));
       helper.succeedWhen(() -> {
@@ -86,7 +86,7 @@ public class PaleGardenTests {
    )
    public static void hittingBoundCreakingGrowsResinAndBreakingHeartKillsIt(GameTestHelper helper) {
       buildHeart(helper);
-      ServerPlayer player = helper.makeMockServerPlayerInLevel();
+      ServerPlayer player = TestPlayers.mockServerPlayer(helper);
       player.setGameMode(GameType.SURVIVAL);
       player.moveTo(helper.absoluteVec(new Vec3(2.0, 1.0, 2.0)));
       helper.succeedWhen(() -> {

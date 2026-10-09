@@ -1,0 +1,8 @@
+{
+  "type": "forge:add_features",
+  "biomes": [
+    "minecraft:dark_forest"
+  ],
+  "features": "futurebackport:patch_leaf_litter",
+  "step": "vegetal_decoration"
+}

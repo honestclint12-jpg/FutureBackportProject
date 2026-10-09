@@ -80,7 +80,9 @@ public class PlaceOnGroundDecorator extends TreeDecorator {
          }
 
          RandomSource random = context.random();
-         BoundingBox box = new BoundingBox(minX, minY, minZ, maxX, minY, maxZ).inflatedBy(this.radius, this.height, this.radius);
+         BoundingBox box = new BoundingBox(
+            minX - this.radius, minY - this.height, minZ - this.radius, maxX + this.radius, minY + this.height, maxZ + this.radius
+         );
          MutableBlockPos posx = new MutableBlockPos();
 
          for (int i = 0; i < this.tries; i++) {

@@ -3,7 +3,6 @@ package com.futurebackport.block;
 import com.futurebackport.block.entity.CopperChestBlockEntity;
 import com.futurebackport.registry.ModBlockEntities;
 import com.futurebackport.registry.ModSounds;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -27,10 +26,6 @@ public class CopperChestBlock extends ChestBlock {
       this.weatherState = weatherState;
    }
 
-   public MapCodec<? extends ChestBlock> codec() {
-      return simpleCodec(p -> new CopperChestBlock(this.weatherState, p));
-   }
-
    public WeatherState getWeatherState() {
       return this.weatherState;
    }
@@ -47,7 +42,7 @@ public class CopperChestBlock extends ChestBlock {
       };
    }
 
-   protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+   public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
       return neighborState.getBlock() instanceof CopperChestBlock
             && neighborState.getBlock() != this
             && state.getValue(TYPE) != ChestType.SINGLE
@@ -58,20 +53,20 @@ public class CopperChestBlock extends ChestBlock {
          : super.updateShape(state, direction, neighborState, level, pos, neighborPos);
    }
 
-   public static class Weathering extends CopperChestBlock implements WeatheringCopper {
+   public static class Weathering extends CopperChestBlock implements ModWeatheringCopper {
       public Weathering(WeatherState weatherState, Properties properties) {
          super(weatherState, properties);
       }
 
-      protected boolean isRandomlyTicking(BlockState state) {
-         return WeatheringCopper.getNext(state.getBlock()).isPresent();
+      public boolean isRandomlyTicking(BlockState state) {
+         return ModWeatheringCopper.canOxidize(state);
       }
 
-      protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+      public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
          if (state.getValue(TYPE) != ChestType.RIGHT
             && level.getBlockEntity(pos) instanceof ChestBlockEntity chest
             && ChestBlockEntity.getOpenCount(level, pos) == 0) {
-            this.changeOverTime(state, level, pos, random);
+            this.onRandomTick(state, level, pos, random);
          }
       }
 

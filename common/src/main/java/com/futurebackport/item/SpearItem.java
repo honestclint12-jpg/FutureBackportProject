@@ -1,7 +1,10 @@
 package com.futurebackport.item;
 
+import com.futurebackport.util.Backports;
 import com.futurebackport.FutureBackport;
 import com.futurebackport.registry.ModSounds;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,9 +23,10 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.Interaction;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
@@ -34,7 +38,6 @@ import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.Item.Properties;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -61,6 +64,7 @@ public class SpearItem extends Item {
    private final SpearItem.Condition knockback;
    private final SpearItem.Condition damage;
    private final Tier tier;
+   private final Multimap<Attribute, AttributeModifier> defaultModifiers;
    private static final Map<LivingEntity, SpearItem.Charge> CHARGES = new WeakHashMap<>();
 
    public SpearItem(
@@ -76,23 +80,13 @@ public class SpearItem extends Item {
       float damageThreshold,
       Properties properties
    ) {
-      super(
-         properties.durability(tier.getUses())
-            .attributes(
-               ItemAttributeModifiers.builder()
-                  .add(
-                     Attributes.ATTACK_DAMAGE,
-                     new AttributeModifier(BASE_ATTACK_DAMAGE_ID, tier.getAttackDamageBonus(), Operation.ADD_VALUE),
-                     EquipmentSlotGroup.MAINHAND
-                  )
-                  .add(
-                     Attributes.ATTACK_SPEED,
-                     new AttributeModifier(BASE_ATTACK_SPEED_ID, 1.0F / attackDuration - 4.0, Operation.ADD_VALUE),
-                     EquipmentSlotGroup.MAINHAND
-                  )
-                  .build()
-            )
-      );
+      super(properties.durability(tier.getUses()));
+      this.defaultModifiers = ImmutableMultimap.<Attribute, AttributeModifier>builder()
+         .put(
+            Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", tier.getAttackDamageBonus(), Operation.ADDITION)
+         )
+         .put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", 1.0F / attackDuration - 4.0, Operation.ADDITION))
+         .build();
       this.tier = tier;
       this.wooden = tier == Tiers.WOOD;
       this.damageMultiplier = damageMultiplier;
@@ -110,12 +104,13 @@ public class SpearItem extends Item {
       return this.tier.getRepairIngredient().test(repairCandidate) || super.isValidRepairItem(stack, repairCandidate);
    }
 
-   public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-      return true;
+   public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot slot) {
+      return slot == EquipmentSlot.MAINHAND ? this.defaultModifiers : super.getDefaultAttributeModifiers(slot);
    }
 
-   public void postHurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-      stack.hurtAndBreak(1, attacker, EquipmentSlot.MAINHAND);
+   public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+      Backports.hurtAndBreak(stack, 1, attacker, EquipmentSlot.MAINHAND);
+      return true;
    }
 
    public SoundEvent attackSound() {
@@ -134,7 +129,7 @@ public class SpearItem extends Item {
       return UseAnim.NONE;
    }
 
-   public int getUseDuration(ItemStack stack, LivingEntity entity) {
+   public int getUseDuration(ItemStack stack) {
       return 72000;
    }
 
@@ -163,7 +158,7 @@ public class SpearItem extends Item {
    public void onUseTick(Level level, LivingEntity user, ItemStack stack, int ticksRemaining) {
       if (level instanceof ServerLevel serverLevel) {
          SpearItem.Charge charge = CHARGES.computeIfAbsent(user, u -> new SpearItem.Charge());
-         int ticksUsed = this.getUseDuration(stack, user) - ticksRemaining - this.delayTicks;
+         int ticksUsed = this.getUseDuration(stack) - ticksRemaining - this.delayTicks;
          if (ticksUsed >= 0) {
             Vec3 look = user.getLookAngle();
             double attackerSpeed = look.dot(motion(user));
@@ -277,7 +272,8 @@ public class SpearItem extends Item {
    ) {
       ItemStack weapon = attacker.getItemBySlot(slot);
       DamageSource source = new DamageSource(level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(SPEAR_DAMAGE), attacker);
-      float total = EnchantmentHelper.modifyDamage(level, weapon, target, source, baseDamage);
+      float total = baseDamage
+         + EnchantmentHelper.getDamageBonus(weapon, target instanceof LivingEntity living ? living.getMobType() : MobType.UNDEFINED);
       if (attacker instanceof Player player) {
          if (player.isSpectator() || !target.isAttackable() || target.skipAttackInteraction(player)) {
             return false;
@@ -297,7 +293,10 @@ public class SpearItem extends Item {
       boolean hurt = dealsDamage && target.hurt(source, total);
       if (dealsKnockback) {
          Vec3 old = target.getDeltaMovement();
-         float strength = 0.4F + (float)attacker.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
+         // 1.20.1 players have no attack_knockback attribute; their knockback comes from the enchantment.
+         float strength = 0.4F
+            + (attacker.getAttributes().hasAttribute(Attributes.ATTACK_KNOCKBACK) ? (float)attacker.getAttributeValue(Attributes.ATTACK_KNOCKBACK) : 0.0F)
+            + EnchantmentHelper.getKnockbackBonus(attacker);
          if (target instanceof LivingEntity livingx) {
             livingx.knockback(strength, Math.sin(attacker.getYRot() * (Math.PI / 180.0)), -Math.cos(attacker.getYRot() * (Math.PI / 180.0)));
          } else {
@@ -324,9 +323,7 @@ public class SpearItem extends Item {
       } else {
          attacker.setLastHurtMob(target);
          if (target instanceof LivingEntity livingx) {
-            if (weapon.getItem().hurtEnemy(weapon, livingx, attacker)) {
-               weapon.getItem().postHurtEnemy(weapon, livingx, attacker);
-            }
+            weapon.getItem().hurtEnemy(weapon, livingx, attacker);
 
             if (attacker instanceof Player player && hurt) {
                player.awardStat(Stats.DAMAGE_DEALT, Math.round((oldHealth - livingx.getHealth()) * 10.0F));
@@ -334,7 +331,11 @@ public class SpearItem extends Item {
          }
 
          if (hurt) {
-            EnchantmentHelper.doPostAttackEffects(level, target, source);
+            if (target instanceof LivingEntity livingx) {
+               EnchantmentHelper.doPostHurtEffects(livingx, attacker);
+            }
+
+            EnchantmentHelper.doPostDamageEffects(attacker, target);
          }
 
          if (attacker instanceof Player player) {

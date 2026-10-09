@@ -15,11 +15,11 @@ public record StoneFamily(BlockEntry<Block> base, BlockEntry<SlabBlock> slab, Bl
    public static StoneFamily register(String baseName, String variantPrefix, Supplier<Properties> properties) {
       BlockEntry<Block> base = ModBlocks.BLOCKS.register(baseName, () -> new Block(properties.get()));
       BlockEntry<SlabBlock> slab = ModBlocks.BLOCKS
-         .register(variantPrefix + "_slab", () -> new SlabBlock(Properties.ofLegacyCopy((BlockBehaviour)base.get())));
+         .register(variantPrefix + "_slab", () -> new SlabBlock(Properties.copy((BlockBehaviour)base.get())));
       BlockEntry<StairBlock> stairs = ModBlocks.BLOCKS
-         .register(variantPrefix + "_stairs", () -> new StairBlock(((Block)base.get()).defaultBlockState(), Properties.ofFullCopy((BlockBehaviour)base.get())));
+         .register(variantPrefix + "_stairs", () -> new StairBlock(((Block)base.get()).defaultBlockState(), Properties.copy((BlockBehaviour)base.get())));
       BlockEntry<WallBlock> wall = ModBlocks.BLOCKS
-         .register(variantPrefix + "_wall", () -> new WallBlock(Properties.ofLegacyCopy((BlockBehaviour)base.get()).forceSolidOn()));
+         .register(variantPrefix + "_wall", () -> new WallBlock(Properties.copy((BlockBehaviour)base.get()).forceSolidOn()));
       return new StoneFamily(base, slab, stairs, wall);
    }
 

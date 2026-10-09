@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "futurebackport:sulfur"
+  },
+  "result": "futurebackport:sulfur_stairs",
+  "count": 1
+}

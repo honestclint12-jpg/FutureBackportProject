@@ -82,7 +82,7 @@ public final class HappyGhastModels {
       }
 
       public void setupAnim(HappyGhast ghast, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-         float squeeze = ghast.getItemBySlot(EquipmentSlot.BODY).isEmpty() ? 1.0F : 0.9375F;
+         float squeeze = ghast.getBodyItem().isEmpty() ? 1.0F : 0.9375F;
          this.body.xScale = squeeze;
          this.body.yScale = squeeze;
          this.body.zScale = squeeze;

@@ -64,7 +64,7 @@ public final class FarmAnimalRenderers {
    }
 
    private static class SaddleLayer extends RenderLayer<Pig, FarmAnimalModels.Quadruped<Pig>> {
-      private static final ResourceLocation SADDLE = ResourceLocation.withDefaultNamespace("textures/entity/pig/pig_saddle.png");
+      private static final ResourceLocation SADDLE = new ResourceLocation("textures/entity/pig/pig_saddle.png");
       private final FarmAnimalModels.Quadruped<Pig> model;
 
       SaddleLayer(RenderLayerParent<Pig, FarmAnimalModels.Quadruped<Pig>> parent, FarmAnimalModels.Quadruped<Pig> model) {
@@ -90,7 +90,7 @@ public final class FarmAnimalRenderers {
             this.model
                .renderToBuffer(
                   poseStack, buffer.getBuffer(RenderType.entityCutoutNoCull(SADDLE)), packedLight, LivingEntityRenderer.getOverlayCoords(pig, 0.0F)
-               );
+               , 1.0F, 1.0F, 1.0F, 1.0F);
          }
       }
    }

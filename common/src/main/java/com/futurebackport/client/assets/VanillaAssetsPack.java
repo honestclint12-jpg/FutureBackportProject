@@ -4,15 +4,12 @@ import com.google.gson.JsonObject;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 import java.util.Set;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.AbstractPackResources;
-import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
-import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
@@ -28,26 +25,15 @@ import org.jetbrains.annotations.Nullable;
  * resource reload is never held up.
  */
 public final class VanillaAssetsPack implements PackResources {
-   private static final PackLocationInfo LOCATION = new PackLocationInfo(
-      "futurebackport_vanilla_assets", Component.literal("Future Backport: Minecraft assets"), PackSource.BUILT_IN, Optional.empty()
-   );
+   private static final String ID = "futurebackport_vanilla_assets";
    /** Always on and pinned to the bottom of the list, so every resource pack the player adds can retexture the mod. */
-   private static final PackSelectionConfig SELECTION = new PackSelectionConfig(true, Pack.Position.BOTTOM, true);
    public static final RepositorySource SOURCE = consumer -> {
-      Pack.ResourcesSupplier resources = new Pack.ResourcesSupplier() {
-         @Override
-         public PackResources openPrimary(PackLocationInfo location) {
-            return new VanillaAssetsPack(VanillaAssets.get());
-         }
-
-         @Override
-         public PackResources openFull(PackLocationInfo location, Pack.Metadata metadata) {
-            return this.openPrimary(location);
-         }
-      };
-      Pack pack = Pack.readMetaAndCreate(LOCATION, resources, PackType.CLIENT_RESOURCES, SELECTION);
-      if (pack != null) {
-         consumer.accept(pack);
+      Pack.ResourcesSupplier resources = id -> new VanillaAssetsPack(VanillaAssets.get());
+      Pack.Info info = Pack.readPackInfo(ID, resources);
+      if (info != null) {
+         consumer.accept(Pack.create(
+            ID, Component.literal("Future Backport: Minecraft assets"), true, resources, info, PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, true, PackSource.BUILT_IN
+         ));
       }
    };
 
@@ -62,7 +48,7 @@ public final class VanillaAssetsPack implements PackResources {
    private synchronized PathPackResources files() {
       if (this.files == null) {
          this.assets.awaitDownload();
-         this.files = new PathPackResources(LOCATION, this.assets.root());
+         this.files = new PathPackResources(ID, this.assets.root(), true);
       }
       return this.files;
    }
@@ -105,8 +91,13 @@ public final class VanillaAssetsPack implements PackResources {
    }
 
    @Override
-   public PackLocationInfo location() {
-      return LOCATION;
+   public String packId() {
+      return ID;
+   }
+
+   @Override
+   public boolean isBuiltin() {
+      return true;
    }
 
    @Override

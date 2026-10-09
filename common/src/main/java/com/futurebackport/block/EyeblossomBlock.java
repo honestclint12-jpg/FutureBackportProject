@@ -3,7 +3,6 @@ package com.futurebackport.block;
 import com.futurebackport.particle.TrailParticleOption;
 import com.futurebackport.registry.ModBlocks;
 import com.futurebackport.registry.ModSounds;
-import com.mojang.serialization.MapCodec;
 import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -34,17 +33,13 @@ public class EyeblossomBlock extends FlowerBlock {
       this.type = type;
    }
 
-   public MapCodec<? extends FlowerBlock> codec() {
-      return simpleCodec(p -> new EyeblossomBlock(this.type, p));
-   }
-
    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
       if (this.type.open && random.nextInt(700) == 0 && level.getBlockState(pos.below()).is(ModBlocks.PALE_MOSS_BLOCK.get())) {
          level.playLocalSound(pos.getX(), pos.getY(), pos.getZ(), (SoundEvent)ModSounds.EYEBLOSSOM_IDLE.get(), SoundSource.AMBIENT, 1.0F, 1.0F, false);
       }
    }
 
-   protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+   public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
       if (this.tryChangingState(state, level, pos, random)) {
          level.playSound(null, pos, this.type.transform().longSwitchSound.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
       }
@@ -52,7 +47,7 @@ public class EyeblossomBlock extends FlowerBlock {
       super.randomTick(state, level, pos, random);
    }
 
-   protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+   public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
       if (this.tryChangingState(state, level, pos, random)) {
          level.playSound(null, pos, this.type.transform().shortSwitchSound.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
       }
@@ -82,27 +77,27 @@ public class EyeblossomBlock extends FlowerBlock {
       }
    }
 
-   protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+   public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
       if (!level.isClientSide() && level.getDifficulty() != Difficulty.PEACEFUL && entity instanceof Bee bee && !bee.hasEffect(MobEffects.POISON)) {
          bee.addEffect(new MobEffectInstance(MobEffects.POISON, 25));
       }
    }
 
    public static enum Type {
-      OPEN(true, MobEffects.BLINDNESS, 11.0F, ModSounds.EYEBLOSSOM_OPEN_LONG, ModSounds.EYEBLOSSOM_OPEN, 16545810),
-      CLOSED(false, MobEffects.CONFUSION, 7.0F, ModSounds.EYEBLOSSOM_CLOSE_LONG, ModSounds.EYEBLOSSOM_CLOSE, 6250335);
+      OPEN(true, MobEffects.BLINDNESS, 11, ModSounds.EYEBLOSSOM_OPEN_LONG, ModSounds.EYEBLOSSOM_OPEN, 16545810),
+      CLOSED(false, MobEffects.CONFUSION, 7, ModSounds.EYEBLOSSOM_CLOSE_LONG, ModSounds.EYEBLOSSOM_CLOSE, 6250335);
 
       final boolean open;
-      final Holder<MobEffect> effect;
-      final float effectDuration;
+      final MobEffect effect;
+      final int effectDuration;
       final Supplier<SoundEvent> longSwitchSound;
       final Supplier<SoundEvent> shortSwitchSound;
       final int particleColor;
 
       private Type(
          boolean open,
-         Holder<MobEffect> effect,
-         float effectDuration,
+         MobEffect effect,
+         int effectDuration,
          Supplier<SoundEvent> longSwitchSound,
          Supplier<SoundEvent> shortSwitchSound,
          int particleColor

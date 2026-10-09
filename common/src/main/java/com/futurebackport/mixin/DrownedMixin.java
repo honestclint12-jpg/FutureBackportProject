@@ -1,5 +1,7 @@
 package com.futurebackport.mixin;
 
+import net.minecraft.nbt.CompoundTag;
+
 import com.futurebackport.entity.nautilus.ZombieNautilus;
 import com.futurebackport.registry.ModEntities;
 import net.minecraft.tags.BiomeTags;
@@ -22,7 +24,7 @@ public class DrownedMixin {
       at = {@At("TAIL")}
    )
    private void futurebackport$zombieNautilusJockey(
-      ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, SpawnGroupData groupData, CallbackInfoReturnable<SpawnGroupData> cir
+      ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, SpawnGroupData groupData, CompoundTag tag, CallbackInfoReturnable<SpawnGroupData> cir
    ) {
       Drowned drowned = (Drowned)(Object)this;
       if ((spawnType == MobSpawnType.NATURAL || spawnType == MobSpawnType.STRUCTURE)
@@ -38,7 +40,7 @@ public class DrownedMixin {
             }
 
             nautilus.moveTo(drowned.getX(), drowned.getY(), drowned.getZ(), drowned.getYRot(), 0.0F);
-            nautilus.finalizeSpawn(level, difficulty, MobSpawnType.JOCKEY, null);
+            nautilus.finalizeSpawn(level, difficulty, MobSpawnType.JOCKEY, null, null);
             drowned.startRiding(nautilus, true);
             level.addFreshEntity(nautilus);
          }

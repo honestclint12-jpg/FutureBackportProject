@@ -5,7 +5,7 @@ import com.futurebackport.platform.Services;
 import com.futurebackport.entity.nautilus.AbstractNautilus;
 import com.futurebackport.item.NautilusArmorItem;
 import com.futurebackport.registry.ModMenus;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleMenuProvider;
@@ -60,7 +60,7 @@ public class NautilusMenu extends AbstractContainerMenu {
       }
    }
 
-   public static NautilusMenu fromNetwork(int id, Inventory playerInventory, RegistryFriendlyByteBuf buf) {
+   public static NautilusMenu fromNetwork(int id, Inventory playerInventory, FriendlyByteBuf buf) {
       return new NautilusMenu(id, playerInventory, (AbstractNautilus)playerInventory.player.level().getEntity(buf.readVarInt()));
    }
 
@@ -73,7 +73,7 @@ public class NautilusMenu extends AbstractContainerMenu {
    }
 
    public boolean stillValid(Player player) {
-      return this.nautilus.isAlive() && player.canInteractWithEntity(this.nautilus, 4.0);
+      return this.nautilus.isAlive() && player.distanceToSqr(this.nautilus) <= 64.0;
    }
 
    public void removed(Player player) {

@@ -3,6 +3,8 @@ package com.futurebackport.registry;
 import com.futurebackport.platform.registry.ItemRegistration;
 import com.futurebackport.platform.registry.ItemEntry;
 import com.futurebackport.platform.Services;
+import com.futurebackport.platform.registry.RegistryEntry;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.SpawnEggItem;
 
 import com.futurebackport.FutureBackport;
@@ -10,6 +12,8 @@ import com.futurebackport.entity.FarmAnimalVariant;
 import com.futurebackport.item.HarnessItem;
 import com.futurebackport.item.NautilusArmorItem;
 import com.futurebackport.item.SpearItem;
+import com.futurebackport.item.ModHorseArmorItem;
+import net.minecraft.world.item.HorseArmorItem;
 import com.futurebackport.item.VariantEggItem;
 import java.util.EnumMap;
 import java.util.List;
@@ -19,9 +23,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.vehicle.Boat.Type;
-import net.minecraft.world.item.AnimalArmorItem;
 import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.BannerPatternItem;
 import net.minecraft.world.item.BoatItem;
@@ -30,7 +32,6 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.HangingSignItem;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.JukeboxSong;
 import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.ShovelItem;
@@ -38,7 +39,6 @@ import net.minecraft.world.item.SignItem;
 import net.minecraft.world.item.StandingAndWallBlockItem;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tiers;
-import net.minecraft.world.item.AnimalArmorItem.BodyType;
 import net.minecraft.world.item.Item.Properties;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BannerPattern;
@@ -65,30 +65,30 @@ public class ModItems {
    public static final ItemEntry<Item> COPPER_NUGGET = ITEMS.registerSimpleItem("copper_nugget");
    public static final ItemEntry<SwordItem> COPPER_SWORD = ITEMS.register(
       "copper_sword",
-      () -> new SwordItem(ModMaterials.COPPER_TIER, new Properties().attributes(SwordItem.createAttributes(ModMaterials.COPPER_TIER, 3, -2.4F)))
+      () -> new SwordItem(ModMaterials.COPPER_TIER, 3, -2.4F, new Properties())
    );
    public static final ItemEntry<ShovelItem> COPPER_SHOVEL = ITEMS.register(
       "copper_shovel",
-      () -> new ShovelItem(ModMaterials.COPPER_TIER, new Properties().attributes(DiggerItem.createAttributes(ModMaterials.COPPER_TIER, 1.5F, -3.0F)))
+      () -> new ShovelItem(ModMaterials.COPPER_TIER, 1.5F, -3.0F, new Properties())
    );
    public static final ItemEntry<PickaxeItem> COPPER_PICKAXE = ITEMS.register(
       "copper_pickaxe",
-      () -> new PickaxeItem(ModMaterials.COPPER_TIER, new Properties().attributes(DiggerItem.createAttributes(ModMaterials.COPPER_TIER, 1.0F, -2.8F)))
+      () -> new PickaxeItem(ModMaterials.COPPER_TIER, 1, -2.8F, new Properties())
    );
    public static final ItemEntry<AxeItem> COPPER_AXE = ITEMS.register(
       "copper_axe",
-      () -> new AxeItem(ModMaterials.COPPER_TIER, new Properties().attributes(DiggerItem.createAttributes(ModMaterials.COPPER_TIER, 7.0F, -3.2F)))
+      () -> new AxeItem(ModMaterials.COPPER_TIER, 7.0F, -3.2F, new Properties())
    );
    public static final ItemEntry<HoeItem> COPPER_HOE = ITEMS.register(
       "copper_hoe",
-      () -> new HoeItem(ModMaterials.COPPER_TIER, new Properties().attributes(DiggerItem.createAttributes(ModMaterials.COPPER_TIER, -1.0F, -2.0F)))
+      () -> new HoeItem(ModMaterials.COPPER_TIER, -1, -2.0F, new Properties())
    );
    public static final ItemEntry<ArmorItem> COPPER_HELMET = copperArmor("copper_helmet", net.minecraft.world.item.ArmorItem.Type.HELMET);
    public static final ItemEntry<ArmorItem> COPPER_CHESTPLATE = copperArmor("copper_chestplate", net.minecraft.world.item.ArmorItem.Type.CHESTPLATE);
    public static final ItemEntry<ArmorItem> COPPER_LEGGINGS = copperArmor("copper_leggings", net.minecraft.world.item.ArmorItem.Type.LEGGINGS);
    public static final ItemEntry<ArmorItem> COPPER_BOOTS = copperArmor("copper_boots", net.minecraft.world.item.ArmorItem.Type.BOOTS);
-   public static final ItemEntry<AnimalArmorItem> COPPER_HORSE_ARMOR = ITEMS.register(
-      "copper_horse_armor", () -> new AnimalArmorItem(ModMaterials.COPPER_ARMOR.holder(), BodyType.EQUESTRIAN, false, new Properties().stacksTo(1))
+   public static final ItemEntry<HorseArmorItem> COPPER_HORSE_ARMOR = ITEMS.register(
+      "copper_horse_armor", () -> new ModHorseArmorItem(4, FutureBackport.id("copper"), new Properties().stacksTo(1))
    );
    public static final ItemEntry<StandingAndWallBlockItem> COPPER_TORCH = ITEMS.register(
       "copper_torch",
@@ -99,7 +99,7 @@ public class ModItems {
    public static final ItemEntry<Item> MUSIC_DISC_BOUNCE;
    public static final ItemEntry<BannerPatternItem> BORDURE_INDENTED_BANNER_PATTERN;
    public static final ItemEntry<BannerPatternItem> FIELD_MASONED_BANNER_PATTERN;
-   public static final ItemEntry<AnimalArmorItem> NETHERITE_HORSE_ARMOR;
+   public static final ItemEntry<HorseArmorItem> NETHERITE_HORSE_ARMOR;
    public static final ItemEntry<VariantEggItem> BLUE_EGG;
    public static final ItemEntry<VariantEggItem> BROWN_EGG;
    public static final ItemEntry<SpawnEggItem> HAPPY_GHAST_SPAWN_EGG;
@@ -122,9 +122,8 @@ public class ModItems {
    public static final ItemEntry<NautilusArmorItem> NETHERITE_NAUTILUS_ARMOR;
    public static final ItemEntry<SpawnEggItem> CAMEL_HUSK_SPAWN_EGG;
 
-   private static ItemEntry<Item> musicDisc(String name, String song, Rarity rarity) {
-      ResourceKey<JukeboxSong> key = ResourceKey.create(Registries.JUKEBOX_SONG, FutureBackport.id(song));
-      return ITEMS.register(name, () -> new Item(new Properties().stacksTo(1).rarity(rarity).jukeboxPlayable(key)));
+   private static ItemEntry<Item> musicDisc(String name, RegistryEntry<SoundEvent, SoundEvent> sound, int comparatorOutput, int lengthInSeconds, Rarity rarity) {
+      return ITEMS.register(name, () -> Services.PLATFORM.musicDisc(comparatorOutput, sound::get, new Properties().stacksTo(1).rarity(rarity), lengthInSeconds));
    }
 
    private static ItemEntry<BannerPatternItem> bannerPattern(String name, String tag) {
@@ -133,7 +132,7 @@ public class ModItems {
    }
 
    private static ItemEntry<ArmorItem> copperArmor(String name, net.minecraft.world.item.ArmorItem.Type type) {
-      return ITEMS.register(name, () -> new ArmorItem(ModMaterials.COPPER_ARMOR.holder(), type, new Properties().durability(type.getDurability(11))));
+      return ITEMS.register(name, () -> new ArmorItem(ModMaterials.COPPER_ARMOR, type, new Properties()));
    }
 
    static {
@@ -185,13 +184,13 @@ public class ModItems {
          family.all().forEach(ITEMS::registerSimpleBlockItem);
       }
 
-      MUSIC_DISC_TEARS = musicDisc("music_disc_tears", "tears", Rarity.UNCOMMON);
-      MUSIC_DISC_LAVA_CHICKEN = musicDisc("music_disc_lava_chicken", "lava_chicken", Rarity.RARE);
-      MUSIC_DISC_BOUNCE = musicDisc("music_disc_bounce", "bounce", Rarity.UNCOMMON);
+      MUSIC_DISC_TEARS = musicDisc("music_disc_tears", ModSounds.MUSIC_DISC_TEARS, 10, 175, Rarity.UNCOMMON);
+      MUSIC_DISC_LAVA_CHICKEN = musicDisc("music_disc_lava_chicken", ModSounds.MUSIC_DISC_LAVA_CHICKEN, 9, 134, Rarity.RARE);
+      MUSIC_DISC_BOUNCE = musicDisc("music_disc_bounce", ModSounds.MUSIC_DISC_BOUNCE, 8, 234, Rarity.UNCOMMON);
       BORDURE_INDENTED_BANNER_PATTERN = bannerPattern("bordure_indented_banner_pattern", "bordure_indented");
       FIELD_MASONED_BANNER_PATTERN = bannerPattern("field_masoned_banner_pattern", "field_masoned");
       NETHERITE_HORSE_ARMOR = ITEMS.register(
-         "netherite_horse_armor", () -> new AnimalArmorItem(ArmorMaterials.NETHERITE, BodyType.EQUESTRIAN, false, new Properties().stacksTo(1).fireResistant())
+         "netherite_horse_armor", () -> new HorseArmorItem(11, "netherite", new Properties().stacksTo(1).fireResistant())
       );
       BLUE_EGG = ITEMS.register("blue_egg", () -> new VariantEggItem(FarmAnimalVariant.COLD, new Properties().stacksTo(16)));
       BROWN_EGG = ITEMS.register("brown_egg", () -> new VariantEggItem(FarmAnimalVariant.WARM, new Properties().stacksTo(16)));

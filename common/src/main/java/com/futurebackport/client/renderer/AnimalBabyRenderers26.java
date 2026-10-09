@@ -1,5 +1,6 @@
 package com.futurebackport.client.renderer;
 
+import com.futurebackport.client.util.ArgbColor;
 import com.futurebackport.FutureBackport;
 import com.futurebackport.client.model.FoxBabyAnimation;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -499,9 +500,10 @@ public final class AnimalBabyRenderers26 {
          }
       }
 
-      public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int light, int overlay, int color) {
+      public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int light, int overlay, float red, float green, float blue, float alpha) {
+         int color = ArgbColor.pack(red, green, blue, alpha);
          this.young = false;
-         super.renderToBuffer(poseStack, buffer, light, overlay, color);
+         super.renderToBuffer(poseStack, buffer, light, overlay, ArgbColor.red(color), ArgbColor.green(color), ArgbColor.blue(color), ArgbColor.alpha(color));
       }
    }
 
@@ -547,8 +549,8 @@ public final class AnimalBabyRenderers26 {
                return (fox.isSleeping() ? asleep : awake).get(fox.getVariant());
             }
 
-            protected void setupRotations(Fox fox, PoseStack poseStack, float bob, float yBodyRot, float partialTick, float scale) {
-               super.setupRotations(fox, poseStack, bob, yBodyRot, partialTick, scale);
+            protected void setupRotations(Fox fox, PoseStack poseStack, float bob, float yBodyRot, float partialTick) {
+               super.setupRotations(fox, poseStack, bob, yBodyRot, partialTick);
                if (fox.isPouncing() || fox.isFaceplanted()) {
                   poseStack.mulPose(Axis.XP.rotationDegrees(-Mth.lerp(partialTick, fox.xRotO, fox.getXRot())));
                }
@@ -699,7 +701,7 @@ public final class AnimalBabyRenderers26 {
       ) {
          if (llama.isTraderLlama() && !llama.isInvisible()) {
             this.model.setupAnim(llama, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
-            this.model.renderToBuffer(poseStack, buffers.getBuffer(RenderType.entityCutoutNoCull(TEXTURE)), light, OverlayTexture.NO_OVERLAY);
+            this.model.renderToBuffer(poseStack, buffers.getBuffer(RenderType.entityCutoutNoCull(TEXTURE)), light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
          }
       }
    }

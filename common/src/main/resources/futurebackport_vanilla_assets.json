@@ -3056,11 +3056,6 @@
    "path": "assets/minecraft/textures/colormap/dry_foliage.png",
    "sha1": "dab8425c35f35424fb9b2738aa155f59a1a62a9a"
   },
-  "assets/futurebackport/textures/entity/armadillo/armadillo_baby.png": {
-   "jar": "26.2",
-   "path": "assets/minecraft/textures/entity/armadillo/armadillo_baby.png",
-   "sha1": "5da88b9c927246618f89c75537c654e39869e77d"
-  },
   "assets/futurebackport/textures/entity/axolotl/axolotl_blue_baby.png": {
    "jar": "26.2",
    "path": "assets/minecraft/textures/entity/axolotl/axolotl_blue_baby.png",

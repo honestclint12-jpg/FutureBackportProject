@@ -61,10 +61,8 @@ public final class FutureBackportGameTests {
          test.timeoutTicks(),
          test.setupTicks(),
          test.required(),
-         test.manualOnly(),
-         test.attempts(),
          test.requiredSuccesses(),
-         test.skyAccess(),
+         test.attempts(),
          helper -> invoke(method, helper)
       );
    }

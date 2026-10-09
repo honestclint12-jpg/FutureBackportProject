@@ -156,7 +156,6 @@ public final class ModClientSetup {
       entities.register(EntityType.ZOMBIE_VILLAGER, HumanoidBabyRenderers26.ZombieVillager26::new);
       entities.register(EntityType.PIGLIN, HumanoidBabyRenderers26.Piglin26::piglin);
       entities.register(EntityType.ZOMBIFIED_PIGLIN, HumanoidBabyRenderers26.Piglin26::zombified);
-      entities.register(EntityType.ARMADILLO, KeyframeBabyRenderers26.Armadillo26::new);
       entities.register(EntityType.AXOLOTL, KeyframeBabyRenderers26.Axolotl26::new);
       entities.register(EntityType.MOOSHROOM, MountBabyRenderers26.Mooshroom26::new);
       entities.register(EntityType.LLAMA, ctx -> new AnimalBabyRenderers26.Llama26(ctx, ModelLayers.LLAMA));
@@ -195,7 +194,6 @@ public final class ModClientSetup {
       layers.accept(BabyArmorLayer.PIGLIN_INNER, () -> BabyArmorLayer.createMesh(new CubeDeformation(0.7F), PartPose.offset(0.5F, -0.5F, 0.0F)));
       layers.accept(BabyArmorLayer.PIGLIN_OUTER, () -> BabyArmorLayer.createMesh(new CubeDeformation(0.7F), PartPose.offset(0.5F, -0.5F, 0.0F)));
       layers.accept(KeyframeBabyRenderers26.RABBIT_BABY, KeyframeBabyRenderers26.BabyRabbitModel::createBodyLayer);
-      layers.accept(KeyframeBabyRenderers26.ARMADILLO_BABY, KeyframeBabyRenderers26.BabyArmadilloModel::createBodyLayer);
       layers.accept(KeyframeBabyRenderers26.AXOLOTL_BABY, KeyframeBabyRenderers26.BabyAxolotlModel::createBodyLayer);
       layers.accept(MountBabyRenderers26.HORSE_BABY, MountBabyRenderers26.BabyEquineModel::createHorseLayer);
       layers.accept(MountBabyRenderers26.DONKEY_BABY, MountBabyRenderers26.BabyEquineModel::createDonkeyLayer);

@@ -1,7 +1,6 @@
 package com.futurebackport.client.renderer;
 
 import com.futurebackport.FutureBackport;
-import com.futurebackport.client.model.BabyArmadilloAnimation;
 import com.futurebackport.client.model.BabyAxolotlAnimation;
 import com.futurebackport.client.model.BabyRabbitAnimation;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -18,7 +17,6 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.ArmadilloRenderer;
 import net.minecraft.client.renderer.entity.AxolotlRenderer;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.RabbitRenderer;
@@ -26,13 +24,11 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider.Context;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.animal.Rabbit;
-import net.minecraft.world.entity.animal.armadillo.Armadillo;
 import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import org.joml.Vector3f;
 
 public final class KeyframeBabyRenderers26 {
    public static final ModelLayerLocation RABBIT_BABY = layer("rabbit_baby");
-   public static final ModelLayerLocation ARMADILLO_BABY = layer("armadillo_baby");
    public static final ModelLayerLocation AXOLOTL_BABY = layer("axolotl_baby");
    private static final Vector3f CACHE = new Vector3f();
 
@@ -49,26 +45,6 @@ public final class KeyframeBabyRenderers26 {
    }
 
    private KeyframeBabyRenderers26() {
-   }
-
-   public static class Armadillo26 extends ArmadilloRenderer {
-      private final MobRenderer<Armadillo, KeyframeBabyRenderers26.BabyArmadilloModel> baby;
-
-      public Armadillo26(Context context) {
-         super(context);
-         ResourceLocation texture = KeyframeBabyRenderers26.tex("armadillo/armadillo_baby");
-         this.baby = NetherBabyRenderers26.babyRenderer(
-            context, new KeyframeBabyRenderers26.BabyArmadilloModel(context.bakeLayer(KeyframeBabyRenderers26.ARMADILLO_BABY)), 0.2F, a -> texture
-         );
-      }
-
-      public void render(Armadillo armadillo, float yaw, float partialTick, PoseStack poseStack, MultiBufferSource buffers, int light) {
-         if (armadillo.isBaby()) {
-            this.baby.render(armadillo, yaw, partialTick, poseStack, buffers, light);
-         } else {
-            super.render(armadillo, yaw, partialTick, poseStack, buffers, light);
-         }
-      }
    }
 
    public static class Axolotl26 extends AxolotlRenderer {
@@ -90,107 +66,6 @@ public final class KeyframeBabyRenderers26 {
          } else {
             super.render(axolotl, yaw, partialTick, poseStack, buffers, light);
          }
-      }
-   }
-
-   public static class BabyArmadilloModel extends HierarchicalModel<Armadillo> {
-      private final ModelPart root;
-      private final ModelPart body;
-      private final ModelPart head;
-      private final ModelPart tail;
-      private final ModelPart cube;
-      private final ModelPart rightHindLeg;
-      private final ModelPart leftHindLeg;
-
-      public BabyArmadilloModel(ModelPart root) {
-         this.root = root;
-         this.body = root.getChild("body");
-         this.head = this.body.getChild("head");
-         this.tail = this.body.getChild("tail");
-         this.cube = root.getChild("cube");
-         this.rightHindLeg = root.getChild("right_hind_leg");
-         this.leftHindLeg = root.getChild("left_hind_leg");
-      }
-
-      public static LayerDefinition createBodyLayer() {
-         MeshDefinition mesh = new MeshDefinition();
-         PartDefinition root = mesh.getRoot();
-         PartDefinition body = root.addOrReplaceChild(
-            "body",
-            CubeListBuilder.create()
-               .texOffs(0, 0)
-               .addBox(-2.5F, -2.0F, -3.5F, 5.0F, 4.0F, 7.0F, new CubeDeformation(0.3F))
-               .texOffs(0, 11)
-               .addBox(-2.5F, -2.0F, -3.0F, 5.0F, 4.0F, 6.0F),
-            PartPose.offset(0.0F, 20.0F, 0.5F)
-         );
-         PartDefinition tail = body.addOrReplaceChild("tail", CubeListBuilder.create(), PartPose.offset(0.0F, 0.0F, 3.4F));
-         tail.addOrReplaceChild(
-            "right_ear_cube",
-            CubeListBuilder.create().texOffs(22, 11).addBox(-0.5F, -0.5F, -2.0F, 1.0F, 1.0F, 4.0F),
-            PartPose.offsetAndRotation(0.0F, 1.5F, 1.0F, -1.0472F, 0.0F, 0.0F)
-         );
-         PartDefinition head = body.addOrReplaceChild("head", CubeListBuilder.create(), PartPose.offset(0.0F, 0.0F, -3.2F));
-         PartDefinition headCube = head.addOrReplaceChild(
-            "head_cube",
-            CubeListBuilder.create().texOffs(20, 17).addBox(-1.0F, -2.0F, -4.0F, 2.0F, 2.0F, 4.0F),
-            PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.7417649F, 0.0F, 0.0F)
-         );
-         headCube.addOrReplaceChild(
-            "right_ear",
-            CubeListBuilder.create().texOffs(28, 8).mirror().addBox(-1.8F, -2.0F, 0.0F, 2.0F, 3.0F, 0.0F).mirror(false),
-            PartPose.offsetAndRotation(-1.0F, -2.0F, -0.3F, -0.4363F, -0.1134F, 0.0524F)
-         );
-         headCube.addOrReplaceChild(
-            "left_ear",
-            CubeListBuilder.create().texOffs(28, 8).addBox(-0.2F, -2.0F, 0.0F, 2.0F, 3.0F, 0.0F),
-            PartPose.offsetAndRotation(1.0F, -2.0F, -0.3F, -0.4363F, 0.1134F, -0.0524F)
-         );
-         root.addOrReplaceChild(
-            "right_hind_leg",
-            CubeListBuilder.create().texOffs(20, 27).mirror().addBox(-1.0F, 0.0F, -1.0F, 2.0F, 2.0F, 2.0F).mirror(false),
-            PartPose.offset(-1.5F, 22.0F, 2.5F)
-         );
-         root.addOrReplaceChild(
-            "left_hind_leg", CubeListBuilder.create().texOffs(20, 27).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 2.0F, 2.0F), PartPose.offset(1.5F, 22.0F, 2.5F)
-         );
-         root.addOrReplaceChild(
-            "right_front_leg", CubeListBuilder.create().texOffs(20, 23).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 2.0F, 2.0F), PartPose.offset(1.5F, 22.0F, -1.5F)
-         );
-         root.addOrReplaceChild(
-            "left_front_leg",
-            CubeListBuilder.create().texOffs(24, 0).mirror().addBox(-1.0F, 0.0F, -1.0F, 2.0F, 2.0F, 2.0F).mirror(false),
-            PartPose.offset(-1.5F, 22.0F, -1.5F)
-         );
-         root.addOrReplaceChild(
-            "cube",
-            CubeListBuilder.create().texOffs(0, 25).addBox(-3.0F, -3.0F, -3.0F, 6.0F, 6.0F, 6.0F, new CubeDeformation(0.3F)),
-            PartPose.offset(0.0F, 20.7F, 0.5F)
-         );
-         return LayerDefinition.create(mesh, 64, 64);
-      }
-
-      public ModelPart root() {
-         return this.root;
-      }
-
-      public void setupAnim(Armadillo armadillo, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-         this.root.getAllParts().forEach(ModelPart::resetPose);
-         boolean hiding = armadillo.shouldHideInShell();
-         this.body.skipDraw = hiding;
-         this.leftHindLeg.visible = !hiding;
-         this.rightHindLeg.visible = !hiding;
-         this.tail.visible = !hiding;
-         this.cube.visible = hiding;
-         if (!hiding) {
-            this.head.xRot = Mth.clamp(headPitch, -22.5F, 25.0F) * (float) (Math.PI / 180.0);
-            this.head.yRot = Mth.clamp(netHeadYaw, -32.5F, 32.5F) * (float) (Math.PI / 180.0);
-            this.animateWalk(BabyArmadilloAnimation.ARMADILLO_BABY_WALK, limbSwing, limbSwingAmount, 16.5F, 2.5F);
-         }
-
-         this.animate(armadillo.rollOutAnimationState, BabyArmadilloAnimation.ARMADILLO_BABY_ROLL_OUT, ageInTicks);
-         this.animate(armadillo.rollUpAnimationState, BabyArmadilloAnimation.ARMADILLO_BABY_ROLL_UP, ageInTicks);
-         this.animate(armadillo.peekAnimationState, BabyArmadilloAnimation.ARMADILLO_BABY_PEEK, ageInTicks);
       }
    }
 

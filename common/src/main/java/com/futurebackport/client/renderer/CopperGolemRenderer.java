@@ -78,7 +78,7 @@ public class CopperGolemRenderer extends MobRenderer<CopperGolem, CopperGolemMod
       ) {
          if (!golem.isInvisible()) {
             VertexConsumer consumer = buffers.getBuffer(RenderType.eyes(CopperGolemRenderer.EYES.get(golem.getWeatherState())));
-            ((CopperGolemModel)this.getParentModel()).renderToBuffer(poseStack, consumer, 15728640, LivingEntityRenderer.getOverlayCoords(golem, 0.0F));
+            ((CopperGolemModel)this.getParentModel()).renderToBuffer(poseStack, consumer, 15728640, LivingEntityRenderer.getOverlayCoords(golem, 0.0F), 1.0F, 1.0F, 1.0F, 1.0F);
          }
       }
    }

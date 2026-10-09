@@ -48,7 +48,7 @@ public record CopperFamily(String baseName, Map<WeatherState, BlockEntry<Block>>
          case EXPOSED -> Blocks.EXPOSED_COPPER.defaultMapColor();
          case WEATHERED -> Blocks.WEATHERED_COPPER.defaultMapColor();
          case OXIDIZED -> Blocks.OXIDIZED_COPPER.defaultMapColor();
-         default -> throw new MatchException(null, null);
+         default -> throw new IllegalStateException("Unknown weather state " + state);
       };
    }
 

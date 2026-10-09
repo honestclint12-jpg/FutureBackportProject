@@ -2,7 +2,6 @@ package com.futurebackport.block;
 
 import com.futurebackport.FutureBackport;
 import com.futurebackport.registry.ModSounds;
-import com.mojang.serialization.MapCodec;
 import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -38,11 +37,7 @@ public class DryVegetationBlock extends BushBlock implements BonemealableBlock {
       this.shape = tall ? box(1.0, 0.0, 1.0, 15.0, 16.0, 15.0) : box(2.0, 0.0, 2.0, 14.0, 10.0, 14.0);
    }
 
-   protected MapCodec<? extends BushBlock> codec() {
-      return simpleCodec(p -> new DryVegetationBlock(this.tall, this.other, p));
-   }
-
-   protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+   public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
       return this.shape;
    }
 
@@ -58,7 +53,7 @@ public class DryVegetationBlock extends BushBlock implements BonemealableBlock {
       }
    }
 
-   public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
+   public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state, boolean isClient) {
       return !this.tall || BonemealSpreading.hasSpreadableNeighbourPos(level, pos, this.other.get().defaultBlockState());
    }
 

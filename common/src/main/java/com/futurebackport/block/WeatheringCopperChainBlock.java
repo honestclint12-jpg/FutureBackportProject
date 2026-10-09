@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.WeatheringCopper.WeatherState;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
-public class WeatheringCopperChainBlock extends ChainBlock implements WeatheringCopper {
+public class WeatheringCopperChainBlock extends ChainBlock implements ModWeatheringCopper {
    private final WeatherState weatherState;
 
    public WeatheringCopperChainBlock(WeatherState weatherState, Properties properties) {
@@ -17,12 +17,12 @@ public class WeatheringCopperChainBlock extends ChainBlock implements Weathering
       this.weatherState = weatherState;
    }
 
-   protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-      this.changeOverTime(state, level, pos, random);
+   public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+      this.onRandomTick(state, level, pos, random);
    }
 
-   protected boolean isRandomlyTicking(BlockState state) {
-      return WeatheringCopper.getNext(state.getBlock()).isPresent();
+   public boolean isRandomlyTicking(BlockState state) {
+      return ModWeatheringCopper.canOxidize(state);
    }
 
    public WeatherState getAge() {

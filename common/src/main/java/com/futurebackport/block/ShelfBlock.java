@@ -3,7 +3,6 @@ package com.futurebackport.block;
 import com.futurebackport.FutureBackport;
 import com.futurebackport.block.entity.ShelfBlockEntity;
 import com.futurebackport.registry.ModSounds;
-import com.mojang.serialization.MapCodec;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -17,10 +16,10 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
+import net.minecraft.world.Container;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -56,7 +55,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class ShelfBlock extends BaseEntityBlock implements SideChainPartBlock, SimpleWaterloggedBlock {
-   public static final MapCodec<ShelfBlock> CODEC = simpleCodec(ShelfBlock::new);
    public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
    public static final EnumProperty<SideChainPart> SIDE_CHAIN_PART = EnumProperty.create("side_chain", SideChainPart.class);
@@ -83,23 +81,19 @@ public class ShelfBlock extends BaseEntityBlock implements SideChainPartBlock, S
       );
    }
 
-   protected MapCodec<ShelfBlock> codec() {
-      return CODEC;
-   }
-
-   protected RenderShape getRenderShape(BlockState state) {
+   public RenderShape getRenderShape(BlockState state) {
       return RenderShape.MODEL;
    }
 
-   protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+   public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
       return SHAPES.get(state.getValue(FACING));
    }
 
-   protected boolean useShapeForLightOcclusion(BlockState state) {
+   public boolean useShapeForLightOcclusion(BlockState state) {
       return true;
    }
 
-   protected boolean isPathfindable(BlockState state, PathComputationType type) {
+   public boolean isPathfindable(BlockState state, PathComputationType type) {
       return type == PathComputationType.WATER && state.getFluidState().is(FluidTags.WATER);
    }
 
@@ -112,16 +106,20 @@ public class ShelfBlock extends BaseEntityBlock implements SideChainPartBlock, S
       builder.add(new Property[]{FACING, POWERED, SIDE_CHAIN_PART, WATERLOGGED});
    }
 
-   protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+   public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
       if (!state.is(newState.getBlock())) {
-         Containers.dropContentsOnDestroy(state, newState, level, pos);
+         if (level.getBlockEntity(pos) instanceof Container container) {
+            Containers.dropContents(level, pos, container);
+            level.updateNeighbourForOutputSignal(pos, this);
+         }
+
          this.updateNeighborsAfterPoweringDown(level, pos, state);
       }
 
       super.onRemove(state, level, pos, newState, movedByPiston);
    }
 
-   protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean movedByPiston) {
+   public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean movedByPiston) {
       if (!level.isClientSide()) {
          boolean signal = level.hasNeighborSignal(pos);
          if ((Boolean)state.getValue(POWERED) != signal) {
@@ -144,34 +142,33 @@ public class ShelfBlock extends BaseEntityBlock implements SideChainPartBlock, S
          .setValue(WATERLOGGED, fluid.is(Fluids.WATER));
    }
 
-   protected BlockState rotate(BlockState state, Rotation rotation) {
+   public BlockState rotate(BlockState state, Rotation rotation) {
       return (BlockState)state.setValue(FACING, rotation.rotate((Direction)state.getValue(FACING)));
    }
 
-   protected BlockState mirror(BlockState state, Mirror mirror) {
+   public BlockState mirror(BlockState state, Mirror mirror) {
       return state.rotate(mirror.getRotation((Direction)state.getValue(FACING)));
    }
 
-   protected ItemInteractionResult useItemOn(
-      ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit
-   ) {
+   public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+      ItemStack stack = player.getItemInHand(hand);
       if (level.getBlockEntity(pos) instanceof ShelfBlockEntity shelf && hand != InteractionHand.OFF_HAND) {
          OptionalInt slot = getHitSlot(hit, (Direction)state.getValue(FACING));
          if (slot.isEmpty()) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.PASS;
          } else {
             Inventory inventory = player.getInventory();
             if (level.isClientSide()) {
-               return inventory.getSelected().isEmpty() ? ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION : ItemInteractionResult.SUCCESS;
+               return inventory.getSelected().isEmpty() ? InteractionResult.PASS : InteractionResult.sidedSuccess(level.isClientSide());
             } else if ((Boolean)state.getValue(POWERED)) {
                if (this.swapHotbar(level, pos, inventory)) {
                   this.playSound(level, pos, (SoundEvent)ModSounds.SHELF_MULTI_SWAP.get());
                }
 
-               return ItemInteractionResult.SUCCESS;
+               return InteractionResult.sidedSuccess(level.isClientSide());
             } else {
                ItemStack removed = shelf.swapItemNoUpdate(slot.getAsInt(), stack);
-               ItemStack toInventory = player.hasInfiniteMaterials() && removed.isEmpty() ? stack.copy() : removed;
+               ItemStack toInventory = player.getAbilities().instabuild && removed.isEmpty() ? stack.copy() : removed;
                inventory.setItem(inventory.selected, toInventory);
                inventory.setChanged();
                shelf.setChanged(GameEvent.ITEM_INTERACT_FINISH);
@@ -179,24 +176,20 @@ public class ShelfBlock extends BaseEntityBlock implements SideChainPartBlock, S
                   this.playSound(level, pos, stack.isEmpty() ? (SoundEvent)ModSounds.SHELF_TAKE_ITEM.get() : (SoundEvent)ModSounds.SHELF_SINGLE_SWAP.get());
                } else {
                   if (stack.isEmpty()) {
-                     return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                     return InteractionResult.PASS;
                   }
 
                   this.playSound(level, pos, (SoundEvent)ModSounds.SHELF_PLACE_ITEM.get());
                }
 
-               return ItemInteractionResult.SUCCESS;
+               return InteractionResult.sidedSuccess(level.isClientSide());
             }
          }
       } else {
-         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+         return InteractionResult.PASS;
       }
    }
 
-   protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-      ItemInteractionResult result = this.useItemOn(ItemStack.EMPTY, state, level, pos, player, InteractionHand.MAIN_HAND, hit);
-      return result == ItemInteractionResult.SUCCESS ? InteractionResult.sidedSuccess(level.isClientSide()) : InteractionResult.PASS;
-   }
 
    private boolean swapHotbar(Level level, BlockPos pos, Inventory inventory) {
       List<BlockPos> connected = this.getAllBlocksConnectedTo(level, pos);
@@ -271,7 +264,7 @@ public class ShelfBlock extends BaseEntityBlock implements SideChainPartBlock, S
       return 3;
    }
 
-   protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+   public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
       if ((Boolean)state.getValue(POWERED)) {
          this.updateSelfAndNeighborsOnPoweringUp(level, pos, state, oldState);
       } else {
@@ -283,11 +276,11 @@ public class ShelfBlock extends BaseEntityBlock implements SideChainPartBlock, S
       level.playSound(null, pos, sound, SoundSource.BLOCKS, 1.0F, 1.0F);
    }
 
-   protected FluidState getFluidState(BlockState state) {
+   public FluidState getFluidState(BlockState state) {
       return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
    }
 
-   protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+   public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
       if ((Boolean)state.getValue(WATERLOGGED)) {
          level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
       }
@@ -295,11 +288,11 @@ public class ShelfBlock extends BaseEntityBlock implements SideChainPartBlock, S
       return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
    }
 
-   protected boolean hasAnalogOutputSignal(BlockState state) {
+   public boolean hasAnalogOutputSignal(BlockState state) {
       return true;
    }
 
-   protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+   public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
       return !level.isClientSide() && level.getBlockEntity(pos) instanceof ShelfBlockEntity shelf
          ? (shelf.getItem(0).isEmpty() ? 0 : 1) | (shelf.getItem(1).isEmpty() ? 0 : 2) | (shelf.getItem(2).isEmpty() ? 0 : 4)
          : 0;

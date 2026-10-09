@@ -1,5 +1,6 @@
 package com.futurebackport.gametest;
 
+import net.minecraft.world.entity.MobType;
 import com.futurebackport.entity.nautilus.AbstractNautilus;
 import com.futurebackport.entity.nautilus.ZombieNautilus;
 import com.futurebackport.registry.ModEffects;
@@ -41,7 +42,7 @@ public class NautilusTests {
    public static void pufferfishTamesThenSaddleAndArmorEquip(GameTestHelper helper) {
       flood(helper);
       AbstractNautilus nautilus = (AbstractNautilus)helper.spawn((EntityType)ModEntities.NAUTILUS.get(), new BlockPos(5, 2, 5));
-      Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+      Player player = TestPlayers.mock(helper, GameType.SURVIVAL);
       player.moveTo(helper.absoluteVec(new Vec3(5.5, 2.0, 4.0)));
       helper.assertTrue(
          !nautilus.isFood(new ItemStack(Items.COD)) && nautilus.isFood(new ItemStack(Items.PUFFERFISH)), "untamed nautiluses only take pufferfish"
@@ -67,7 +68,7 @@ public class NautilusTests {
       helper.runAfterDelay(
          2L,
          () -> {
-            helper.assertTrue(player.hasEffect(ModEffects.BREATH_OF_THE_NAUTILUS.holder()), "rider has no Breath of the Nautilus");
+            helper.assertTrue(player.hasEffect(ModEffects.BREATH_OF_THE_NAUTILUS.get()), "rider has no Breath of the Nautilus");
             helper.assertTrue(
                nautilus.getAttributeValue(Attributes.ARMOR) - armorBefore == 11.0,
                "diamond nautilus armor should give 11 armor, gave " + (nautilus.getAttributeValue(Attributes.ARMOR) - armorBefore)
@@ -89,7 +90,7 @@ public class NautilusTests {
          Drowned drowned = (Drowned)EntityType.DROWNED.create(level);
          drowned.moveTo(helper.absoluteVec(new Vec3(5.5, 2.0, 5.5)));
          drowned.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.TRIDENT));
-         drowned.finalizeSpawn(level, level.getCurrentDifficultyAt(drowned.blockPosition()), MobSpawnType.NATURAL, null);
+         drowned.finalizeSpawn(level, level.getCurrentDifficultyAt(drowned.blockPosition()), MobSpawnType.NATURAL, null, null);
          if (drowned.getMainHandItem().is(Items.TRIDENT) && drowned.getVehicle() instanceof ZombieNautilus z) {
             jockeys++;
             z.discard();
@@ -98,7 +99,7 @@ public class NautilusTests {
 
       helper.assertTrue(jockeys > 5 && jockeys < 35, "about half of trident drowned should ride a zombie nautilus, got " + jockeys + "/40");
       ZombieNautilus zombie = (ZombieNautilus)helper.spawn((EntityType)ModEntities.ZOMBIE_NAUTILUS.get(), new BlockPos(5, 2, 5));
-      helper.assertTrue(zombie.getType().is(EntityTypeTags.UNDEAD), "zombie nautilus should be undead");
+      helper.assertTrue(zombie.getMobType() == MobType.UNDEAD, "zombie nautilus should be undead");
       helper.succeed();
    }
 }

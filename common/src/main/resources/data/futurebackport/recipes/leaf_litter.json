@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "category": "blocks",
+  "experience": 0.1,
+  "ingredient": {
+    "tag": "minecraft:leaves"
+  },
+  "result": "futurebackport:leaf_litter"
+}

@@ -1,5 +1,12 @@
 package com.futurebackport.entity.nautilus;
 
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import java.util.List;
+import java.util.UUID;
+import com.futurebackport.util.Backports;
 import com.futurebackport.item.NautilusArmorItem;
 import com.futurebackport.menu.NautilusMenu;
 import com.futurebackport.registry.ModEffects;
@@ -55,7 +62,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -65,6 +72,9 @@ public abstract class AbstractNautilus extends TamableAnimal implements PlayerRi
    public static final int ARMOR_SLOT = 1;
    private static final EntityDataAccessor<Boolean> DASH = SynchedEntityData.defineId(AbstractNautilus.class, EntityDataSerializers.BOOLEAN);
    private static final EntityDataAccessor<Boolean> SADDLED = SynchedEntityData.defineId(AbstractNautilus.class, EntityDataSerializers.BOOLEAN);
+   /** Nautilus armor. 1.20.1 has no BODY equipment slot, so it is synced here (inventory slot 1 is the source of truth). */
+   private static final EntityDataAccessor<ItemStack> BODY_ARMOR = SynchedEntityData.defineId(AbstractNautilus.class, EntityDataSerializers.ITEM_STACK);
+   private static final UUID ARMOR_MODIFIER_UUID = UUID.fromString("7f4d4b1e-6d0e-4b52-9a5e-2f3c1c9b6a11");
    private static final int DASH_COOLDOWN_TICKS = 40;
    private int dashCooldown = 0;
    protected float playerJumpPendingScale;
@@ -76,9 +86,19 @@ public abstract class AbstractNautilus extends TamableAnimal implements PlayerRi
       super(type, level);
       this.moveControl = new SmoothSwimmingMoveControl(this, 85, 10, 0.011F, 0.0F, true);
       this.lookControl = new SmoothSwimmingLookControl(this, 10);
-      this.setPathfindingMalus(PathType.WATER, 0.0F);
+      this.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
       this.inventory = new SimpleContainer(2);
       this.inventory.addListener(this);
+   }
+
+   /** Eye height as a fraction of the (age-scaled) height; 1.20.1 has no EntityType eyeHeight. */
+   protected float getStandingEyeHeight(Pose pose, EntityDimensions dimensions) {
+      return dimensions.height * (0.2751F / 0.95F);
+   }
+
+   /** Rider seat (1.21 passenger attachment 1.1375, less the 0.25 a 1.20.1 player rider sits lower than in 1.21). */
+   public double getPassengersRidingOffset() {
+      return (1.1375 - 0.25) * this.getScale();
    }
 
    public static Builder createAttributes() {
@@ -100,10 +120,11 @@ public abstract class AbstractNautilus extends TamableAnimal implements PlayerRi
          && level.getBlockState(pos.above()).is(Blocks.WATER);
    }
 
-   protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder builder) {
-      super.defineSynchedData(builder);
-      builder.define(DASH, false);
-      builder.define(SADDLED, false);
+   protected void defineSynchedData() {
+      super.defineSynchedData();
+      this.entityData.define(DASH, false);
+      this.entityData.define(SADDLED, false);
+      this.entityData.define(BODY_ARMOR, ItemStack.EMPTY);
    }
 
    public boolean isFood(ItemStack stack) {
@@ -149,7 +170,7 @@ public abstract class AbstractNautilus extends TamableAnimal implements PlayerRi
 
             if (this.isTame() && stack.getItem() instanceof NautilusArmorItem && this.inventory.getItem(1).isEmpty()) {
                if (!this.level().isClientSide) {
-                  this.inventory.setItem(1, stack.consumeAndReturn(1, player));
+                  this.inventory.setItem(1, Backports.consumeAndReturn(stack, 1, player));
                   this.playSound((SoundEvent)ModSounds.ARMOR_EQUIP_NAUTILUS.get(), 1.0F, 1.0F);
                }
 
@@ -161,7 +182,7 @@ public abstract class AbstractNautilus extends TamableAnimal implements PlayerRi
                   this.spawnAtLocation(this.inventory.removeItemNoUpdate(1));
                   this.containerChanged(this.inventory);
                   this.playSound((SoundEvent)ModSounds.ARMOR_UNEQUIP_NAUTILUS.get(), 1.0F, 1.0F);
-                  stack.hurtAndBreak(1, player, getSlotForHand(hand));
+                  Backports.hurtAndBreak(stack, 1, player, Backports.slotForHand(hand));
                }
 
                return InteractionResult.sidedSuccess(this.level().isClientSide);
@@ -211,8 +232,27 @@ public abstract class AbstractNautilus extends TamableAnimal implements PlayerRi
       return this.isAlive() && !this.isBaby() && this.isTame();
    }
 
-   public void equipSaddle(ItemStack stack, @Nullable SoundSource source) {
-      this.inventory.setItem(0, stack);
+   public void equipSaddle(@Nullable SoundSource source) {
+      this.inventory.setItem(0, new ItemStack(Items.SADDLE));
+   }
+
+   public ItemStack getBodyArmorItem() {
+      return this.entityData.get(BODY_ARMOR);
+   }
+
+   /** Syncs the armor and applies its attribute modifiers, like Horse.setArmorEquipment. */
+   public void setBodyArmorItem(ItemStack stack) {
+      this.entityData.set(BODY_ARMOR, stack.copy());
+      for (Attribute attribute : List.of(Attributes.ARMOR, Attributes.ARMOR_TOUGHNESS, Attributes.KNOCKBACK_RESISTANCE)) {
+         AttributeInstance instance = this.getAttribute(attribute);
+         if (instance != null) {
+            instance.removeModifier(ARMOR_MODIFIER_UUID);
+         }
+      }
+
+      if (stack.getItem() instanceof NautilusArmorItem armor) {
+         armor.applyModifiers(this, ARMOR_MODIFIER_UUID);
+      }
    }
 
    public boolean isSaddled() {
@@ -251,21 +291,35 @@ public abstract class AbstractNautilus extends TamableAnimal implements PlayerRi
       }
 
       this.inventory.setItem(0, ItemStack.EMPTY);
+      ItemStack armor = this.inventory.getItem(1);
+      if (!armor.isEmpty()) {
+         this.spawnAtLocation(armor);
+      }
+
+      this.inventory.setItem(1, ItemStack.EMPTY);
    }
 
    public void addAdditionalSaveData(CompoundTag tag) {
       super.addAdditionalSaveData(tag);
       ItemStack saddle = this.inventory.getItem(0);
       if (!saddle.isEmpty()) {
-         tag.put("SaddleItem", saddle.save(this.registryAccess()));
+         tag.put("SaddleItem", saddle.save(new CompoundTag()));
+      }
+
+      ItemStack armor = this.inventory.getItem(1);
+      if (!armor.isEmpty()) {
+         tag.put("body_armor_item", armor.save(new CompoundTag()));
       }
    }
 
    public void readAdditionalSaveData(CompoundTag tag) {
       super.readAdditionalSaveData(tag);
-      this.inventory.setItem(1, this.getBodyArmorItem().copy());
-      if (tag.contains("SaddleItem")) {
-         this.inventory.setItem(0, ItemStack.parse(this.registryAccess(), tag.getCompound("SaddleItem")).orElse(ItemStack.EMPTY));
+      if (tag.contains("body_armor_item", 10)) {
+         this.inventory.setItem(1, ItemStack.of(tag.getCompound("body_armor_item")));
+      }
+
+      if (tag.contains("SaddleItem", 10)) {
+         this.inventory.setItem(0, ItemStack.of(tag.getCompound("SaddleItem")));
       }
    }
 
@@ -363,7 +417,7 @@ public abstract class AbstractNautilus extends TamableAnimal implements PlayerRi
    public void handleStartJump(int jumpPower) {
       SoundEvent sound = this.getDashSound();
       if (sound != null) {
-         this.makeSound(sound);
+         this.playSound(sound, this.getSoundVolume(), this.getVoicePitch());
       }
 
       this.setDashing(true);
@@ -426,9 +480,9 @@ public abstract class AbstractNautilus extends TamableAnimal implements PlayerRi
    public void tick() {
       super.tick();
       if (!this.level().isClientSide && this.getFirstPassenger() instanceof Player player) {
-         boolean has = player.hasEffect(ModEffects.BREATH_OF_THE_NAUTILUS.holder());
+         boolean has = player.hasEffect(ModEffects.BREATH_OF_THE_NAUTILUS.get());
          if (!has || this.level().getGameTime() % 40L == 0L) {
-            player.addEffect(new MobEffectInstance(ModEffects.BREATH_OF_THE_NAUTILUS.holder(), 60, 0, true, true, true));
+            player.addEffect(new MobEffectInstance(ModEffects.BREATH_OF_THE_NAUTILUS.get(), 60, 0, true, true, true));
          }
       }
 
@@ -441,7 +495,7 @@ public abstract class AbstractNautilus extends TamableAnimal implements PlayerRi
          if (this.dashCooldown == 0) {
             SoundEvent ready = this.getDashReadySound();
             if (ready != null) {
-               this.makeSound(ready);
+               this.playSound(ready, this.getSoundVolume(), this.getVoicePitch());
             }
          }
       }
@@ -492,9 +546,11 @@ public abstract class AbstractNautilus extends TamableAnimal implements PlayerRi
       return !this.isTame() && !this.hasCustomName() && !this.isLeashed();
    }
 
-   public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData groupData) {
+   public SpawnGroupData finalizeSpawn(
+      ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData groupData, @Nullable CompoundTag tag
+   ) {
       this.attackTargetCooldown = 2400 + this.random.nextInt(1201);
-      return super.finalizeSpawn(level, difficulty, spawnType, groupData);
+      return super.finalizeSpawn(level, difficulty, spawnType, groupData, tag);
    }
 
    protected boolean isMobControlled() {

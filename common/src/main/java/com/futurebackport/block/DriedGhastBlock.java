@@ -3,7 +3,6 @@ package com.futurebackport.block;
 import com.futurebackport.entity.HappyGhast;
 import com.futurebackport.registry.ModEntities;
 import com.futurebackport.registry.ModSounds;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -40,7 +39,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class DriedGhastBlock extends HorizontalDirectionalBlock implements SimpleWaterloggedBlock {
-   public static final MapCodec<DriedGhastBlock> CODEC = simpleCodec(DriedGhastBlock::new);
    public static final IntegerProperty HYDRATION_LEVEL = IntegerProperty.create("hydration", 0, 3);
    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
    private static final int HYDRATION_TICK_DELAY = 5000;
@@ -54,15 +52,11 @@ public class DriedGhastBlock extends HorizontalDirectionalBlock implements Simpl
       );
    }
 
-   protected MapCodec<DriedGhastBlock> codec() {
-      return CODEC;
-   }
-
    protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
       builder.add(new Property[]{FACING, HYDRATION_LEVEL, WATERLOGGED});
    }
 
-   protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+   public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
       if ((Boolean)state.getValue(WATERLOGGED)) {
          level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
       }
@@ -70,11 +64,11 @@ public class DriedGhastBlock extends HorizontalDirectionalBlock implements Simpl
       return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
    }
 
-   protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+   public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
       return SHAPE;
    }
 
-   protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+   public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
       int hydration = (Integer)state.getValue(HYDRATION_LEVEL);
       if ((Boolean)state.getValue(WATERLOGGED)) {
          if (hydration < 3) {
@@ -114,7 +108,7 @@ public class DriedGhastBlock extends HorizontalDirectionalBlock implements Simpl
          }
 
          if (random.nextInt(6) == 0) {
-            level.addParticle(ParticleTypes.WHITE_SMOKE, x, y, z, 0.0, 0.02, 0.0);
+            level.addParticle(ParticleTypes.CLOUD, x, y, z, 0.0, 0.02, 0.0);
          }
       } else {
          if (random.nextInt(40) == 0) {
@@ -135,7 +129,7 @@ public class DriedGhastBlock extends HorizontalDirectionalBlock implements Simpl
       }
    }
 
-   protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+   public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
       if (((Boolean)state.getValue(WATERLOGGED) || (Integer)state.getValue(HYDRATION_LEVEL) > 0) && !level.getBlockTicks().hasScheduledTick(pos, this)) {
          level.scheduleTick(pos, this, 5000);
       }
@@ -147,7 +141,7 @@ public class DriedGhastBlock extends HorizontalDirectionalBlock implements Simpl
          .setValue(FACING, context.getHorizontalDirection().getOpposite());
    }
 
-   protected FluidState getFluidState(BlockState state) {
+   public FluidState getFluidState(BlockState state) {
       return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
    }
 
@@ -177,7 +171,7 @@ public class DriedGhastBlock extends HorizontalDirectionalBlock implements Simpl
       );
    }
 
-   protected boolean isPathfindable(BlockState state, PathComputationType type) {
+   public boolean isPathfindable(BlockState state, PathComputationType type) {
       return false;
    }
 }

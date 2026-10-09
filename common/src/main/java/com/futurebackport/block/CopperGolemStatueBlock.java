@@ -3,8 +3,6 @@ package com.futurebackport.block;
 import com.futurebackport.block.entity.CopperGolemStatueBlockEntity;
 import com.futurebackport.entity.CopperGolem;
 import com.futurebackport.registry.ModSounds;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Locale;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -16,7 +14,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -72,10 +70,6 @@ public class CopperGolemStatueBlock extends BaseEntityBlock implements SimpleWat
       return this.weatherState;
    }
 
-   protected MapCodec<? extends BaseEntityBlock> codec() {
-      return RecordCodecBuilder.mapCodec(i -> i.group(propertiesCodec()).apply(i, p -> new CopperGolemStatueBlock(this.weatherState, p)));
-   }
-
    protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
       builder.add(new Property[]{FACING, POSE, WATERLOGGED});
    }
@@ -85,30 +79,29 @@ public class CopperGolemStatueBlock extends BaseEntityBlock implements SimpleWat
          .setValue(WATERLOGGED, context.getLevel().getFluidState(context.getClickedPos()).is(Fluids.WATER));
    }
 
-   protected RenderShape getRenderShape(BlockState state) {
+   public RenderShape getRenderShape(BlockState state) {
       return RenderShape.ENTITYBLOCK_ANIMATED;
    }
 
-   protected BlockState rotate(BlockState state, Rotation rotation) {
+   public BlockState rotate(BlockState state, Rotation rotation) {
       return (BlockState)state.setValue(FACING, rotation.rotate((Direction)state.getValue(FACING)));
    }
 
-   protected BlockState mirror(BlockState state, Mirror mirror) {
+   public BlockState mirror(BlockState state, Mirror mirror) {
       return state.rotate(mirror.getRotation((Direction)state.getValue(FACING)));
    }
 
-   protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+   public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
       return SHAPE;
    }
 
-   protected ItemInteractionResult useItemOn(
-      ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit
-   ) {
+   public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+      ItemStack stack = player.getItemInHand(hand);
       if (stack.is(ItemTags.AXES)) {
-         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+         return InteractionResult.PASS;
       } else {
          this.updatePose(level, state, pos, player);
-         return ItemInteractionResult.sidedSuccess(level.isClientSide);
+         return InteractionResult.sidedSuccess(level.isClientSide);
       }
    }
 
@@ -118,7 +111,7 @@ public class CopperGolemStatueBlock extends BaseEntityBlock implements SimpleWat
       level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
    }
 
-   protected boolean isPathfindable(BlockState state, PathComputationType type) {
+   public boolean isPathfindable(BlockState state, PathComputationType type) {
       return type == PathComputationType.WATER && state.getFluidState().is(FluidTags.WATER);
    }
 
@@ -127,19 +120,19 @@ public class CopperGolemStatueBlock extends BaseEntityBlock implements SimpleWat
       return new CopperGolemStatueBlockEntity(pos, state);
    }
 
-   protected boolean hasAnalogOutputSignal(BlockState state) {
+   public boolean hasAnalogOutputSignal(BlockState state) {
       return true;
    }
 
-   protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+   public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
       return ((CopperGolemStatueBlock.Pose)state.getValue(POSE)).ordinal() + 1;
    }
 
-   protected FluidState getFluidState(BlockState state) {
+   public FluidState getFluidState(BlockState state) {
       return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
    }
 
-   protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbor, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+   public BlockState updateShape(BlockState state, Direction direction, BlockState neighbor, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
       if ((Boolean)state.getValue(WATERLOGGED)) {
          level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
       }
@@ -162,56 +155,49 @@ public class CopperGolemStatueBlock extends BaseEntityBlock implements SimpleWat
       }
    }
 
-   public static class Weathering extends CopperGolemStatueBlock implements WeatheringCopper {
+   public static class Weathering extends CopperGolemStatueBlock implements ModWeatheringCopper {
       public Weathering(WeatherState weatherState, Properties properties) {
          super(weatherState, properties);
-      }
-
-      @Override
-      protected MapCodec<? extends BaseEntityBlock> codec() {
-         return RecordCodecBuilder.mapCodec(i -> i.group(propertiesCodec()).apply(i, p -> new CopperGolemStatueBlock.Weathering(this.getWeatherState(), p)));
       }
 
       public WeatherState getAge() {
          return this.getWeatherState();
       }
 
-      protected boolean isRandomlyTicking(BlockState state) {
+      public boolean isRandomlyTicking(BlockState state) {
          return this.getWeatherState() != WeatherState.OXIDIZED;
       }
 
-      protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-         this.changeOverTime(state, level, pos, random);
+      public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+         this.onRandomTick(state, level, pos, random);
       }
 
-      @Override
-      protected ItemInteractionResult useItemOn(
-         ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit
-      ) {
+      public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+         ItemStack stack = player.getItemInHand(hand);
          if (level.getBlockEntity(pos) instanceof CopperGolemStatueBlockEntity statue) {
             if (!stack.is(ItemTags.AXES)) {
                if (stack.is(Items.HONEYCOMB)) {
-                  return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                  return InteractionResult.PASS;
                } else {
                   this.updatePose(level, state, pos, player);
-                  return ItemInteractionResult.sidedSuccess(level.isClientSide);
+                  return InteractionResult.sidedSuccess(level.isClientSide);
                }
             } else if (this.getAge() == WeatherState.UNAFFECTED) {
                if (!level.isClientSide) {
                   CopperGolem golem = statue.removeStatue(state);
-                  stack.hurtAndBreak(1, player, hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
+                  stack.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(hand));
                   if (golem != null) {
                      level.addFreshEntity(golem);
                      level.removeBlock(pos, false);
                   }
                }
 
-               return ItemInteractionResult.sidedSuccess(level.isClientSide);
+               return InteractionResult.sidedSuccess(level.isClientSide);
             } else {
-               return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+               return InteractionResult.PASS;
             }
          } else {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.PASS;
          }
       }
    }
