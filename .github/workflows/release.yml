@@ -68,14 +68,22 @@ jobs:
             fi
           done
 
+      - name: Collect the loader jars
+        run: |
+          mkdir -p dist
+          for module in neoforge forge fabric; do
+            if [ -d "$module/build/libs" ]; then
+              find "$module/build/libs" -maxdepth 1 -name '*.jar' ! -name '*-sources.jar' ! -name '*-javadoc.jar' -exec cp {} dist/ \;
+            fi
+          done
+          ls -l dist
+          test "$(ls dist/*.jar | wc -l)" -eq 2
+
       - uses: actions/upload-artifact@v5
         with:
           name: jars-${{ matrix.minecraft }}
           if-no-files-found: error
-          path: |
-            */build/libs/*.jar
-            !*/build/libs/*-sources.jar
-            !*/build/libs/*-javadoc.jar
+          path: dist/*.jar
 
   release:
     needs: build
@@ -92,6 +100,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ls -l jars
+          test "$(ls jars/*.jar | wc -l)" -eq 4
           # A version with a suffix (v1.0.0-beta.1) is published as a pre-release. When started from the Actions
           # tab, this also creates the tag on the commit the workflow ran on.
           prerelease=()

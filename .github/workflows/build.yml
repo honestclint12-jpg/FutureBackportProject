@@ -38,11 +38,19 @@ jobs:
             fi
           done
 
+      - name: Collect the loader jars
+        run: |
+          mkdir -p dist
+          for module in neoforge forge fabric; do
+            if [ -d "$module/build/libs" ]; then
+              find "$module/build/libs" -maxdepth 1 -name '*.jar' ! -name '*-sources.jar' ! -name '*-javadoc.jar' -exec cp {} dist/ \;
+            fi
+          done
+          ls -l dist
+          test "$(ls dist/*.jar | wc -l)" -eq 2
+
       - name: Upload jars
         uses: actions/upload-artifact@v5
         with:
           name: futurebackport-jars
-          path: |
-            */build/libs/*.jar
-            !*/build/libs/*-sources.jar
-            !*/build/libs/*-javadoc.jar
+          path: dist/*.jar
