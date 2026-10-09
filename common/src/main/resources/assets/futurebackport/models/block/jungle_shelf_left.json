@@ -1,0 +1,7 @@
+{
+  "parent": "futurebackport:block/template_shelf_left",
+  "textures": {
+    "all": "futurebackport:block/jungle_shelf",
+    "particle": "minecraft:block/stripped_jungle_log"
+  }
+}

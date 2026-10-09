@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/wall_inventory",
+  "textures": {
+    "wall": "futurebackport:block/cinnabar_bricks"
+  }
+}

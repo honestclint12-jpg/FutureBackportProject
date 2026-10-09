@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "futurebackport:resin_brick_slab",
+    "futurebackport:cinnabar_slab",
+    "futurebackport:polished_cinnabar_slab",
+    "futurebackport:cinnabar_brick_slab",
+    "futurebackport:sulfur_slab",
+    "futurebackport:polished_sulfur_slab",
+    "futurebackport:sulfur_brick_slab"
+  ]
+}

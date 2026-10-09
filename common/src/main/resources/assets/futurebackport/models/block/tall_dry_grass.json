@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "futurebackport:block/tall_dry_grass"
+  }
+}

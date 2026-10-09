@@ -1,0 +1,37 @@
+{
+    "schemaVersion": 1,
+    "id": "${mod_id}",
+    "version": "${version}",
+    "name": "${mod_name}",
+    "description": "${description}",
+    "authors": [
+        "${mod_author}"
+    ],
+    "contact": {
+        "sources": "https://github.com/honestclint12-jpg/FutureBackportProject"
+    },
+    "license": "${license}",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "com.futurebackport.fabric.FutureBackportFabric"
+        ],
+        "client": [
+            "com.futurebackport.fabric.FutureBackportFabricClient"
+        ],
+        "fabric-gametest": [
+            "com.futurebackport.fabric.FabricGameTests"
+        ]
+    },
+    "depends": {
+        "fabricloader": ">=${fabric_loader_version}",
+        "fabric-api": "*",
+        "minecraft": "~${minecraft_version}",
+        "java": ">=${java_version}"
+    },
+    "mixins": [
+        "${mod_id}.mixins.json",
+        "${mod_id}.fabric.mixins.json"
+    ],
+    "accessWidener": "${mod_id}.accesswidener"
+}

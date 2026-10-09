@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "futurebackport:copper_helmet",
+    "futurebackport:copper_chestplate",
+    "futurebackport:copper_leggings",
+    "futurebackport:copper_boots"
+  ]
+}

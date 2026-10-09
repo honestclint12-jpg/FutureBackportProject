@@ -1,0 +1,23 @@
+{
+  "replace": false,
+  "entries": [
+    "futurebackport:inject/chests/bastion_treasure",
+    "futurebackport:inject/chests/buried_treasure",
+    "futurebackport:inject/chests/desert_pyramid",
+    "futurebackport:inject/chests/end_city_treasure",
+    "futurebackport:inject/chests/jungle_temple",
+    "futurebackport:inject/chests/nether_bridge",
+    "futurebackport:inject/chests/shipwreck_map",
+    "futurebackport:inject/chests/shipwreck_supply",
+    "futurebackport:inject/chests/shipwreck_treasure",
+    "futurebackport:inject/chests/simple_dungeon",
+    "futurebackport:inject/chests/stronghold_corridor",
+    "futurebackport:inject/chests/underwater_ruin_big",
+    "futurebackport:inject/chests/underwater_ruin_small",
+    "futurebackport:inject/chests/village/village_weaponsmith",
+    "futurebackport:inject/chests/woodland_mansion",
+    "futurebackport:inject/entities/ghast",
+    "futurebackport:inject/entities/zombie",
+    "futurebackport:inject/gameplay/piglin_bartering"
+  ]
+}

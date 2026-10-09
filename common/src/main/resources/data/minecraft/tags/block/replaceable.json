@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "futurebackport:bush",
+    "futurebackport:short_dry_grass",
+    "futurebackport:tall_dry_grass",
+    "futurebackport:resin_clump",
+    "futurebackport:leaf_litter"
+  ]
+}

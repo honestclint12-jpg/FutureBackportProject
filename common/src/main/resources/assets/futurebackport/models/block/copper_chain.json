@@ -1,0 +1,6 @@
+{
+  "parent": "futurebackport:block/template_chain",
+  "textures": {
+    "texture": "futurebackport:block/copper_chain"
+  }
+}

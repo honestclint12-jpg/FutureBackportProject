@@ -1,0 +1,224 @@
+package com.futurebackport.registry;
+
+import com.futurebackport.platform.registry.RegistrationProvider;
+import com.futurebackport.platform.registry.RegistryEntry;
+import com.futurebackport.platform.util.SuppliedSoundType;
+
+import com.futurebackport.FutureBackport;
+import com.futurebackport.entity.SoundVariants;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.sounds.SoundEvent;
+
+public class ModSounds {
+   public static final RegistrationProvider<SoundEvent> SOUNDS = RegistrationProvider.create(Registries.SOUND_EVENT, "futurebackport");
+   public static final RegistryEntry<SoundEvent, SoundEvent> EMPTY = register("empty");
+   public static final RegistryEntry<SoundEvent, SoundEvent> EYEBLOSSOM_CLOSE = register("block.eyeblossom.close");
+   public static final RegistryEntry<SoundEvent, SoundEvent> EYEBLOSSOM_CLOSE_LONG = register("block.eyeblossom.close_long");
+   public static final RegistryEntry<SoundEvent, SoundEvent> EYEBLOSSOM_IDLE = register("block.eyeblossom.idle");
+   public static final RegistryEntry<SoundEvent, SoundEvent> EYEBLOSSOM_OPEN = register("block.eyeblossom.open");
+   public static final RegistryEntry<SoundEvent, SoundEvent> EYEBLOSSOM_OPEN_LONG = register("block.eyeblossom.open_long");
+   public static final RegistryEntry<SoundEvent, SoundEvent> PALE_HANGING_MOSS_IDLE = register("block.pale_hanging_moss.idle");
+   public static final RegistryEntry<SoundEvent, SoundEvent> RESIN_BREAK = register("block.resin.break");
+   public static final RegistryEntry<SoundEvent, SoundEvent> RESIN_FALL = register("block.resin.fall");
+   public static final RegistryEntry<SoundEvent, SoundEvent> RESIN_PLACE = register("block.resin.place");
+   public static final RegistryEntry<SoundEvent, SoundEvent> RESIN_STEP = register("block.resin.step");
+   public static final RegistryEntry<SoundEvent, SoundEvent> RESIN_BRICKS_BREAK = register("block.resin_bricks.break");
+   public static final RegistryEntry<SoundEvent, SoundEvent> RESIN_BRICKS_FALL = register("block.resin_bricks.fall");
+   public static final RegistryEntry<SoundEvent, SoundEvent> RESIN_BRICKS_HIT = register("block.resin_bricks.hit");
+   public static final RegistryEntry<SoundEvent, SoundEvent> RESIN_BRICKS_PLACE = register("block.resin_bricks.place");
+   public static final RegistryEntry<SoundEvent, SoundEvent> RESIN_BRICKS_STEP = register("block.resin_bricks.step");
+   public static final RegistryEntry<SoundEvent, SoundEvent> LEAF_LITTER_BREAK = register("block.leaf_litter.break");
+   public static final RegistryEntry<SoundEvent, SoundEvent> LEAF_LITTER_FALL = register("block.leaf_litter.fall");
+   public static final RegistryEntry<SoundEvent, SoundEvent> LEAF_LITTER_HIT = register("block.leaf_litter.hit");
+   public static final RegistryEntry<SoundEvent, SoundEvent> LEAF_LITTER_PLACE = register("block.leaf_litter.place");
+   public static final RegistryEntry<SoundEvent, SoundEvent> LEAF_LITTER_STEP = register("block.leaf_litter.step");
+   public static final RegistryEntry<SoundEvent, SoundEvent> FIREFLY_BUSH_IDLE = register("block.firefly_bush.idle");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CACTUS_FLOWER_BREAK = register("block.cactus_flower.break");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CACTUS_FLOWER_PLACE = register("block.cactus_flower.place");
+   public static final RegistryEntry<SoundEvent, SoundEvent> DRY_GRASS = register("block.dry_grass.ambient");
+   public static final RegistryEntry<SoundEvent, SoundEvent> ARMOR_EQUIP_COPPER = register("item.armor.equip_copper");
+   public static final RegistryEntry<SoundEvent, SoundEvent> MUSIC_DISC_TEARS = register("music_disc.tears");
+   public static final RegistryEntry<SoundEvent, SoundEvent> MUSIC_DISC_LAVA_CHICKEN = register("music_disc.lava_chicken");
+   public static final RegistryEntry<SoundEvent, SoundEvent> MUSIC_DISC_BOUNCE = register("music_disc.bounce");
+   public static final RegistryEntry<SoundEvent, SoundEvent> SULFUR_BREAK = register("block.sulfur.break");
+   public static final RegistryEntry<SoundEvent, SoundEvent> SULFUR_FALL = register("block.sulfur.fall");
+   public static final RegistryEntry<SoundEvent, SoundEvent> SULFUR_HIT = register("block.sulfur.hit");
+   public static final RegistryEntry<SoundEvent, SoundEvent> SULFUR_PLACE = register("block.sulfur.place");
+   public static final RegistryEntry<SoundEvent, SoundEvent> SULFUR_STEP = register("block.sulfur.step");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CINNABAR_BREAK = register("block.cinnabar.break");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CINNABAR_FALL = register("block.cinnabar.fall");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CINNABAR_HIT = register("block.cinnabar.hit");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CINNABAR_PLACE = register("block.cinnabar.place");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CINNABAR_STEP = register("block.cinnabar.step");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CREAKING_ACTIVATE = register("entity.creaking.activate");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CREAKING_AMBIENT = register("entity.creaking.ambient");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CREAKING_ATTACK = register("entity.creaking.attack");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CREAKING_DEACTIVATE = register("entity.creaking.deactivate");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CREAKING_DEATH = register("entity.creaking.death");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CREAKING_FREEZE = register("entity.creaking.freeze");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CREAKING_SPAWN = register("entity.creaking.spawn");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CREAKING_STEP = register("entity.creaking.step");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CREAKING_SWAY = register("entity.creaking.sway");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CREAKING_TWITCH = register("entity.creaking.twitch");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CREAKING_UNFREEZE = register("entity.creaking.unfreeze");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CREAKING_HEART_BREAK = register("block.creaking_heart.break");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CREAKING_HEART_FALL = register("block.creaking_heart.fall");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CREAKING_HEART_HIT = register("block.creaking_heart.hit");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CREAKING_HEART_HURT = register("block.creaking_heart.hurt");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CREAKING_HEART_IDLE = register("block.creaking_heart.idle");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CREAKING_HEART_PLACE = register("block.creaking_heart.place");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CREAKING_HEART_SPAWN = register("block.creaking_heart.spawn");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CREAKING_HEART_STEP = register("block.creaking_heart.step");
+   public static final RegistryEntry<SoundEvent, SoundEvent> SHELF_ACTIVATE = register("block.shelf.activate");
+   public static final RegistryEntry<SoundEvent, SoundEvent> SHELF_BREAK = register("block.shelf.break");
+   public static final RegistryEntry<SoundEvent, SoundEvent> SHELF_DEACTIVATE = register("block.shelf.deactivate");
+   public static final RegistryEntry<SoundEvent, SoundEvent> SHELF_FALL = register("block.shelf.fall");
+   public static final RegistryEntry<SoundEvent, SoundEvent> SHELF_HIT = register("block.shelf.hit");
+   public static final RegistryEntry<SoundEvent, SoundEvent> SHELF_MULTI_SWAP = register("block.shelf.multi_swap");
+   public static final RegistryEntry<SoundEvent, SoundEvent> SHELF_PLACE = register("block.shelf.place");
+   public static final RegistryEntry<SoundEvent, SoundEvent> SHELF_PLACE_ITEM = register("block.shelf.place_item");
+   public static final RegistryEntry<SoundEvent, SoundEvent> SHELF_SINGLE_SWAP = register("block.shelf.single_swap");
+   public static final RegistryEntry<SoundEvent, SoundEvent> SHELF_STEP = register("block.shelf.step");
+   public static final RegistryEntry<SoundEvent, SoundEvent> SHELF_TAKE_ITEM = register("block.shelf.take_item");
+   public static final RegistryEntry<SoundEvent, SoundEvent> DRIED_GHAST_AMBIENT = register("block.dried_ghast.ambient");
+   public static final RegistryEntry<SoundEvent, SoundEvent> DRIED_GHAST_AMBIENT_WATER = register("block.dried_ghast.ambient_water");
+   public static final RegistryEntry<SoundEvent, SoundEvent> DRIED_GHAST_BREAK = register("block.dried_ghast.break");
+   public static final RegistryEntry<SoundEvent, SoundEvent> DRIED_GHAST_FALL = register("block.dried_ghast.fall");
+   public static final RegistryEntry<SoundEvent, SoundEvent> DRIED_GHAST_PLACE = register("block.dried_ghast.place");
+   public static final RegistryEntry<SoundEvent, SoundEvent> DRIED_GHAST_PLACE_IN_WATER = register("block.dried_ghast.place_in_water");
+   public static final RegistryEntry<SoundEvent, SoundEvent> DRIED_GHAST_STEP = register("block.dried_ghast.step");
+   public static final RegistryEntry<SoundEvent, SoundEvent> DRIED_GHAST_TRANSITION = register("block.dried_ghast.transition");
+   public static final RegistryEntry<SoundEvent, SoundEvent> GHASTLING_AMBIENT = register("entity.ghastling.ambient");
+   public static final RegistryEntry<SoundEvent, SoundEvent> GHASTLING_DEATH = register("entity.ghastling.death");
+   public static final RegistryEntry<SoundEvent, SoundEvent> GHASTLING_HURT = register("entity.ghastling.hurt");
+   public static final RegistryEntry<SoundEvent, SoundEvent> GHASTLING_SPAWN = register("entity.ghastling.spawn");
+   public static final RegistryEntry<SoundEvent, SoundEvent> HAPPY_GHAST_AMBIENT = register("entity.happy_ghast.ambient");
+   public static final RegistryEntry<SoundEvent, SoundEvent> HAPPY_GHAST_DEATH = register("entity.happy_ghast.death");
+   public static final RegistryEntry<SoundEvent, SoundEvent> HAPPY_GHAST_EQUIP = register("entity.happy_ghast.equip");
+   public static final RegistryEntry<SoundEvent, SoundEvent> HARNESS_GOGGLES_DOWN = register("entity.happy_ghast.harness_goggles_down");
+   public static final RegistryEntry<SoundEvent, SoundEvent> HARNESS_GOGGLES_UP = register("entity.happy_ghast.harness_goggles_up");
+   public static final RegistryEntry<SoundEvent, SoundEvent> HAPPY_GHAST_HURT = register("entity.happy_ghast.hurt");
+   public static final RegistryEntry<SoundEvent, SoundEvent> HAPPY_GHAST_RIDING = register("entity.happy_ghast.riding");
+   public static final RegistryEntry<SoundEvent, SoundEvent> HAPPY_GHAST_UNEQUIP = register("entity.happy_ghast.unequip");
+   public static final RegistryEntry<SoundEvent, SoundEvent> GOLDEN_DANDELION_USE = register("item.golden_dandelion.use");
+   public static final RegistryEntry<SoundEvent, SoundEvent> GOLDEN_DANDELION_UNUSE = register("item.golden_dandelion.unuse");
+   public static final RegistryEntry<SoundEvent, SoundEvent> PARCHED_AMBIENT = register("entity.parched.ambient");
+   public static final RegistryEntry<SoundEvent, SoundEvent> PARCHED_DEATH = register("entity.parched.death");
+   public static final RegistryEntry<SoundEvent, SoundEvent> PARCHED_HURT = register("entity.parched.hurt");
+   public static final RegistryEntry<SoundEvent, SoundEvent> PARCHED_STEP = register("entity.parched.step");
+   public static final RegistryEntry<SoundEvent, SoundEvent> SPEAR_ATTACK = register("item.spear.attack");
+   public static final RegistryEntry<SoundEvent, SoundEvent> SPEAR_HIT = register("item.spear.hit");
+   public static final RegistryEntry<SoundEvent, SoundEvent> SPEAR_USE = register("item.spear.use");
+   public static final RegistryEntry<SoundEvent, SoundEvent> SPEAR_LUNGE_1 = register("item.spear.lunge_1");
+   public static final RegistryEntry<SoundEvent, SoundEvent> SPEAR_LUNGE_2 = register("item.spear.lunge_2");
+   public static final RegistryEntry<SoundEvent, SoundEvent> SPEAR_LUNGE_3 = register("item.spear.lunge_3");
+   public static final RegistryEntry<SoundEvent, SoundEvent> SPEAR_WOOD_ATTACK = register("item.spear_wood.attack");
+   public static final RegistryEntry<SoundEvent, SoundEvent> SPEAR_WOOD_HIT = register("item.spear_wood.hit");
+   public static final RegistryEntry<SoundEvent, SoundEvent> SPEAR_WOOD_USE = register("item.spear_wood.use");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_GOLEM_DEATH = register("entity.copper_golem.death");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_GOLEM_HURT = register("entity.copper_golem.hurt");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_GOLEM_ITEM_DROP = register("entity.copper_golem.item_drop");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_GOLEM_ITEM_NO_DROP = register("entity.copper_golem.item_no_drop");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_GOLEM_ITEM_GET = register("entity.copper_golem.no_item_get");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_GOLEM_ITEM_NO_GET = register("entity.copper_golem.no_item_no_get");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_GOLEM_SHEAR = register("entity.copper_golem.shear");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_GOLEM_SPAWN = register("entity.copper_golem.spawn");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_GOLEM_SPIN = register("entity.copper_golem.spin");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_GOLEM_STEP = register("entity.copper_golem.step");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_GOLEM_WEATHERED_DEATH = register("entity.copper_golem_weathered.death");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_GOLEM_WEATHERED_HURT = register("entity.copper_golem_weathered.hurt");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_GOLEM_WEATHERED_SPIN = register("entity.copper_golem_weathered.spin");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_GOLEM_WEATHERED_STEP = register("entity.copper_golem_weathered.step");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_GOLEM_OXIDIZED_DEATH = register("entity.copper_golem_oxidized.death");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_GOLEM_OXIDIZED_HURT = register("entity.copper_golem_oxidized.hurt");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_GOLEM_OXIDIZED_SPIN = register("entity.copper_golem_oxidized.spin");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_GOLEM_OXIDIZED_STEP = register("entity.copper_golem_oxidized.step");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_GOLEM_BECOME_STATUE = register("entity.copper_golem_become_statue");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_GOLEM_STATUE_BREAK = register("block.copper_golem_statue.break");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_GOLEM_STATUE_FALL = register("block.copper_golem_statue.fall");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_GOLEM_STATUE_HIT = register("block.copper_golem_statue.hit");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_GOLEM_STATUE_PLACE = register("block.copper_golem_statue.place");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_GOLEM_STATUE_STEP = register("block.copper_golem_statue.step");
+   public static final RegistryEntry<SoundEvent, SoundEvent> BABY_NAUTILUS_AMBIENT = register("entity.baby_nautilus.ambient");
+   public static final RegistryEntry<SoundEvent, SoundEvent> BABY_NAUTILUS_AMBIENT_ON_LAND = register("entity.baby_nautilus.ambient_land");
+   public static final RegistryEntry<SoundEvent, SoundEvent> BABY_NAUTILUS_DEATH = register("entity.baby_nautilus.death");
+   public static final RegistryEntry<SoundEvent, SoundEvent> BABY_NAUTILUS_DEATH_ON_LAND = register("entity.baby_nautilus.death_land");
+   public static final RegistryEntry<SoundEvent, SoundEvent> BABY_NAUTILUS_EAT = register("entity.baby_nautilus.eat");
+   public static final RegistryEntry<SoundEvent, SoundEvent> BABY_NAUTILUS_HURT = register("entity.baby_nautilus.hurt");
+   public static final RegistryEntry<SoundEvent, SoundEvent> BABY_NAUTILUS_HURT_ON_LAND = register("entity.baby_nautilus.hurt_land");
+   public static final RegistryEntry<SoundEvent, SoundEvent> BABY_NAUTILUS_SWIM = register("entity.baby_nautilus.swim");
+   public static final RegistryEntry<SoundEvent, SoundEvent> NAUTILUS_AMBIENT = register("entity.nautilus.ambient");
+   public static final RegistryEntry<SoundEvent, SoundEvent> NAUTILUS_AMBIENT_ON_LAND = register("entity.nautilus.ambient_land");
+   public static final RegistryEntry<SoundEvent, SoundEvent> NAUTILUS_DASH = register("entity.nautilus.dash");
+   public static final RegistryEntry<SoundEvent, SoundEvent> NAUTILUS_DASH_ON_LAND = register("entity.nautilus.dash_land");
+   public static final RegistryEntry<SoundEvent, SoundEvent> NAUTILUS_DASH_READY = register("entity.nautilus.dash_ready");
+   public static final RegistryEntry<SoundEvent, SoundEvent> NAUTILUS_DASH_READY_ON_LAND = register("entity.nautilus.dash_ready_land");
+   public static final RegistryEntry<SoundEvent, SoundEvent> NAUTILUS_DEATH = register("entity.nautilus.death");
+   public static final RegistryEntry<SoundEvent, SoundEvent> NAUTILUS_DEATH_ON_LAND = register("entity.nautilus.death_land");
+   public static final RegistryEntry<SoundEvent, SoundEvent> NAUTILUS_EAT = register("entity.nautilus.eat");
+   public static final RegistryEntry<SoundEvent, SoundEvent> NAUTILUS_HURT = register("entity.nautilus.hurt");
+   public static final RegistryEntry<SoundEvent, SoundEvent> NAUTILUS_HURT_ON_LAND = register("entity.nautilus.hurt_land");
+   public static final RegistryEntry<SoundEvent, SoundEvent> NAUTILUS_RIDING = register("entity.nautilus.riding");
+   public static final RegistryEntry<SoundEvent, SoundEvent> NAUTILUS_SWIM = register("entity.nautilus.swim");
+   public static final RegistryEntry<SoundEvent, SoundEvent> ZOMBIE_NAUTILUS_AMBIENT = register("entity.zombie_nautilus.ambient");
+   public static final RegistryEntry<SoundEvent, SoundEvent> ZOMBIE_NAUTILUS_AMBIENT_ON_LAND = register("entity.zombie_nautilus.ambient_land");
+   public static final RegistryEntry<SoundEvent, SoundEvent> ZOMBIE_NAUTILUS_DASH = register("entity.zombie_nautilus.dash");
+   public static final RegistryEntry<SoundEvent, SoundEvent> ZOMBIE_NAUTILUS_DASH_ON_LAND = register("entity.zombie_nautilus.dash_land");
+   public static final RegistryEntry<SoundEvent, SoundEvent> ZOMBIE_NAUTILUS_DASH_READY = register("entity.zombie_nautilus.dash_ready");
+   public static final RegistryEntry<SoundEvent, SoundEvent> ZOMBIE_NAUTILUS_DASH_READY_ON_LAND = register("entity.zombie_nautilus.dash_ready_land");
+   public static final RegistryEntry<SoundEvent, SoundEvent> ZOMBIE_NAUTILUS_DEATH = register("entity.zombie_nautilus.death");
+   public static final RegistryEntry<SoundEvent, SoundEvent> ZOMBIE_NAUTILUS_DEATH_ON_LAND = register("entity.zombie_nautilus.death_land");
+   public static final RegistryEntry<SoundEvent, SoundEvent> ZOMBIE_NAUTILUS_EAT = register("entity.zombie_nautilus.eat");
+   public static final RegistryEntry<SoundEvent, SoundEvent> ZOMBIE_NAUTILUS_HURT = register("entity.zombie_nautilus.hurt");
+   public static final RegistryEntry<SoundEvent, SoundEvent> ZOMBIE_NAUTILUS_HURT_ON_LAND = register("entity.zombie_nautilus.hurt_land");
+   public static final RegistryEntry<SoundEvent, SoundEvent> ZOMBIE_NAUTILUS_SWIM = register("entity.zombie_nautilus.swim");
+   public static final RegistryEntry<SoundEvent, SoundEvent> ARMOR_EQUIP_NAUTILUS = register("item.armor.equip_nautilus");
+   public static final RegistryEntry<SoundEvent, SoundEvent> ARMOR_UNEQUIP_NAUTILUS = register("item.armor.unequip_nautilus");
+   public static final RegistryEntry<SoundEvent, SoundEvent> NAUTILUS_SADDLE_EQUIP = register("item.nautilus_saddle_equip");
+   public static final RegistryEntry<SoundEvent, SoundEvent> NAUTILUS_SADDLE_UNDERWATER_EQUIP = register("item.nautilus_saddle_underwater_equip");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CAMEL_HUSK_AMBIENT = register("entity.camel_husk.ambient");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CAMEL_HUSK_DASH = register("entity.camel_husk.dash");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CAMEL_HUSK_DASH_READY = register("entity.camel_husk.dash_ready");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CAMEL_HUSK_DEATH = register("entity.camel_husk.death");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CAMEL_HUSK_EAT = register("entity.camel_husk.eat");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CAMEL_HUSK_HURT = register("entity.camel_husk.hurt");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CAMEL_HUSK_SADDLE = register("entity.camel_husk.saddle");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CAMEL_HUSK_SIT = register("entity.camel_husk.sit");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CAMEL_HUSK_STAND = register("entity.camel_husk.stand");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CAMEL_HUSK_STEP = register("entity.camel_husk.step");
+   public static final RegistryEntry<SoundEvent, SoundEvent> CAMEL_HUSK_STEP_SAND = register("entity.camel_husk.step_sand");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_CHEST_OPEN = register("block.copper_chest.open");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_CHEST_CLOSE = register("block.copper_chest.close");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_CHEST_WEATHERED_OPEN = register("block.copper_chest_weathered.open");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_CHEST_WEATHERED_CLOSE = register("block.copper_chest_weathered.close");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_CHEST_OXIDIZED_OPEN = register("block.copper_chest_oxidized.open");
+   public static final RegistryEntry<SoundEvent, SoundEvent> COPPER_CHEST_OXIDIZED_CLOSE = register("block.copper_chest_oxidized.close");
+   public static final SuppliedSoundType DRIED_GHAST = new SuppliedSoundType(1.0F, 1.0F, DRIED_GHAST_BREAK, DRIED_GHAST_STEP, EMPTY, EMPTY, DRIED_GHAST_FALL);
+   public static final SuppliedSoundType SHELF = new SuppliedSoundType(1.0F, 1.0F, SHELF_BREAK, SHELF_STEP, SHELF_PLACE, SHELF_HIT, SHELF_FALL);
+   public static final SuppliedSoundType CREAKING_HEART = new SuppliedSoundType(
+      1.0F, 1.0F, CREAKING_HEART_BREAK, CREAKING_HEART_STEP, CREAKING_HEART_PLACE, CREAKING_HEART_HIT, CREAKING_HEART_FALL
+   );
+   public static final SuppliedSoundType COPPER_GOLEM_STATUE = new SuppliedSoundType(
+      1.0F, 1.0F, COPPER_GOLEM_STATUE_BREAK, COPPER_GOLEM_STATUE_STEP, COPPER_GOLEM_STATUE_PLACE, COPPER_GOLEM_STATUE_HIT, COPPER_GOLEM_STATUE_FALL
+   );
+   public static final SuppliedSoundType RESIN = new SuppliedSoundType(1.0F, 1.0F, RESIN_BREAK, RESIN_STEP, RESIN_PLACE, EMPTY, RESIN_FALL);
+   public static final SuppliedSoundType RESIN_BRICKS = new SuppliedSoundType(
+      1.0F, 1.0F, RESIN_BRICKS_BREAK, RESIN_BRICKS_STEP, RESIN_BRICKS_PLACE, RESIN_BRICKS_HIT, RESIN_BRICKS_FALL
+   );
+   public static final SuppliedSoundType LEAF_LITTER = new SuppliedSoundType(
+      1.0F, 1.0F, LEAF_LITTER_BREAK, LEAF_LITTER_STEP, LEAF_LITTER_PLACE, LEAF_LITTER_HIT, LEAF_LITTER_FALL
+   );
+   public static final SuppliedSoundType SULFUR = new SuppliedSoundType(1.0F, 1.0F, SULFUR_BREAK, SULFUR_STEP, SULFUR_PLACE, SULFUR_HIT, SULFUR_FALL);
+   public static final SuppliedSoundType CINNABAR = new SuppliedSoundType(
+      1.0F, 1.0F, CINNABAR_BREAK, CINNABAR_STEP, CINNABAR_PLACE, CINNABAR_HIT, CINNABAR_FALL
+   );
+   public static final SuppliedSoundType CACTUS_FLOWER = new SuppliedSoundType(1.0F, 1.0F, CACTUS_FLOWER_BREAK, EMPTY, CACTUS_FLOWER_PLACE, EMPTY, EMPTY);
+
+   private static RegistryEntry<SoundEvent, SoundEvent> register(String name) {
+      return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(FutureBackport.id(name)));
+   }
+
+   static {
+      SoundVariants.registerSounds(ModSounds::register);
+   }
+}

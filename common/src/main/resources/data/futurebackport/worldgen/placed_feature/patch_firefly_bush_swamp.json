@@ -1,0 +1,38 @@
+{
+  "feature": {
+    "type": "minecraft:random_patch",
+    "config": {
+      "feature": {
+        "feature": "futurebackport:firefly_bush",
+        "placement": [
+          {
+            "type": "minecraft:block_predicate_filter",
+            "predicate": {
+              "type": "minecraft:matching_block_tag",
+              "tag": "minecraft:air"
+            }
+          }
+        ]
+      },
+      "tries": 20,
+      "xz_spread": 5,
+      "y_spread": 4
+    }
+  },
+  "placement": [
+    {
+      "type": "minecraft:rarity_filter",
+      "chance": 8
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:heightmap",
+      "heightmap": "MOTION_BLOCKING"
+    },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

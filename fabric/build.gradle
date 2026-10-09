@@ -1,0 +1,43 @@
+plugins {
+    id 'multiloader-loader'
+    id 'fabric-loom'
+}
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+}
+
+loom {
+    def aw = project(':common').file("src/main/resources/${mod_id}.accesswidener")
+    if (aw.exists()) {
+        accessWidenerPath.set(aw)
+    }
+    mixin {
+        defaultRefmapName.set("${mod_id}.refmap.json")
+    }
+    runs {
+        client {
+            client()
+            setConfigName('Fabric Client')
+            ideConfigGenerated(true)
+            runDir('runs/client')
+        }
+        server {
+            server()
+            setConfigName('Fabric Server')
+            ideConfigGenerated(true)
+            runDir('runs/server')
+        }
+        // Runs every game test in the mod on a headless server and exits non-zero if any fail (same as NeoForge's).
+        gameTestServer {
+            server()
+            setConfigName('Fabric Game Test Server')
+            ideConfigGenerated(false)
+            vmArg('-Dfabric-api.gametest')
+            vmArg("-Dfabric-api.gametest.report-file=${project.layout.buildDirectory.get()}/gametest/report.xml")
+            runDir('runs/gametest')
+        }
+    }
+}

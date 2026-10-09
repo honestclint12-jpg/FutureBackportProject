@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "futurebackport:diamond_spear",
+    "futurebackport:stone_spear",
+    "futurebackport:golden_spear",
+    "futurebackport:netherite_spear",
+    "futurebackport:wooden_spear",
+    "futurebackport:iron_spear",
+    "futurebackport:copper_spear"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:dirt",
+    "#futurebackport:moss_blocks",
+    "minecraft:podzol"
+  ]
+}

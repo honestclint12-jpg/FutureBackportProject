@@ -1,0 +1,27 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.futurebackport.mixin",
+  "refmap": "${mod_id}.refmap.json",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "CactusBlockMixin",
+    "CamelMixin",
+    "CarvedPumpkinBlockMixin",
+    "ChestBlockEntityMixin",
+    "ChickenMixin",
+    "DrownedMixin",
+    "EntityMixin",
+    "LeavesBlockMixin",
+    "LightningRodBlockMixin",
+    "OverworldBiomeBuilderMixin",
+    "SimpleBlockFeatureMixin",
+    "ZombieMixin"
+  ],
+  "client": [
+    "client.PackRepositoryMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

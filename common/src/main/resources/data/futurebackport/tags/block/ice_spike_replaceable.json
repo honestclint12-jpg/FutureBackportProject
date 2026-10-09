@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "#futurebackport:substrate_overworld",
+    "minecraft:snow_block",
+    "minecraft:ice"
+  ]
+}

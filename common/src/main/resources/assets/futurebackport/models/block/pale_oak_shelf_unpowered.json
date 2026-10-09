@@ -1,0 +1,7 @@
+{
+  "parent": "futurebackport:block/template_shelf_unpowered",
+  "textures": {
+    "all": "futurebackport:block/pale_oak_shelf",
+    "particle": "futurebackport:block/stripped_pale_oak_log"
+  }
+}

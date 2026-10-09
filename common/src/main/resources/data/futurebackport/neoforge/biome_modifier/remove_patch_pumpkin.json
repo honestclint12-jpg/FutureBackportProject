@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:remove_features",
+  "biomes": [
+    "minecraft:mushroom_fields"
+  ],
+  "features": "minecraft:patch_pumpkin",
+  "steps": [
+    "vegetal_decoration"
+  ]
+}

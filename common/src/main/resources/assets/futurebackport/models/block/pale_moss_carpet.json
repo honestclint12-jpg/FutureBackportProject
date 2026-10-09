@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/carpet",
+  "textures": {
+    "wool": "futurebackport:block/pale_moss_carpet"
+  }
+}

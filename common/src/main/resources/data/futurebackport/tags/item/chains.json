@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:chain",
+    "futurebackport:copper_chain",
+    "futurebackport:exposed_copper_chain",
+    "futurebackport:weathered_copper_chain",
+    "futurebackport:oxidized_copper_chain",
+    "futurebackport:waxed_copper_chain",
+    "futurebackport:waxed_exposed_copper_chain",
+    "futurebackport:waxed_weathered_copper_chain",
+    "futurebackport:waxed_oxidized_copper_chain"
+  ]
+}

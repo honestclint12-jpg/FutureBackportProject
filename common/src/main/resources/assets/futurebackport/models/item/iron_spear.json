@@ -1,0 +1,26 @@
+{
+  "loader": "neoforge:separate_transforms",
+  "base": {
+    "parent": "futurebackport:item/iron_spear_in_hand"
+  },
+  "perspectives": {
+    "gui": {
+      "parent": "minecraft:item/generated",
+      "textures": {
+        "layer0": "futurebackport:item/iron_spear"
+      }
+    },
+    "ground": {
+      "parent": "minecraft:item/generated",
+      "textures": {
+        "layer0": "futurebackport:item/iron_spear"
+      }
+    },
+    "fixed": {
+      "parent": "minecraft:item/generated",
+      "textures": {
+        "layer0": "futurebackport:item/iron_spear"
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "futurebackport:block/sulfur_brick_slab"
+    },
+    "type=double": {
+      "model": "futurebackport:block/sulfur_bricks"
+    },
+    "type=top": {
+      "model": "futurebackport:block/sulfur_brick_slab_top"
+    }
+  }
+}

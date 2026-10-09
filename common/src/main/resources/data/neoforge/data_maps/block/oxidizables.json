@@ -1,0 +1,22 @@
+{
+  "values": {
+    "futurebackport:copper_golem_statue": "futurebackport:exposed_copper_golem_statue",
+    "futurebackport:exposed_copper_golem_statue": "futurebackport:weathered_copper_golem_statue",
+    "futurebackport:weathered_copper_golem_statue": "futurebackport:oxidized_copper_golem_statue",
+    "futurebackport:copper_bars": "futurebackport:exposed_copper_bars",
+    "futurebackport:exposed_copper_bars": "futurebackport:weathered_copper_bars",
+    "futurebackport:weathered_copper_bars": "futurebackport:oxidized_copper_bars",
+    "futurebackport:copper_chain": "futurebackport:exposed_copper_chain",
+    "futurebackport:exposed_copper_chain": "futurebackport:weathered_copper_chain",
+    "futurebackport:weathered_copper_chain": "futurebackport:oxidized_copper_chain",
+    "futurebackport:copper_lantern": "futurebackport:exposed_copper_lantern",
+    "futurebackport:exposed_copper_lantern": "futurebackport:weathered_copper_lantern",
+    "futurebackport:weathered_copper_lantern": "futurebackport:oxidized_copper_lantern",
+    "minecraft:lightning_rod": "futurebackport:exposed_lightning_rod",
+    "futurebackport:exposed_lightning_rod": "futurebackport:weathered_lightning_rod",
+    "futurebackport:weathered_lightning_rod": "futurebackport:oxidized_lightning_rod",
+    "futurebackport:copper_chest": "futurebackport:exposed_copper_chest",
+    "futurebackport:exposed_copper_chest": "futurebackport:weathered_copper_chest",
+    "futurebackport:weathered_copper_chest": "futurebackport:oxidized_copper_chest"
+  }
+}

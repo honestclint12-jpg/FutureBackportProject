@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "futurebackport:block/sulfur_bricks",
+    "side": "futurebackport:block/sulfur_bricks",
+    "top": "futurebackport:block/sulfur_bricks"
+  }
+}

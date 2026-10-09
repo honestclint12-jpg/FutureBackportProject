@@ -1,0 +1,16 @@
+{
+  "values": {
+    "futurebackport:pale_oak_leaves": 0.3,
+    "futurebackport:pale_oak_sapling": 0.3,
+    "futurebackport:pale_moss_carpet": 0.3,
+    "futurebackport:pale_hanging_moss": 0.3,
+    "futurebackport:wildflowers": 0.3,
+    "futurebackport:leaf_litter": 0.3,
+    "futurebackport:firefly_bush": 0.3,
+    "futurebackport:bush": 0.3,
+    "futurebackport:cactus_flower": 0.3,
+    "futurebackport:open_eyeblossom": 0.65,
+    "futurebackport:closed_eyeblossom": 0.65,
+    "futurebackport:pale_moss_block": 0.65
+  }
+}

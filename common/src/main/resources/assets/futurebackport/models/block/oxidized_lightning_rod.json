@@ -1,0 +1,6 @@
+{
+  "parent": "futurebackport:block/template_lightning_rod",
+  "textures": {
+    "texture": "futurebackport:block/oxidized_lightning_rod"
+  }
+}

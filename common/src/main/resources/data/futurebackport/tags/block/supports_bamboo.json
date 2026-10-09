@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:sand",
+    "#futurebackport:substrate_overworld",
+    "minecraft:bamboo",
+    "minecraft:bamboo_sapling",
+    "minecraft:gravel",
+    "minecraft:suspicious_gravel"
+  ]
+}
